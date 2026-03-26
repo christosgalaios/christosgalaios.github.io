@@ -170,7 +170,7 @@ Each project should have a live interactive element, not just a description:
   5. DistributionAgent publishes to site/, updates index + sitemap + RSS
   6. Show article appearing on the live site
   7. Counter: "44 articles published. Zero human intervention. Zero ongoing cost."
-- Add: compass demo (the actual compass from DevGuide, embedded as a mini interactive)
+- **Inline compass demo** — a large compass (120px+) centered in the DevGuide project card, impossible to miss. Visitor moves their mouse and the needle follows. Below it: "This compass tracks your cursor. On devguide.co.uk it doubles as a back-to-top button. I think about UX details like this." The floating compass in the bottom-right is subtle by design — this one is the showcase version, big and obvious.
 - Show the "built in 2 hours" timeline — fast-forward through the build process
 - Show real article titles from the live site to prove it works
 
