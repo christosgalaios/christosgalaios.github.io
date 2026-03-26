@@ -210,53 +210,110 @@
             </div>
           </article>
 
-          <!-- Agentic Workflow -->
-          <article class="project-card reveal">
-            <div class="project-card-inner">
-              <div class="project-corner project-corner--tl"></div>
-              <div class="project-corner project-corner--tr"></div>
-              <div class="project-corner project-corner--bl"></div>
-              <div class="project-corner project-corner--br"></div>
+          <!-- Agentic Workflow — Expanded Showcase -->
+        </div>
+
+        <article class="project-showcase reveal">
+          <div class="project-showcase-header">
+            <div>
               <div class="project-header">
-                <h3 class="project-name">Agentic Workflow</h3>
-                <span class="project-stat">4 codebases</span>
+                <h3 class="project-name">Agentic Workflow System</h3>
+                <span class="project-stat">4 codebases autonomous</span>
               </div>
-              <p class="project-role">AI Agent Orchestration Framework</p>
-              <p class="project-desc">A multi-agent system modeled after real studio operations. 5 years leading teams taught me how studios work — I encoded that knowledge into AI agents.</p>
-              <!-- Agent Flow Diagram -->
-              <div class="agent-flow">
-                <div class="agent-node agent-node--ceo">
-                  <span class="agent-icon">&#9733;</span>
-                  <span>CEO</span>
-                  <span class="agent-role">Strategy</span>
+              <p class="project-role">AI Agent Orchestration Framework — Built from 5 Years of Studio Experience</p>
+            </div>
+          </div>
+          <p class="project-desc">I spent 5 years inside game studios. I know what every role does and why it exists — from how artists need fast iteration loops, to how QA and devs communicate, to how a technical lead shields their team from scope creep. I encoded all of that into an autonomous AI system that runs my codebases while I sleep.</p>
+
+          <!-- Agent Flow Diagram — Expanded -->
+          <div class="agent-flow-expanded">
+            <div class="agent-flow-row">
+              <div class="agent-node-expanded agent-node--ceo">
+                <span class="agent-node-icon">&#9733;</span>
+                <div class="agent-node-content">
+                  <strong>CEO Agent</strong>
+                  <span>Strategic oversight. Reads status reports, evaluates efficiency, scolds violations, writes business directives. Operates at the business level — WHAT the company needs, not HOW.</span>
                 </div>
-                <div class="agent-arrow">&darr;</div>
-                <div class="agent-node agent-node--manager">
-                  <span class="agent-icon">&#9881;</span>
-                  <span>Manager</span>
-                  <span class="agent-role">Code Review + Dispatch</span>
-                </div>
-                <div class="agent-arrow">&darr;</div>
-                <div class="agent-node agent-node--agent">
-                  <span class="agent-icon">&#9881;</span>
-                  <span>Agent</span>
-                  <span class="agent-role">Implementation</span>
-                </div>
-              </div>
-              <div class="project-tags">
-                <span class="tag">Claude API</span>
-                <span class="tag">MCP</span>
-                <span class="tag">TypeScript</span>
-                <span class="tag">Multi-Agent</span>
-                <span class="tag">GitHub Actions</span>
-              </div>
-              <div class="project-links">
-                <a href="https://github.com/christosgalaios/claude-shared" target="_blank" rel="noopener noreferrer">View on GitHub</a>
               </div>
             </div>
-          </article>
+            <div class="agent-flow-connector">
+              <div class="agent-flow-line"></div>
+              <span class="agent-flow-label">ceo-directives.md</span>
+            </div>
+            <div class="agent-flow-row">
+              <div class="agent-node-expanded agent-node--manager">
+                <span class="agent-node-icon">&#9881;</span>
+                <div class="agent-node-content">
+                  <strong>Manager Agent</strong>
+                  <span>Writes task specs (&le;15 lines), dispatches code-reviewer subagents, verifies work, archives completed tasks. Decides HOW to achieve CEO directives. Never implements.</span>
+                </div>
+              </div>
+            </div>
+            <div class="agent-flow-connector">
+              <div class="agent-flow-line"></div>
+              <span class="agent-flow-label">.manager-feedback.md</span>
+            </div>
+            <div class="agent-flow-row">
+              <div class="agent-node-expanded agent-node--agent">
+                <span class="agent-node-icon">&#9662;</span>
+                <div class="agent-node-content">
+                  <strong>Agent</strong>
+                  <span>Implements tasks, runs tests, commits code, checks for feedback before AND after every commit. Uses haiku for mechanical work, sonnet for implementation, opus for architecture.</span>
+                </div>
+              </div>
+            </div>
+          </div>
 
-        </div>
+          <!-- Key Achievements -->
+          <div class="project-highlights">
+            <div class="highlight-item">
+              <span class="highlight-number">3</span>
+              <span class="highlight-text">Autonomous roles running continuously — CEO evaluates, Manager dispatches, Agent implements</span>
+            </div>
+            <div class="highlight-item">
+              <span class="highlight-number">24/7</span>
+              <span class="highlight-text">Night Shift mode — agents work autonomously while I sleep, committing and pushing working code</span>
+            </div>
+            <div class="highlight-item">
+              <span class="highlight-number">3-tier</span>
+              <span class="highlight-text">Model routing — Haiku for file search, Sonnet for implementation, Opus for strategy. Minimizes cost.</span>
+            </div>
+          </div>
+
+          <!-- Sprint Skill & Communication -->
+          <div class="agentic-detail-grid">
+            <div class="agentic-detail-card">
+              <h4>Sprint Skill — QA/Dev Communication</h4>
+              <p>Built a custom sprint management skill where the Manager writes task specs to a shared sprint file and the Agent reads, implements, and acknowledges — all asynchronously. The Manager dispatches code-reviewer subagents after each commit, writes VERIFIED or feedback, and immediately queues the next task. No human in the loop. The sprint file is the single source of truth.</p>
+            </div>
+            <div class="agentic-detail-card">
+              <h4>Autonomous Night Shift</h4>
+              <p>When I say "night shift", the agents enter continuous operation. They never stop. When a task is done, they find the next one. When the backlog is empty, they proactively hunt for bugs, UX issues, missing validation, test coverage gaps. They commit working pieces early and often. Only stop when context runs out — then log what to do next so the next agent picks up seamlessly.</p>
+            </div>
+            <div class="agentic-detail-card">
+              <h4>Learned-From-Mistakes System</h4>
+              <p>Cross-project rules encoded from real failures: "always rebase before pushing", "workflow changes must land on the target branch", "never pass raw LLM responses to frontend", "never add auto-triggered API calls". Every mistake becomes a permanent rule. The agents don't repeat my mistakes — they've inherited 5 years of operational knowledge.</p>
+            </div>
+            <div class="agentic-detail-card">
+              <h4>MCP Server Integration</h4>
+              <p>SocialiseHub exposes 55+ tools via Model Context Protocol over SSE. QA agents can query the database, trigger browser automation, capture screenshots, and validate UI state — all through structured tool calls. The agents don't just write code; they test and operate the application autonomously.</p>
+            </div>
+          </div>
+
+          <div class="project-tags">
+            <span class="tag">Claude API</span>
+            <span class="tag">MCP</span>
+            <span class="tag">TypeScript</span>
+            <span class="tag">Multi-Agent</span>
+            <span class="tag">GitHub Actions</span>
+            <span class="tag">Custom Skills</span>
+            <span class="tag">Hooks</span>
+            <span class="tag">Subagents</span>
+          </div>
+          <div class="project-links">
+            <a href="https://github.com/christosgalaios/claude-shared" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+          </div>
+        </article>
 
         <!-- ======= Small Cards Row ======= -->
         <div class="projects-small">

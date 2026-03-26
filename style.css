@@ -774,6 +774,107 @@ section {
   font-size: 1.2rem;
 }
 
+/* Expanded Agent Flow */
+.agent-flow-expanded {
+  margin: 1.5rem 0;
+}
+
+.agent-flow-row {
+  display: flex;
+  justify-content: center;
+}
+
+.agent-node-expanded {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.agent-node-expanded strong {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.agent-node-expanded span {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.agent-node-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.agent-node-content {
+  flex: 1;
+}
+
+.agent-flow-connector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.25rem 0;
+}
+
+.agent-flow-line {
+  width: 2px;
+  height: 20px;
+  background: linear-gradient(to bottom, var(--accent-secondary), var(--accent));
+}
+
+.agent-flow-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  background: var(--bg-card);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  margin: 0.25rem 0;
+}
+
+/* Agentic Detail Cards */
+.agentic-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.agentic-detail-card {
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  transition: border-color 0.2s;
+}
+
+.agentic-detail-card:hover {
+  border-color: var(--border-hover);
+}
+
+.agentic-detail-card h4 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+
+.agentic-detail-card p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
 /* Mango Mascot */
 .mango {
   position: fixed;
@@ -1118,6 +1219,15 @@ section {
   .mango {
     bottom: 1rem;
     right: 1rem;
+  }
+
+  .agentic-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .agent-node-expanded {
+    flex-direction: column;
+    gap: 0.5rem;
   }
 
   /* Education */
