@@ -162,9 +162,17 @@ Each project should have a live interactive element, not just a description:
 - Add: micro-meet matching animation — show 6 user avatars, click "Match", watch them sort into groups of 4 based on shared interests
 
 **DevGuide:**
-- Add: live pipeline visualization — Discovery → Content → Validation → Distribution, animated nodes with data flowing between them
+- Add: **Autonomous pipeline simulation** — the full daily cycle animated:
+  1. GitHub Actions cron fires at 03:00 UTC
+  2. DiscoveryAgent scans 3 niches (dev tools comparisons, micro-niche compatibility, JP/CN tech news)
+  3. ContentAgent generates 1,200+ word article with SEO structure
+  4. ValidationAgent runs quality gate (word count, structure, tone, keyword safety checks — show pass/fail)
+  5. DistributionAgent publishes to site/, updates index + sitemap + RSS
+  6. Show article appearing on the live site
+  7. Counter: "44 articles published. Zero human intervention. Zero ongoing cost."
 - Add: compass demo (the actual compass from DevGuide, embedded as a mini interactive)
 - Show the "built in 2 hours" timeline — fast-forward through the build process
+- Show real article titles from the live site to prove it works
 
 **Socialise Website:**
 - Embed iframe of the live site
@@ -232,6 +240,49 @@ Research and integrate more animated components from 21st.dev:
 - All built in vanilla JS using Canvas API or pure SVG — no Chart.js or D3 dependency
 - Tooltips, hover states, click interactions on every data point
 - Data is hardcoded but shaped from the real Socialise analytics (we have the actual numbers from the trends.json files)
+
+### 13. CI/CD Pipeline Demo
+
+**What:** Show the full automated pipeline — not just "we have CI" but the entire flow animated and interactive.
+
+**Implementation:** Interactive pipeline visualization:
+1. **Git Workflow:** Show the rebase-before-push flow animated:
+   - `git fetch origin develop`
+   - `git rebase origin/develop`
+   - Conflict detected → resolve → lint → `git rebase --continue`
+   - `git push --force-with-lease`
+   - Show why: "bare git push causes divergence. This is a permanent learned rule."
+
+2. **Pre-commit Hooks:** Show hooks firing on commit:
+   - Auto type-check on `.ts`/`.tsx` edits
+   - Block `.env` edits (security gate)
+   - Lint check before commit passes
+   - Self-reflect on merge (hook reviews the diff)
+
+3. **CI Pipeline:** Animated GitHub Actions workflow:
+   - Push triggers CI → lint → tsc → test (1,671 passing) → build
+   - Show test results streaming in
+   - Green checkmark → auto-merge to develop
+   - Deploy workflow fires → build → deploy to GitHub Pages
+   - Show the gotcha: "Workflow changes must land on TARGET branch to take effect"
+
+4. **6-Environment Release Pipeline** (from Koffee Cup):
+   - Dev → Shared → QA → Review → Partner QA → Live
+   - Show dual-lane parallel development (LiveOps + Features)
+   - Animated flow with gates between each environment
+
+5. **Test Coverage:**
+   - Show test count accumulating: 1,671 (Hub) + 548 (App) + 40 (DevGuide) = 2,259 total
+   - Show test categories: stores, routes, validation, automation, analytics
+   - Click a category to see example test names
+
+**Key messaging:** "Every commit is guarded. Every push is rebased. Every merge is reviewed. The pipeline enforces discipline — humans make mistakes, automation doesn't."
+
+---
+
+### 14. Mango position: left, Compass position: right
+
+**Status:** Done in this commit.
 
 ---
 

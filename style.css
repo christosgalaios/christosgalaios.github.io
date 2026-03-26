@@ -943,7 +943,7 @@ section {
 .mango {
   position: fixed;
   bottom: 2rem;
-  right: 2rem;
+  left: 2rem;
   z-index: 60;
   cursor: grab;
   touch-action: none;
@@ -968,7 +968,7 @@ section {
 .mango-chat {
   position: fixed;
   bottom: 7rem;
-  right: 2rem;
+  left: 2rem;
   width: 340px;
   max-height: 420px;
   background: var(--bg-card);
@@ -1097,7 +1097,7 @@ section {
 .floating-compass {
   position: fixed;
   bottom: 1.5rem;
-  left: 1.5rem;
+  right: 1.5rem;
   width: 56px;
   height: 56px;
   border-radius: 50%;
@@ -2199,7 +2199,7 @@ section {
 
   .mango {
     bottom: 1rem;
-    right: 1rem;
+    left: 1rem;
   }
 
   .agentic-detail-grid {
