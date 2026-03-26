@@ -121,6 +121,85 @@
               <span class="highlight-text">Platforms synced — Meetup (GraphQL), Eventbrite (DOM automation), Headfirst (scraping)</span>
             </div>
           </div>
+          <!-- Interactive Hub Demo -->
+          <div class="hub-demo" id="hub-demo">
+            <div class="hub-demo-tabs">
+              <button class="hub-tab hub-tab--active" data-tab="sync">Live Sync</button>
+              <button class="hub-tab" data-tab="events">Events</button>
+              <button class="hub-tab" data-tab="analytics">Analytics</button>
+              <button class="hub-tab" data-tab="mcp">MCP Tools</button>
+            </div>
+
+            <!-- Sync Tab: animated platform flow -->
+            <div class="hub-panel hub-panel--active" id="hub-panel-sync">
+              <div class="sync-flow">
+                <div class="sync-platform sync-platform--meetup">
+                  <span class="sync-platform-name">Meetup</span>
+                  <span class="sync-platform-type">GraphQL API</span>
+                </div>
+                <div class="sync-arrows">
+                  <div class="sync-arrow sync-arrow--1"></div>
+                  <div class="sync-arrow sync-arrow--2"></div>
+                  <div class="sync-arrow sync-arrow--3"></div>
+                </div>
+                <div class="sync-hub-center">
+                  <div class="sync-hub-icon">Hub</div>
+                  <span class="sync-hub-status" id="sync-status">Ready</span>
+                </div>
+                <div class="sync-arrows sync-arrows--reverse">
+                  <div class="sync-arrow sync-arrow--1"></div>
+                  <div class="sync-arrow sync-arrow--2"></div>
+                </div>
+                <div class="sync-platform-col">
+                  <div class="sync-platform sync-platform--eventbrite">
+                    <span class="sync-platform-name">Eventbrite</span>
+                    <span class="sync-platform-type">DOM Automation</span>
+                  </div>
+                  <div class="sync-platform sync-platform--headfirst">
+                    <span class="sync-platform-name">Headfirst</span>
+                    <span class="sync-platform-type">Browser Scraping</span>
+                  </div>
+                </div>
+              </div>
+              <button class="hub-demo-btn" id="sync-btn">Run Sync</button>
+              <div class="sync-log" id="sync-log"></div>
+            </div>
+
+            <!-- Events Tab -->
+            <div class="hub-panel" id="hub-panel-events">
+              <div class="hub-events-list" id="hub-events-list"></div>
+              <button class="hub-demo-btn" id="score-btn">AI Score All Events</button>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div class="hub-panel" id="hub-panel-analytics">
+              <div class="hub-chart-row">
+                <div class="hub-chart">
+                  <h4>Member Growth</h4>
+                  <div class="hub-bars" id="hub-members-chart"></div>
+                </div>
+                <div class="hub-chart">
+                  <h4>Monthly Revenue</h4>
+                  <div class="hub-bars" id="hub-revenue-chart"></div>
+                </div>
+              </div>
+              <div class="hub-chart-stats">
+                <div class="hub-chart-stat"><span class="hub-chart-stat-num">3,112</span><span>Total Members</span></div>
+                <div class="hub-chart-stat"><span class="hub-chart-stat-num">282</span><span>Events Synced</span></div>
+                <div class="hub-chart-stat"><span class="hub-chart-stat-num">&pound;855</span><span>Total Revenue</span></div>
+              </div>
+            </div>
+
+            <!-- MCP Tools Tab -->
+            <div class="hub-panel" id="hub-panel-mcp">
+              <div class="mcp-terminal" id="mcp-terminal">
+                <div class="mcp-line mcp-line--comment"># 55+ tools available via SSE at localhost:3000/mcp/sse</div>
+                <div class="mcp-line mcp-line--comment"># Click a tool to execute it</div>
+              </div>
+              <div class="mcp-tools-grid" id="mcp-tools-grid"></div>
+            </div>
+          </div>
+
           <div class="socialise-palette-section">
             <p class="project-desc project-desc--muted">Brand palette — AI-researched color theory from #E3705B base terracotta:</p>
             <div class="socialise-palette">

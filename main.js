@@ -305,6 +305,178 @@ function initLazyIframes() {
   });
 }
 
+/* --- Hub Interactive Demo --- */
+function initHubDemo() {
+  // Tab switching
+  document.querySelectorAll('.hub-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.hub-tab').forEach(t => t.classList.remove('hub-tab--active'));
+      document.querySelectorAll('.hub-panel').forEach(p => p.classList.remove('hub-panel--active'));
+      tab.classList.add('hub-tab--active');
+      document.getElementById(`hub-panel-${tab.dataset.tab}`)?.classList.add('hub-panel--active');
+    });
+  });
+
+  // === SYNC TAB ===
+  const syncBtn = document.getElementById('sync-btn');
+  const syncLog = document.getElementById('sync-log');
+  const syncStatus = document.getElementById('sync-status');
+  if (syncBtn) {
+    syncBtn.addEventListener('click', () => {
+      syncBtn.disabled = true;
+      syncLog.innerHTML = '';
+      syncStatus.textContent = 'Syncing...';
+      const platforms = document.querySelectorAll('.sync-platform');
+      const arrows = document.querySelectorAll('.sync-arrow');
+      const steps = [
+        { delay: 0, log: '> Connecting to Meetup GraphQL API...', type: 'info' },
+        { delay: 600, log: '  Fetched 282 events via graphql.meetup.com', type: 'info', platform: 0, arrows: [0,1,2] },
+        { delay: 1200, log: '> Launching Eventbrite DOM automation...', type: 'info' },
+        { delay: 1800, log: '  Scraped 47 events via Electron WebContentsView', type: 'info', platform: 3, arrows: [3,4] },
+        { delay: 2400, log: '> Scraping Headfirst Bristol...', type: 'info' },
+        { delay: 2800, log: '  Parsed 23 events from headfirstbristol.co.uk', type: 'info', platform: 4 },
+        { delay: 3400, log: '> Running conflict detection...', type: 'info' },
+        { delay: 3800, log: '  6 cross-platform conflicts detected', type: 'info' },
+        { delay: 4200, log: '> Sync complete: 282 pulled, 6 updated, 276 skipped', type: 'success' },
+      ];
+      steps.forEach(step => {
+        setTimeout(() => {
+          const line = document.createElement('div');
+          line.className = `sync-log-line sync-log-line--${step.type}`;
+          line.textContent = step.log;
+          syncLog.appendChild(line);
+          syncLog.scrollTop = syncLog.scrollHeight;
+          if (step.platform !== undefined) {
+            platforms[step.platform]?.classList.add('sync-platform--active');
+            setTimeout(() => platforms[step.platform]?.classList.remove('sync-platform--active'), 800);
+          }
+          if (step.arrows) {
+            step.arrows.forEach((a, i) => {
+              setTimeout(() => arrows[a]?.classList.add('sync-arrow--pulse'), i * 150);
+              setTimeout(() => arrows[a]?.classList.remove('sync-arrow--pulse'), i * 150 + 500);
+            });
+          }
+        }, step.delay);
+      });
+      setTimeout(() => { syncBtn.disabled = false; syncStatus.textContent = 'Synced'; }, 4500);
+    });
+  }
+
+  // === EVENTS TAB ===
+  const eventsList = document.getElementById('hub-events-list');
+  const scoreBtn = document.getElementById('score-btn');
+  const events = [
+    { name: 'Speed Friending Social', date: 'Mar 28', platform: 'meetup', attendees: 42, price: '£5' },
+    { name: 'Board Games Night', date: 'Mar 29', platform: 'meetup', attendees: 28, price: 'Free' },
+    { name: 'Comedy Open Mic', date: 'Mar 30', platform: 'eventbrite', attendees: 65, price: '£8' },
+    { name: 'Sunday Hike — Leigh Woods', date: 'Mar 31', platform: 'meetup', attendees: 35, price: 'Free' },
+    { name: 'Pub Quiz Night', date: 'Apr 2', platform: 'headfirst', attendees: 50, price: '£3' },
+    { name: 'Pottery Workshop', date: 'Apr 5', platform: 'eventbrite', attendees: 12, price: '£25' },
+  ];
+  if (eventsList) {
+    events.forEach(ev => {
+      const div = document.createElement('div');
+      div.className = 'hub-event';
+      div.innerHTML = `<div class="hub-event-name">${ev.name}</div>
+        <div class="hub-event-meta">
+          <span class="hub-event-badge">${ev.platform}</span>
+          <span>${ev.date}</span>
+          <span>${ev.attendees} going</span>
+          <span>${ev.price}</span>
+          <span class="hub-event-score" data-event></span>
+        </div>`;
+      eventsList.appendChild(div);
+    });
+  }
+  if (scoreBtn) {
+    scoreBtn.addEventListener('click', () => {
+      scoreBtn.disabled = true;
+      scoreBtn.textContent = 'Scoring...';
+      const scoreEls = document.querySelectorAll('[data-event]');
+      scoreEls.forEach((el, i) => {
+        setTimeout(() => {
+          const score = Math.floor(Math.random() * 40) + 60;
+          el.textContent = `AI: ${score}%`;
+          el.classList.add('hub-event-score--visible');
+          el.classList.add(score >= 80 ? 'hub-event-score--high' : score >= 65 ? 'hub-event-score--mid' : 'hub-event-score--low');
+          el.parentElement.parentElement.style.borderColor = score >= 80 ? 'rgba(34,197,94,0.4)' : score >= 65 ? 'rgba(245,158,11,0.4)' : 'rgba(239,68,68,0.4)';
+        }, i * 400 + 300);
+      });
+      setTimeout(() => { scoreBtn.textContent = 'AI Score All Events'; scoreBtn.disabled = false; }, events.length * 400 + 600);
+    });
+  }
+
+  // === ANALYTICS TAB ===
+  const membersChart = document.getElementById('hub-members-chart');
+  const revenueChart = document.getElementById('hub-revenue-chart');
+  const memberData = [753,925,1150,1275,1364,1449,1536,1707,1824,2070,2610,2922,3112];
+  const revenueData = [0,0,0,0,0,57.5,229,261,258.5,35,7,7,3.5];
+  const months = ['Apr','Jun','Aug','Oct','Jan','Mar','May','Jul','Sep','Dec','Jan','Feb','Mar'];
+
+  function renderChart(container, data, color, label) {
+    if (!container) return;
+    const max = Math.max(...data);
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        container.querySelectorAll('.hub-bar').forEach((bar, i) => {
+          setTimeout(() => { bar.style.height = `${(data[i] / max) * 100}%`; }, i * 60);
+        });
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.3 });
+    data.forEach((val, i) => {
+      const bar = document.createElement('div');
+      bar.className = 'hub-bar';
+      bar.style.background = color;
+      bar.style.height = '0%';
+      bar.dataset.tooltip = `${months[i]}: ${label === '£' ? '£' + val : val.toLocaleString()}`;
+      container.appendChild(bar);
+    });
+    observer.observe(container);
+  }
+  renderChart(membersChart, memberData, 'var(--accent)', '');
+  renderChart(revenueChart, revenueData, 'var(--accent-secondary)', '£');
+
+  // === MCP TAB ===
+  const terminal = document.getElementById('mcp-terminal');
+  const toolsGrid = document.getElementById('mcp-tools-grid');
+  const tools = [
+    { name: 'get-events', result: '→ 282 events returned (47ms)' },
+    { name: 'sync-meetup', result: '→ Synced 282 events, 6 conflicts detected' },
+    { name: 'score-event', result: '→ Score: 87% (high demand, low competition, good timing)' },
+    { name: 'get-analytics', result: '→ { members: 3112, revenue: £855, avg_fill: 45% }' },
+    { name: 'publish-event', result: '→ Published to Meetup + Eventbrite (2 platforms)' },
+    { name: 'capture-screenshot', result: '→ Screenshot saved: /tmp/hub-capture-001.png' },
+    { name: 'get-member-stats', result: '→ 540 new members in Jan 2026, 190 in Mar 2026' },
+    { name: 'detect-conflicts', result: '→ 6 cross-platform field mismatches found' },
+    { name: 'generate-event-idea', result: '→ "Sunset Kayaking Social" — projected: 35 attendees, £175 revenue' },
+    { name: 'augment-description', result: '→ Description enhanced with AI (tone: warm, inclusive, cheeky)' },
+  ];
+  if (toolsGrid && terminal) {
+    tools.forEach(tool => {
+      const btn = document.createElement('button');
+      btn.className = 'mcp-tool-btn';
+      btn.textContent = tool.name;
+      btn.addEventListener('click', () => {
+        const cmd = document.createElement('div');
+        cmd.className = 'mcp-line mcp-line--cmd';
+        cmd.textContent = `> mcp.call("${tool.name}")`;
+        terminal.appendChild(cmd);
+        setTimeout(() => {
+          const res = document.createElement('div');
+          res.className = 'mcp-line mcp-line--result';
+          res.textContent = tool.result;
+          terminal.appendChild(res);
+          terminal.scrollTop = terminal.scrollHeight;
+        }, 300 + Math.random() * 400);
+        terminal.scrollTop = terminal.scrollHeight;
+      });
+      toolsGrid.appendChild(btn);
+    });
+  }
+}
+
 /* --- Init --- */
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
@@ -318,4 +490,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initMango();
   initMangoChat();
   initLazyIframes();
+  initHubDemo();
 });
