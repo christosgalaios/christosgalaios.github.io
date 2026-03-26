@@ -11,7 +11,7 @@
   <meta property="og:url" content="https://christosgalaios.github.io">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Fira+Code:wght@400;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Fira+Code:wght@400;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Cinzel+Decorative:wght@700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -79,61 +79,111 @@
         <span class="section-label">[ PROJECTS ]</span>
         <h2 class="section-title">What I've Built</h2>
 
-        <!-- Large Cards -->
-        <div class="projects-grid">
-
-          <article class="project-card reveal">
-            <div class="project-card-inner">
-              <div class="project-corner project-corner--tl"></div>
-              <div class="project-corner project-corner--tr"></div>
-              <div class="project-corner project-corner--bl"></div>
-              <div class="project-corner project-corner--br"></div>
+        <!-- ======= SocialiseHub ======= -->
+        <article class="project-showcase reveal">
+          <div class="project-showcase-header">
+            <div>
               <div class="project-header">
                 <h3 class="project-name">SocialiseHub</h3>
                 <span class="project-stat">1,671 tests</span>
               </div>
               <p class="project-role">AI-Powered Business Operations Platform</p>
-              <p class="project-desc">Full production Electron desktop app with 55+ MCP tools, AI augmentation, multi-platform sync, and browser automation. 1,671 automated tests across 33 suites. Entirely AI-directed development.</p>
-              <div class="project-tags">
-                <span class="tag">Electron</span>
-                <span class="tag">React 19</span>
-                <span class="tag">Express 5</span>
-                <span class="tag">SQLite</span>
-                <span class="tag">MCP</span>
-                <span class="tag">TypeScript</span>
-              </div>
-              <div class="project-links">
-                <a href="https://github.com/christosgalaios/SocialiseHub" target="_blank" rel="noopener noreferrer">GitHub</a>
-              </div>
             </div>
-          </article>
+          </div>
+          <p class="project-desc">Full production Electron desktop app with 55+ MCP tools, AI augmentation, multi-platform sync, and browser automation. 1,671 automated tests across 33 suites. Entirely AI-directed development — I never touched the Node.js code directly.</p>
+          <div class="project-screenshot-grid">
+            <img src="assets/hub-screenshot.png" alt="SocialiseHub main interface showing event management dashboard" class="project-screenshot" loading="lazy" width="1200" height="800">
+            <img src="assets/hub-analytics.png" alt="SocialiseHub analytics dashboard with revenue and attendance trends" class="project-screenshot" loading="lazy" width="1200" height="800">
+          </div>
+          <div class="project-highlights">
+            <div class="highlight-item">
+              <span class="highlight-number">55+</span>
+              <span class="highlight-text">MCP tools via SSE — LLMs query databases, trigger automation, execute business ops</span>
+            </div>
+            <div class="highlight-item">
+              <span class="highlight-number">33</span>
+              <span class="highlight-text">Test suites covering stores, routes, validation, automation, analytics</span>
+            </div>
+            <div class="highlight-item">
+              <span class="highlight-number">3</span>
+              <span class="highlight-text">Platforms synced — Meetup (GraphQL), Eventbrite (DOM automation), Headfirst (scraping)</span>
+            </div>
+          </div>
+          <div class="project-tags">
+            <span class="tag">Electron 40</span>
+            <span class="tag">React 19</span>
+            <span class="tag">Express 5</span>
+            <span class="tag">SQLite</span>
+            <span class="tag">MCP Server</span>
+            <span class="tag">TypeScript</span>
+          </div>
+          <div class="project-links">
+            <a href="https://github.com/christosgalaios/SocialiseHub" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+          </div>
+        </article>
 
-          <article class="project-card reveal">
-            <div class="project-card-inner">
-              <div class="project-corner project-corner--tl"></div>
-              <div class="project-corner project-corner--tr"></div>
-              <div class="project-corner project-corner--bl"></div>
-              <div class="project-corner project-corner--br"></div>
+        <!-- ======= Interactive CV — with mini card demo ======= -->
+        <article class="project-showcase project-showcase--dark reveal">
+          <div class="project-showcase-header">
+            <div>
               <div class="project-header">
                 <h3 class="project-name">Interactive CV</h3>
                 <span class="project-stat">4-player multiplayer</span>
               </div>
               <p class="project-role">Card Battle Game as a CV</p>
-              <p class="project-desc">A Hand of Fate-inspired card battle game where recruiters play objection cards and the CV counters with achievements. Procedural audio synthesis, multiplayer via WebSocket, 3D CSS transforms. Zero frameworks, zero audio files.</p>
-              <div class="project-tags">
-                <span class="tag">Vanilla JS</span>
-                <span class="tag">Canvas API</span>
-                <span class="tag">Web Audio</span>
-                <span class="tag">Socket.io</span>
-                <span class="tag">Express</span>
-              </div>
-              <div class="project-links">
-                <a class="project-cta" href="https://christosgalaios.github.io/InteractiveCV" target="_blank" rel="noopener noreferrer">Play It</a>
-                <a href="https://github.com/christosgalaios/InteractiveCV" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+          </div>
+          <p class="project-desc">A Hand of Fate-inspired card battle game where recruiters play objection cards and the CV counters with achievements. Procedural audio synthesis at runtime — zero audio files. Multiplayer via WebSocket with QR code entry. All vanilla JS, zero frameworks.</p>
+
+          <!-- Mini Card Demo -->
+          <div class="cv-cards-showcase">
+            <div class="cv-card cv-card--objection">
+              <div class="cv-card-art">?</div>
+              <div class="cv-card-title">No Node.js Experience</div>
+              <div class="cv-card-desc">Candidate lacks traditional backend experience</div>
+              <div class="cv-card-footer">
+                <span class="cv-card-badge cv-card-badge--red">OBJECTION</span>
+                <span class="cv-card-power">6</span>
               </div>
             </div>
-          </article>
+            <div class="cv-card-vs">VS</div>
+            <div class="cv-card cv-card--counter">
+              <div class="cv-card-art">&#9830;</div>
+              <div class="cv-card-title">1,671 Automated Tests</div>
+              <div class="cv-card-desc">Vibecoded a full Electron app with production-grade test coverage</div>
+              <div class="cv-card-footer">
+                <span class="cv-card-badge cv-card-badge--green">COUNTERED</span>
+                <span class="cv-card-power">9</span>
+              </div>
+            </div>
+          </div>
 
+          <!-- Embedded Demo -->
+          <div class="demo-embed">
+            <div class="demo-placeholder" data-src="https://christosgalaios.github.io/InteractiveCV/" data-title="Interactive CV Game">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="var(--accent)" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <span>Click to play the Interactive CV</span>
+            </div>
+          </div>
+
+          <div class="project-tags">
+            <span class="tag">Vanilla JS</span>
+            <span class="tag">Canvas API</span>
+            <span class="tag">Web Audio API</span>
+            <span class="tag">Socket.io</span>
+            <span class="tag">Express</span>
+            <span class="tag">3D CSS Transforms</span>
+          </div>
+          <div class="project-links">
+            <a class="project-cta" href="https://christosgalaios.github.io/InteractiveCV" target="_blank" rel="noopener noreferrer">Play It</a>
+            <a href="https://github.com/christosgalaios/InteractiveCV" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+          </div>
+        </article>
+
+        <!-- ======= Medium Cards Row ======= -->
+        <div class="projects-grid">
+
+          <!-- SocialiseApp -->
           <article class="project-card reveal">
             <div class="project-card-inner">
               <div class="project-corner project-corner--tl"></div>
@@ -145,7 +195,8 @@
                 <span class="project-stat">548 tests</span>
               </div>
               <p class="project-role">Social Event Discovery Platform</p>
-              <p class="project-desc">Full-stack web platform with real-time chat, AI-matched micro-meets, gamification (XP + levels), communities, and an interactive mascot. PWA-ready.</p>
+              <p class="project-desc">Full-stack web platform with real-time chat, AI-matched micro-meets, gamification (XP + levels), communities, and Mango — an interactive kitten mascot with physics and 10 animated poses. PWA-ready.</p>
+              <p class="project-desc project-desc--muted">Meet Mango below — drag the kitten around this page.</p>
               <div class="project-tags">
                 <span class="tag">React 19</span>
                 <span class="tag">Supabase</span>
@@ -154,11 +205,12 @@
                 <span class="tag">Zustand</span>
               </div>
               <div class="project-links">
-                <a href="https://github.com/christosgalaios/SocialiseApp" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a href="https://github.com/christosgalaios/SocialiseApp" target="_blank" rel="noopener noreferrer">View on GitHub</a>
               </div>
             </div>
           </article>
 
+          <!-- Agentic Workflow -->
           <article class="project-card reveal">
             <div class="project-card-inner">
               <div class="project-corner project-corner--tl"></div>
@@ -167,10 +219,30 @@
               <div class="project-corner project-corner--br"></div>
               <div class="project-header">
                 <h3 class="project-name">Agentic Workflow</h3>
-                <span class="project-stat">4 codebases autonomous</span>
+                <span class="project-stat">4 codebases</span>
               </div>
               <p class="project-role">AI Agent Orchestration Framework</p>
-              <p class="project-desc">A multi-agent system modeled after real studio operations: CEO (strategy), Manager (code review + task dispatch), Agent (implementation). Autonomous sprint management, model-tier routing (Haiku/Sonnet/Opus), inter-agent signaling. Manages 4 codebases continuously.</p>
+              <p class="project-desc">A multi-agent system modeled after real studio operations. 5 years leading teams taught me how studios work — I encoded that knowledge into AI agents.</p>
+              <!-- Agent Flow Diagram -->
+              <div class="agent-flow">
+                <div class="agent-node agent-node--ceo">
+                  <span class="agent-icon">&#9733;</span>
+                  <span>CEO</span>
+                  <span class="agent-role">Strategy</span>
+                </div>
+                <div class="agent-arrow">&darr;</div>
+                <div class="agent-node agent-node--manager">
+                  <span class="agent-icon">&#9881;</span>
+                  <span>Manager</span>
+                  <span class="agent-role">Code Review + Dispatch</span>
+                </div>
+                <div class="agent-arrow">&darr;</div>
+                <div class="agent-node agent-node--agent">
+                  <span class="agent-icon">&#9881;</span>
+                  <span>Agent</span>
+                  <span class="agent-role">Implementation</span>
+                </div>
+              </div>
               <div class="project-tags">
                 <span class="tag">Claude API</span>
                 <span class="tag">MCP</span>
@@ -179,16 +251,17 @@
                 <span class="tag">GitHub Actions</span>
               </div>
               <div class="project-links">
-                <a href="https://github.com/christosgalaios/claude-shared" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a href="https://github.com/christosgalaios/claude-shared" target="_blank" rel="noopener noreferrer">View on GitHub</a>
               </div>
             </div>
           </article>
 
         </div>
 
-        <!-- Small Cards -->
+        <!-- ======= Small Cards Row ======= -->
         <div class="projects-small">
 
+          <!-- DevGuide -->
           <article class="project-card reveal">
             <div class="project-card-inner">
               <div class="project-corner project-corner--tl"></div>
@@ -200,7 +273,7 @@
                 <span class="project-stat">Built in 2 hours</span>
               </div>
               <p class="project-role">Autonomous Content Pipeline</p>
-              <p class="project-desc">Multi-agent Python system that discovers topics, generates SEO articles, validates quality, and publishes daily. 44 articles live, zero ongoing cost. The compass navigation element doubles as back-to-top — designed with intention.</p>
+              <p class="project-desc">Multi-agent Python system: Discovery &rarr; Content &rarr; Validation &rarr; Distribution. Publishes daily via GitHub Actions. 44 articles live, zero ongoing cost. The compass navigation doubles as back-to-top — designed with intention.</p>
               <div class="project-tags">
                 <span class="tag">Python</span>
                 <span class="tag">GitHub Actions</span>
@@ -214,6 +287,7 @@
             </div>
           </article>
 
+          <!-- Socialise Website -->
           <article class="project-card reveal">
             <div class="project-card-inner">
               <div class="project-corner project-corner--tl"></div>
@@ -237,6 +311,7 @@
             </div>
           </article>
 
+          <!-- Edge AI Robot -->
           <article class="project-card reveal">
             <div class="project-card-inner">
               <div class="project-corner project-corner--tl"></div>
@@ -267,10 +342,8 @@
       <div class="container">
         <span class="section-label">[ EXPERIENCE ]</span>
         <h2 class="section-title">Where I Learned How Teams, Pipelines, and Products Actually Work</h2>
-
         <div class="timeline">
           <div class="timeline-line"></div>
-
           <div class="timeline-item reveal">
             <div class="timeline-dot"></div>
             <div class="timeline-card">
@@ -284,7 +357,6 @@
               </ul>
             </div>
           </div>
-
           <div class="timeline-item reveal">
             <div class="timeline-dot"></div>
             <div class="timeline-card">
@@ -299,7 +371,6 @@
               </ul>
             </div>
           </div>
-
           <div class="timeline-item reveal">
             <div class="timeline-dot"></div>
             <div class="timeline-card">
@@ -313,7 +384,6 @@
               </ul>
             </div>
           </div>
-
           <div class="timeline-item reveal">
             <div class="timeline-dot"></div>
             <div class="timeline-card">
@@ -326,7 +396,6 @@
               </ul>
             </div>
           </div>
-
         </div>
       </div>
     </section>
@@ -372,6 +441,176 @@
     </section>
 
   </main>
+
+  <!-- Mango Mascot - Draggable! -->
+  <div class="mango" id="mango" aria-label="Mango the kitten mascot - drag me around!">
+    <svg class="mango-svg" width="80" height="80" viewBox="0 0 80 80" style="overflow:visible;cursor:grab">
+      <!-- Wave pose (default) -->
+      <g class="mango-pose mango-pose-wave">
+        <path d="M54 58 Q68 50 64 36" stroke="#E2725B" stroke-width="7" stroke-linecap="round" fill="none">
+          <animate attributeName="d" values="M54 58 Q68 50 64 36;M54 58 Q72 52 66 38;M54 58 Q68 50 64 36" dur="1.5s" repeatCount="indefinite"/>
+        </path>
+        <ellipse cx="40" cy="60" rx="16" ry="12" fill="#E2725B"/>
+        <ellipse cx="40" cy="62" rx="8" ry="8" fill="#fff"/>
+        <ellipse cx="40" cy="32" rx="18" ry="16" fill="#E2725B"/>
+        <path d="M20 28 L26 8 L34 26 Z" fill="#E2725B"/>
+        <path d="M46 26 L54 8 L60 28 Z" fill="#E2725B"/>
+        <path d="M23 26 L26 12 L31 25 Z" fill="#FFB5A7"/>
+        <path d="M49 25 L54 12 L57 26 Z" fill="#FFB5A7"/>
+        <path d="M32 20 L34 26" stroke="#C75B47" stroke-width="2" stroke-linecap="round"/>
+        <path d="M40 18 L40 24" stroke="#C75B47" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M48 20 L46 26" stroke="#C75B47" stroke-width="2" stroke-linecap="round"/>
+        <ellipse cx="40" cy="38" rx="10" ry="7" fill="#FFF8F0"/>
+        <ellipse cx="32" cy="30" rx="5" ry="4" fill="#2D5F5D"/>
+        <ellipse cx="48" cy="30" rx="5" ry="4" fill="#2D5F5D"/>
+        <ellipse cx="32" cy="30" rx="1.5" ry="3" fill="#1a3a38"/>
+        <ellipse cx="48" cy="30" rx="1.5" ry="3" fill="#1a3a38"/>
+        <circle cx="33" cy="29" r="1" fill="#fff"/>
+        <circle cx="49" cy="29" r="1" fill="#fff"/>
+        <ellipse cx="40" cy="38" rx="2.5" ry="2" fill="#FFB5A7"/>
+        <path d="M40 40 L40 43" stroke="#C75B47" stroke-width="1"/>
+        <path d="M36 45 Q40 43 44 45" stroke="#C75B47" stroke-width="1" fill="none" stroke-linecap="round"/>
+        <g stroke="#fff" stroke-width="0.8" opacity="0.9">
+          <line x1="14" y1="34" x2="28" y2="36"/><line x1="14" y1="38" x2="28" y2="38"/>
+          <line x1="52" y1="36" x2="66" y2="34"/><line x1="52" y1="38" x2="66" y2="38"/>
+        </g>
+        <g>
+          <ellipse cx="62" cy="46" rx="6" ry="5" fill="#E2725B"/>
+          <ellipse cx="64" cy="48" rx="3" ry="3" fill="#fff"/>
+          <animateTransform attributeName="transform" type="rotate" values="0 56 50;20 56 50;0 56 50;20 56 50;0 56 50" dur="1.7s" repeatCount="indefinite"/>
+        </g>
+        <ellipse cx="32" cy="68" rx="5" ry="6" fill="#E2725B"/>
+        <ellipse cx="32" cy="70" rx="3" ry="3" fill="#fff"/>
+      </g>
+      <!-- Carried pose (while dragging) -->
+      <g class="mango-pose mango-pose-carried" style="display:none" transform="translate(0,25)">
+        <path d="M45 50 Q52 60 48 72" stroke="#E2725B" stroke-width="6" stroke-linecap="round" fill="none"/>
+        <ellipse cx="40" cy="52" rx="14" ry="10" fill="#E2725B"/>
+        <ellipse cx="40" cy="54" rx="7" ry="6" fill="#fff"/>
+        <ellipse cx="40" cy="26" rx="16" ry="14" fill="#E2725B"/>
+        <ellipse cx="40" cy="12" rx="6" ry="4" fill="#C75B47"/>
+        <path d="M22 22 L26 10 L32 24 Z" fill="#E2725B" transform="rotate(-10 27 17)"/>
+        <path d="M48 24 L54 10 L58 22 Z" fill="#E2725B" transform="rotate(10 53 17)"/>
+        <ellipse cx="40" cy="32" rx="9" ry="6" fill="#FFF8F0"/>
+        <path d="M30 26 Q34 24 38 26" stroke="#2D5F5D" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M42 26 Q46 24 50 26" stroke="#2D5F5D" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <ellipse cx="40" cy="32" rx="2" ry="1.5" fill="#FFB5A7"/>
+        <path d="M37 35 Q40 37 43 35" stroke="#C75B47" stroke-width="1" fill="none" stroke-linecap="round"/>
+        <g>
+          <ellipse cx="32" cy="62" rx="4" ry="5" fill="#E2725B"/>
+          <ellipse cx="32" cy="64" rx="2.5" ry="2.5" fill="#fff"/>
+          <animateTransform attributeName="transform" type="rotate" values="0 32 62;5 32 62;0 32 62;-5 32 62;0 32 62" dur="1s" repeatCount="indefinite"/>
+        </g>
+        <g>
+          <ellipse cx="48" cy="62" rx="4" ry="5" fill="#E2725B"/>
+          <ellipse cx="48" cy="64" rx="2.5" ry="2.5" fill="#fff"/>
+          <animateTransform attributeName="transform" type="rotate" values="0 48 62;-5 48 62;0 48 62;5 48 62;0 48 62" dur="1s" repeatCount="indefinite"/>
+        </g>
+      </g>
+      <!-- Playful pose (after drop) -->
+      <g class="mango-pose mango-pose-playful" style="display:none">
+        <ellipse cx="40" cy="60" rx="16" ry="12" fill="#E2725B"/>
+        <ellipse cx="40" cy="62" rx="8" ry="8" fill="#fff"/>
+        <ellipse cx="40" cy="32" rx="18" ry="16" fill="#E2725B"/>
+        <path d="M18 26 L24 4 L32 24 Z" fill="#E2725B"/>
+        <path d="M48 24 L56 4 L62 26 Z" fill="#E2725B"/>
+        <path d="M21 24 L24 10 L29 23 Z" fill="#FFB5A7"/>
+        <path d="M51 23 L56 10 L59 24 Z" fill="#FFB5A7"/>
+        <ellipse cx="40" cy="38" rx="10" ry="7" fill="#FFF8F0"/>
+        <ellipse cx="32" cy="28" rx="6" ry="5" fill="#2D5F5D"/>
+        <ellipse cx="48" cy="28" rx="6" ry="5" fill="#2D5F5D"/>
+        <ellipse cx="32" cy="28" rx="2" ry="4" fill="#1a3a38"/>
+        <ellipse cx="48" cy="28" rx="2" ry="4" fill="#1a3a38"/>
+        <circle cx="34" cy="26" r="1.5" fill="#fff"/>
+        <circle cx="50" cy="26" r="1.5" fill="#fff"/>
+        <ellipse cx="40" cy="38" rx="2.5" ry="2" fill="#FFB5A7"/>
+        <path d="M35 42 Q40 48 45 42" stroke="#C75B47" stroke-width="1.5" fill="#FFB5A7" stroke-linecap="round"/>
+        <text x="8" y="16" font-size="10" fill="#F4B942" opacity="0.8">&#10024;</text>
+        <text x="64" y="12" font-size="8" fill="#F4B942" opacity="0.8">&#11088;</text>
+      </g>
+      <!-- Curious pose -->
+      <g class="mango-pose mango-pose-curious" style="display:none">
+        <ellipse cx="40" cy="60" rx="16" ry="12" fill="#E2725B"/>
+        <ellipse cx="40" cy="62" rx="8" ry="8" fill="#fff"/>
+        <ellipse cx="40" cy="32" rx="18" ry="16" fill="#E2725B"/>
+        <path d="M18 26 L24 4 L32 24 Z" fill="#E2725B"/>
+        <path d="M48 26 L54 10 L60 28 Z" fill="#E2725B"/>
+        <path d="M21 24 L24 10 L29 23 Z" fill="#FFB5A7"/>
+        <path d="M51 25 L54 14 L57 27 Z" fill="#FFB5A7"/>
+        <ellipse cx="40" cy="38" rx="10" ry="7" fill="#FFF8F0"/>
+        <ellipse cx="32" cy="30" rx="6" ry="5" fill="#2D5F5D"/>
+        <ellipse cx="48" cy="30" rx="6" ry="5" fill="#2D5F5D"/>
+        <ellipse cx="32" cy="30" rx="2" ry="4" fill="#1a3a38"/>
+        <ellipse cx="48" cy="30" rx="2" ry="4" fill="#1a3a38"/>
+        <circle cx="33" cy="28" r="1.5" fill="#fff"/>
+        <circle cx="49" cy="28" r="1.5" fill="#fff"/>
+        <ellipse cx="40" cy="38" rx="2.5" ry="2" fill="#FFB5A7"/>
+        <ellipse cx="40" cy="44" rx="2" ry="2" fill="#C75B47"/>
+        <text x="64" y="18" font-size="12" font-weight="bold" fill="#F4B942">?</text>
+        <ellipse cx="32" cy="68" rx="5" ry="6" fill="#E2725B"/>
+        <ellipse cx="32" cy="70" rx="3" ry="3" fill="#fff"/>
+        <ellipse cx="48" cy="68" rx="5" ry="6" fill="#E2725B"/>
+        <ellipse cx="48" cy="70" rx="3" ry="3" fill="#fff"/>
+      </g>
+      <!-- Celebrate pose -->
+      <g class="mango-pose mango-pose-celebrate" style="display:none">
+        <ellipse cx="40" cy="60" rx="16" ry="12" fill="#E2725B"/>
+        <ellipse cx="40" cy="62" rx="8" ry="8" fill="#fff"/>
+        <ellipse cx="40" cy="32" rx="18" ry="16" fill="#E2725B"/>
+        <path d="M18 26 L24 4 L32 24 Z" fill="#E2725B"/>
+        <path d="M48 24 L56 4 L62 26 Z" fill="#E2725B"/>
+        <path d="M21 24 L24 10 L29 23 Z" fill="#FFB5A7"/>
+        <path d="M51 23 L56 10 L59 24 Z" fill="#FFB5A7"/>
+        <ellipse cx="40" cy="38" rx="10" ry="7" fill="#FFF8F0"/>
+        <path d="M27 30 Q32 26 37 30" stroke="#2D5F5D" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M43 30 Q48 26 53 30" stroke="#2D5F5D" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="40" cy="38" rx="2.5" ry="2" fill="#FFB5A7"/>
+        <path d="M35 42 Q40 48 45 42" stroke="#C75B47" stroke-width="1.5" fill="#FFB5A7" stroke-linecap="round"/>
+        <text x="6" y="18" font-size="10" fill="#F4B942">&#10024;</text>
+        <text x="66" y="12" font-size="8" fill="#F4B942">&#11088;</text>
+      </g>
+      <!-- Sleep pose -->
+      <g class="mango-pose mango-pose-sleep" style="display:none">
+        <path d="M58 54 Q70 44 66 30" stroke="#E2725B" stroke-width="6" stroke-linecap="round" fill="none"/>
+        <path d="M66 30 Q62 36 56 40" stroke="#E2725B" stroke-width="6" stroke-linecap="round" fill="none"/>
+        <ellipse cx="40" cy="54" rx="24" ry="16" fill="#E2725B"/>
+        <ellipse cx="40" cy="56" rx="14" ry="9" fill="#fff"/>
+        <ellipse cx="28" cy="42" rx="14" ry="12" fill="#E2725B"/>
+        <ellipse cx="28" cy="48" rx="8" ry="5" fill="#FFF8F0"/>
+        <path d="M12 38 L16 28 L24 38 Z" fill="#E2725B"/>
+        <path d="M34 36 L40 26 L46 38 Z" fill="#E2725B"/>
+        <path d="M14 37 L16 30 L21 37 Z" fill="#FFB5A7"/>
+        <path d="M36 36 L40 29 L43 37 Z" fill="#FFB5A7"/>
+        <path d="M20 42 Q24 40 28 42" stroke="#2D5F5D" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M30 40 Q34 38 38 40" stroke="#2D5F5D" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="26" cy="48" rx="2" ry="1.5" fill="#FFB5A7"/>
+        <path d="M22 52 Q26 54 30 52" stroke="#C75B47" stroke-width="1" fill="none" stroke-linecap="round"/>
+        <text x="46" y="24" fill="#2D5F5D" font-size="12" font-weight="bold" opacity="0.7">z
+          <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite"/>
+          <animate attributeName="y" values="24;18" dur="2s" repeatCount="indefinite"/>
+        </text>
+        <text x="54" y="14" fill="#2D5F5D" font-size="10" font-weight="bold" opacity="0.5">z
+          <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite" begin="0.5s"/>
+          <animate attributeName="y" values="14;8" dur="2s" repeatCount="indefinite" begin="0.5s"/>
+        </text>
+      </g>
+      <!-- Clean pose -->
+      <g class="mango-pose mango-pose-clean" style="display:none">
+        <ellipse cx="40" cy="58" rx="16" ry="12" fill="#E2725B"/>
+        <ellipse cx="40" cy="62" rx="8" ry="8" fill="#fff"/>
+        <ellipse cx="40" cy="42" rx="18" ry="16" fill="#E2725B"/>
+        <path d="M22 36 L26 18 L34 34 Z" fill="#E2725B"/>
+        <path d="M48 34 L54 18 L60 36 Z" fill="#E2725B"/>
+        <ellipse cx="40" cy="48" rx="10" ry="7" fill="#FFF8F0"/>
+        <path d="M27 40 Q32 36 37 40" stroke="#2D5F5D" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M43 40 Q48 36 53 40" stroke="#2D5F5D" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="40" cy="54" rx="5" ry="4" fill="#fff"/>
+        <path d="M40 50 Q43 54 40 58" stroke="#FFB5A7" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M54 58 Q68 50 64 36" stroke="#E2725B" stroke-width="6" stroke-linecap="round" fill="none"/>
+      </g>
+    </svg>
+    <div class="mango-label">Mango</div>
+  </div>
 
   <footer class="footer">
     <div class="container">
