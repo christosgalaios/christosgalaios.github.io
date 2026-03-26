@@ -822,6 +822,269 @@ function initSprintSim() {
   });
 }
 
+/* --- DevGuide Inline Compass --- */
+function initDevGuideCompass() {
+  const needle = document.querySelector('.devguide-compass-needle');
+  const wrap = document.querySelector('.devguide-compass-wrap');
+  if (!needle || !wrap) return;
+  let rotation = 0, target = 0, tracking = false, idleTimeout;
+
+  function updateTarget(cx, cy) {
+    const rect = wrap.getBoundingClientRect();
+    const ccx = rect.left + rect.width / 2, ccy = rect.top + rect.height / 2;
+    target = Math.atan2(cx - ccx, -(cy - ccy)) * (180 / Math.PI);
+    tracking = true;
+    clearTimeout(idleTimeout);
+    idleTimeout = setTimeout(() => { tracking = false; }, 3000);
+  }
+
+  window.addEventListener('mousemove', e => updateTarget(e.clientX, e.clientY));
+  window.addEventListener('touchmove', e => { if (e.touches[0]) updateTarget(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+
+  function animate() {
+    if (tracking) {
+      let d = target - rotation;
+      while (d > 180) d -= 360;
+      while (d < -180) d += 360;
+      rotation += d * 0.08;
+    } else {
+      const t = performance.now() / 1000;
+      rotation += (Math.sin(t * 0.6) * 15 + Math.cos(t * 0.35) * 8 - rotation) * 0.02;
+    }
+    needle.style.transform = `rotate(${rotation}deg)`;
+    requestAnimationFrame(animate);
+  }
+  requestAnimationFrame(animate);
+}
+
+/* --- DevGuide Pipeline Sim --- */
+function initPipelineSim() {
+  const btn = document.getElementById('pipeline-run-btn');
+  const logEl = document.getElementById('pipeline-log');
+  const counter = document.getElementById('pipeline-article-count');
+  if (!btn) return;
+  const nodes = ['pipe-cron', 'pipe-discover', 'pipe-content', 'pipe-validate', 'pipe-publish'].map(id => document.getElementById(id));
+
+  let timers = [];
+  function d(ms) { return new Promise(r => { timers.push(setTimeout(r, ms)); }); }
+  function log(t, cls) {
+    const l = document.createElement('div');
+    l.className = `sync-log-line sync-log-line--${cls}`;
+    l.textContent = t;
+    logEl.appendChild(l);
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+  function activate(i) { nodes.forEach((n,j) => { n.classList.toggle('pipeline-node--active', j === i); if (j < i) n.classList.add('pipeline-node--done'); }); }
+
+  btn.addEventListener('click', async () => {
+    btn.disabled = true;
+    logEl.innerHTML = '';
+    nodes.forEach(n => n.classList.remove('pipeline-node--active', 'pipeline-node--done'));
+    timers.forEach(clearTimeout); timers = [];
+
+    activate(0);
+    log('GitHub Actions cron triggered at 03:00 UTC', 'info');
+    await d(800);
+    activate(1);
+    log('DiscoveryAgent: Scanning 3 niches — dev tools, compatibility, JP/CN tech news...', 'info');
+    await d(1000);
+    log('DiscoveryAgent: Found topic → "Bun vs Deno 2.0: Package Manager Speed Comparison"', 'success');
+    await d(600);
+    activate(2);
+    log('ContentAgent: Generating 1,200+ word SEO article...', 'info');
+    await d(1200);
+    log('ContentAgent: Article complete — 1,847 words, 6 sections, FAQ, comparison table', 'success');
+    await d(600);
+    activate(3);
+    log('ValidationAgent: Checking word count... ✓ (1,847 > 1,200)', 'success');
+    await d(400);
+    log('ValidationAgent: Checking structure... ✓ (H2s, intro, FAQ, table)', 'success');
+    await d(400);
+    log('ValidationAgent: Keyword safety check... ✓ (no stuffing detected)', 'success');
+    await d(400);
+    log('ValidationAgent: Tone check... ✓ (human-like, developer-focused)', 'success');
+    await d(500);
+    activate(4);
+    log('DistributionAgent: Writing to site/posts/bun-vs-deno-2-0.md', 'info');
+    await d(400);
+    log('DistributionAgent: Updating index.json + sitemap.xml + RSS feed', 'info');
+    await d(400);
+    log('DistributionAgent: Published ✓ — live at devguide.co.uk/posts/bun-vs-deno-2-0', 'success');
+    if (counter) { let c = 44; const iv = setInterval(() => { c++; counter.textContent = c; if (c >= 45) clearInterval(iv); }, 100); }
+    await d(500);
+    nodes.forEach(n => { n.classList.remove('pipeline-node--active'); n.classList.add('pipeline-node--done'); });
+    log('Pipeline complete. Next run: tomorrow 03:00 UTC. Zero human intervention.', 'info');
+    btn.disabled = false;
+    btn.textContent = 'Run Again';
+  });
+}
+
+/* --- Hub: AI Augment Demo --- */
+function initAugmentDemo() {
+  const btn = document.getElementById('augment-btn');
+  const safeEl = document.getElementById('augment-safe');
+  const stepsEl = document.getElementById('augment-steps');
+  if (!btn || !safeEl || !stepsEl) return;
+
+  btn.addEventListener('click', async () => {
+    btn.disabled = true;
+    safeEl.textContent = '';
+    stepsEl.innerHTML = '';
+    const d = ms => new Promise(r => setTimeout(r, ms));
+    function step(t, cls) {
+      const s = document.createElement('div');
+      s.className = `augment-step augment-step--${cls}`;
+      s.textContent = t;
+      stepsEl.appendChild(s);
+    }
+
+    step('Step 1: Normalizing field names...', 'normalize');
+    await d(600);
+    safeEl.textContent = '{\n  "name": "Speed Friending",\n  "date": ...,\n  "price": ...,\n  "description": ...,\n  "attendees": ...,\n  "venue": ...\n}';
+    step('  eventName → name, Event_Date → date, PRICE → price, desc → description', 'normalize');
+    await d(800);
+
+    step('Step 2: Shape-checking types (typeof === "object")...', 'check');
+    await d(600);
+    step('  venue: typeof === "object" ✓ — extracting venue.name', 'check');
+    step('  price: typeof === "string" — needs parseInt()', 'check');
+    step('  attendee_count: typeof === "string" — needs parseInt()', 'check');
+    await d(800);
+
+    step('Step 3: Applying ?? defaults for null/undefined...', 'default');
+    await d(600);
+    step('  date: null ?? "TBD"', 'default');
+    step('  description: undefined ?? "No description provided"', 'default');
+    await d(800);
+
+    step('Step 4: String() wrapping for safe JSX render...', 'wrap');
+    await d(600);
+    safeEl.textContent = `{
+  "name": String("Speed Friending"),
+  "date": String("TBD"),
+  "price": 5,
+  "description": String("No description"),
+  "attendees": 42,
+  "venue": String("The Lanes")
+}`;
+    step('  All values safe for React render. No runtime crashes. ✓', 'wrap');
+    btn.disabled = false;
+  });
+}
+
+/* --- Hub: Idea Generator --- */
+function initIdeaGenerator() {
+  const btn = document.getElementById('ideas-btn');
+  const results = document.getElementById('ideas-results');
+  if (!btn || !results) return;
+
+  const ideas = [
+    { name: 'Sunset Kayaking Social', attendees: 28, revenue: '£196', fill: '93%', reasoning: 'Outdoor +40% trend + kayaking rising in Bristol + Saturday afternoon peak slot + paid (£7) above break-even at 15' },
+    { name: 'Midweek Climbing Taster', attendees: 20, revenue: '£200', fill: '80%', reasoning: 'Competitor gap: no weekday daytime socials + climbing trending + higher ticket (£10) justified by venue costs + targets remote workers' },
+    { name: 'Friday Night Comedy + Dinner', attendees: 45, revenue: '£360', fill: '90%', reasoning: 'Friday 7pm = peak attendance + comedy avg 65 attendees + bundled dinner upsell + speed friending warm-up fills early slots' },
+    { name: 'Sunday Morning Park Yoga', attendees: 15, revenue: 'Free', fill: '60%', reasoning: 'Low-cost acquisition: free events drive 3x member signups + Sunday morning underserved + builds community loyalty for paid events' },
+  ];
+
+  btn.addEventListener('click', () => {
+    btn.disabled = true;
+    btn.textContent = 'Analyzing data...';
+    results.innerHTML = '';
+    ideas.forEach((idea, i) => {
+      setTimeout(() => {
+        const card = document.createElement('div');
+        card.className = 'idea-card';
+        card.innerHTML = `<div class="idea-card-name">${idea.name}</div>
+          <div class="idea-card-stats">
+            <div class="idea-stat"><strong>${idea.attendees}</strong> projected</div>
+            <div class="idea-stat"><strong>${idea.revenue}</strong> revenue</div>
+            <div class="idea-stat"><strong>${idea.fill}</strong> fill rate</div>
+          </div>
+          <div class="idea-card-reasoning">Based on: ${idea.reasoning}</div>`;
+        results.appendChild(card);
+        if (i === ideas.length - 1) { btn.disabled = false; btn.textContent = 'Generate Ideas'; }
+      }, (i + 1) * 600);
+    });
+  });
+}
+
+/* --- Hub: Content Prompts --- */
+function initContentPrompts() {
+  const btn = document.getElementById('prompts-btn');
+  const output = document.getElementById('prompts-output');
+  if (!btn || !output) return;
+
+  const prompts = [
+    { platform: 'TikTok / Reels (9:16)', context: 'category: social · venue: pub · time: evening · 42 going · brand: warm, inclusive', prompt: 'Warm candlelit pub interior, diverse group of 6 people laughing around a small table, speed friending question cards visible between drinks, cozy Friday evening atmosphere, fairy lights in background, terracotta and teal color palette, shot from slightly above, 9:16 vertical, cinematic shallow depth of field' },
+    { platform: 'Instagram Post (1:1)', context: 'hook: "90% come alone" · social proof · FOMO · brand voice: cheeky', prompt: 'Split-screen: left side shows person scrolling phone alone on couch (blue/cold tones), right side shows same person laughing in group at pub (warm terracotta tones). Text overlay space at top. 1:1 square crop, high contrast, editorial style photography' },
+    { platform: 'Instagram Story (9:16)', context: 'event promo · countdown · poll overlay · swipe-up CTA', prompt: 'Close-up of hands holding speed friending cards with fun questions visible, blurred pub background with warm bokeh lights, space for poll sticker ("Coming Friday?") and countdown timer, terracotta accent border, 9:16 vertical, lifestyle photography' },
+  ];
+
+  btn.addEventListener('click', () => {
+    btn.disabled = true;
+    btn.textContent = 'Generating...';
+    output.innerHTML = '';
+    prompts.forEach((p, i) => {
+      setTimeout(() => {
+        const card = document.createElement('div');
+        card.className = 'prompt-card';
+        card.innerHTML = `<div class="prompt-card-platform">${p.platform}</div>
+          <div class="prompt-card-context">Context: ${p.context}</div>
+          <div class="prompt-card-text">${p.prompt}</div>`;
+        output.appendChild(card);
+        if (i === prompts.length - 1) { btn.disabled = false; btn.textContent = 'Generate Content'; }
+      }, (i + 1) * 800);
+    });
+  });
+}
+
+/* --- Hub: Enhanced AI Score with Suggestions --- */
+function initEnhancedScoring() {
+  const btn = document.getElementById('score-btn');
+  if (!btn) return;
+
+  const suggestions = [
+    { score: 87, text: 'Add early bird pricing — similar events saw 40% more pre-signups', tag: 'pricing' },
+    { score: 72, text: 'Move to Saturday — Friday board games underperform by 25% vs weekends', tag: 'timing' },
+    { score: 94, text: 'Strong performer. Consider raising price to £10 — demand supports it', tag: 'pricing' },
+    { score: 81, text: 'Title is 6 words — optimal for Meetup CTR. Add "Bristol" for SEO', tag: 'copy' },
+    { score: 68, text: 'Pub quiz market saturated. Differentiate: add themed rounds or live music', tag: 'competition' },
+    { score: 45, text: 'Low projected fill. £25 price point needs stronger value proposition or lower to £15', tag: 'pricing' },
+  ];
+
+  // Override the original score button behavior
+  const originalHandler = btn.onclick;
+  btn.onclick = null;
+  btn.replaceWith(btn.cloneNode(true));
+  const newBtn = document.getElementById('score-btn');
+
+  newBtn.addEventListener('click', () => {
+    newBtn.disabled = true;
+    newBtn.textContent = 'AI Analyzing...';
+    const scoreEls = document.querySelectorAll('[data-event]');
+    scoreEls.forEach((el, i) => {
+      setTimeout(() => {
+        const s = suggestions[i] || suggestions[0];
+        el.textContent = `AI: ${s.score}%`;
+        el.classList.add('hub-event-score--visible');
+        el.classList.add(s.score >= 80 ? 'hub-event-score--high' : s.score >= 65 ? 'hub-event-score--mid' : 'hub-event-score--low');
+
+        // Add suggestion below event
+        const event = el.closest('.hub-event');
+        if (event && !event.querySelector('.hub-event-suggestion')) {
+          const sug = document.createElement('div');
+          sug.className = 'hub-event-suggestion';
+          sug.innerHTML = `<span class="hub-event-sug-tag">${s.tag}</span> ${s.text}`;
+          sug.style.cssText = 'font-size:0.65rem;color:var(--text-muted);margin-top:0.4rem;padding-top:0.4rem;border-top:1px solid var(--border);line-height:1.4;opacity:0;animation:fadeIn 0.3s ease forwards';
+          const sugTag = sug.querySelector('.hub-event-sug-tag');
+          if (sugTag) sugTag.style.cssText = 'font-family:var(--font-mono);font-size:0.6rem;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:3px;padding:0.1rem 0.3rem;margin-right:0.3rem';
+          event.appendChild(sug);
+        }
+      }, i * 500 + 300);
+    });
+    setTimeout(() => { newBtn.textContent = 'AI Score All Events'; newBtn.disabled = false; }, suggestions.length * 500 + 600);
+  });
+}
+
 /* --- Init --- */
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
@@ -832,9 +1095,15 @@ document.addEventListener('DOMContentLoaded', () => {
   initCardTilt();
   initCVCards();
   initCompass();
+  initDevGuideCompass();
+  initPipelineSim();
   initMango();
   initMangoChat();
   initLazyIframes();
   initHubDemo();
   initSprintSim();
+  initAugmentDemo();
+  initIdeaGenerator();
+  initContentPrompts();
+  initEnhancedScoring();
 });

@@ -128,6 +128,9 @@
               <button class="hub-tab" data-tab="events">Events</button>
               <button class="hub-tab" data-tab="analytics">Analytics</button>
               <button class="hub-tab" data-tab="mcp">MCP Tools</button>
+              <button class="hub-tab" data-tab="augment">AI Augment</button>
+              <button class="hub-tab" data-tab="ideas">Idea Generator</button>
+              <button class="hub-tab" data-tab="prompts">Content Prompts</button>
             </div>
 
             <!-- Sync Tab: animated platform flow -->
@@ -198,6 +201,61 @@
               </div>
               <div class="mcp-tools-grid" id="mcp-tools-grid"></div>
             </div>
+
+            <!-- AI Augment / JSON Parsing Tab -->
+            <div class="hub-panel" id="hub-panel-augment">
+              <p class="augment-rule">Rule: Never pass raw AI/LLM responses to the frontend.</p>
+              <div class="augment-columns">
+                <div class="augment-col">
+                  <h4>Raw API Response</h4>
+                  <pre class="augment-code" id="augment-raw">{
+  "eventName": "Speed Friending",
+  "Event_Date": null,
+  "PRICE": "5",
+  "desc": undefined,
+  "attendee_count": "42",
+  "venue": { "name": "The Lanes" }
+}</pre>
+                </div>
+                <div class="augment-col">
+                  <h4>Safe for Frontend</h4>
+                  <pre class="augment-code augment-code--safe" id="augment-safe"></pre>
+                </div>
+              </div>
+              <button class="hub-demo-btn" id="augment-btn">AI Augment</button>
+              <div class="augment-steps" id="augment-steps"></div>
+            </div>
+
+            <!-- Idea Generator Tab -->
+            <div class="hub-panel" id="hub-panel-ideas">
+              <div class="ideas-inputs">
+                <div class="ideas-input-card">
+                  <h4>Community Data</h4>
+                  <p>3,112 members &middot; Top: hiking (35 avg), speed friending (42 avg), board games (28 avg) &middot; Friday 7pm peak</p>
+                </div>
+                <div class="ideas-input-card">
+                  <h4>Market Analysis</h4>
+                  <p>Bristol outdoor events trending +40% &middot; Kayaking, climbing, wild swimming rising &middot; Competitor gap: weekday daytime events</p>
+                </div>
+                <div class="ideas-input-card">
+                  <h4>Financial Data</h4>
+                  <p>Avg ticket &pound;5.50 &middot; Paid events 3x revenue &middot; Venue costs &pound;50-150 &middot; Break-even at 15 attendees</p>
+                </div>
+              </div>
+              <button class="hub-demo-btn" id="ideas-btn">Generate Ideas</button>
+              <div class="ideas-results" id="ideas-results"></div>
+            </div>
+
+            <!-- Content Prompts Tab -->
+            <div class="hub-panel" id="hub-panel-prompts">
+              <div class="prompts-event-card">
+                <strong>Speed Friending Social</strong>
+                <span>Fri 7pm &middot; The Lanes &middot; 42 going &middot; &pound;5</span>
+              </div>
+              <button class="hub-demo-btn" id="prompts-btn">Generate Content</button>
+              <div class="prompts-output" id="prompts-output"></div>
+            </div>
+
           </div>
 
           <div class="socialise-palette-section">
@@ -551,8 +609,8 @@
         <!-- ======= Small Cards Row ======= -->
         <div class="projects-small">
 
-          <!-- DevGuide -->
-          <article class="project-card reveal">
+          <!-- DevGuide — Full Showcase -->
+          <article class="project-card project-card--devguide-wide reveal">
             <div class="project-card-inner">
               <div class="project-corner project-corner--tl"></div>
               <div class="project-corner project-corner--tr"></div>
@@ -563,7 +621,71 @@
                 <span class="project-stat">Built in 2 hours</span>
               </div>
               <p class="project-role">Autonomous Content Pipeline</p>
-              <p class="project-desc">Multi-agent Python system: Discovery &rarr; Content &rarr; Validation &rarr; Distribution. Publishes daily via GitHub Actions. 44 articles live, zero ongoing cost. The compass navigation doubles as back-to-top — designed with intention.</p>
+              <p class="project-desc">Multi-agent Python system that publishes SEO articles daily. Zero human intervention. Zero ongoing cost. 44 articles live.</p>
+
+              <!-- Inline Compass Demo -->
+              <div class="devguide-compass-demo">
+                <div class="devguide-compass-wrap">
+                  <svg class="devguide-compass-svg" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="20" cy="20" r="17" fill="none" stroke="#7a8494" stroke-width="1.2" opacity="0.35"/>
+                    <circle cx="20" cy="20" r="13.5" fill="none" stroke="#7a8494" stroke-width="0.5" opacity="0.15"/>
+                    <polygon points="20,1 17,5 20,3 23,5" fill="#22C55E" opacity="0.8"/>
+                    <g class="devguide-compass-needle" style="transform-origin:20px 20px">
+                      <path d="M20,3 L17,12 L14.5,17.5 L18,20 L20,17 L22,20 L25.5,17.5 L23,12 Z" fill="url(#dg-n)"/>
+                      <path d="M20,37 L23,28 L25.5,22.5 L22,20 L20,23 L18,20 L14.5,22.5 L17,28 Z" fill="url(#dg-s)" opacity="0.3"/>
+                      <circle cx="20" cy="20" r="2" fill="#e2e8f0"/>
+                      <circle cx="20" cy="20" r="1" fill="#0d5a3a"/>
+                    </g>
+                    <defs>
+                      <linearGradient id="dg-n" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0%" stop-color="#0d5a3a"/><stop offset="100%" stop-color="#22C55E"/></linearGradient>
+                      <linearGradient id="dg-s" x1="0.5" y1="0" x2="0.5" y2="1"><stop offset="0%" stop-color="#22C55E"/><stop offset="100%" stop-color="#4ade80"/></linearGradient>
+                    </defs>
+                  </svg>
+                </div>
+                <p class="devguide-compass-caption">This compass tracks your cursor. On <a href="https://devguide.co.uk" target="_blank" rel="noopener noreferrer">devguide.co.uk</a> it doubles as back-to-top. I think about UX details like this.</p>
+              </div>
+
+              <!-- Pipeline Simulation -->
+              <div class="pipeline-sim" id="pipeline-sim">
+                <div class="pipeline-nodes">
+                  <div class="pipeline-node" id="pipe-cron">
+                    <span class="pipeline-node-icon">&#9200;</span>
+                    <span class="pipeline-node-label">GitHub Actions</span>
+                    <span class="pipeline-node-sub">03:00 UTC daily</span>
+                  </div>
+                  <div class="pipeline-arrow">&rarr;</div>
+                  <div class="pipeline-node" id="pipe-discover">
+                    <span class="pipeline-node-icon">&#128270;</span>
+                    <span class="pipeline-node-label">Discovery</span>
+                    <span class="pipeline-node-sub">3 niches</span>
+                  </div>
+                  <div class="pipeline-arrow">&rarr;</div>
+                  <div class="pipeline-node" id="pipe-content">
+                    <span class="pipeline-node-icon">&#9997;</span>
+                    <span class="pipeline-node-label">Content</span>
+                    <span class="pipeline-node-sub">1,200+ words</span>
+                  </div>
+                  <div class="pipeline-arrow">&rarr;</div>
+                  <div class="pipeline-node" id="pipe-validate">
+                    <span class="pipeline-node-icon">&#9989;</span>
+                    <span class="pipeline-node-label">Validation</span>
+                    <span class="pipeline-node-sub">Quality gate</span>
+                  </div>
+                  <div class="pipeline-arrow">&rarr;</div>
+                  <div class="pipeline-node" id="pipe-publish">
+                    <span class="pipeline-node-icon">&#128640;</span>
+                    <span class="pipeline-node-label">Publish</span>
+                    <span class="pipeline-node-sub">site/ + RSS</span>
+                  </div>
+                </div>
+                <button class="hub-demo-btn" id="pipeline-run-btn">Run Pipeline</button>
+                <div class="pipeline-log" id="pipeline-log"></div>
+                <div class="pipeline-counter">
+                  <span class="pipeline-counter-num" id="pipeline-article-count">44</span>
+                  <span>articles published. Zero human intervention. Zero ongoing cost.</span>
+                </div>
+              </div>
+
               <div class="project-tags">
                 <span class="tag">Python</span>
                 <span class="tag">GitHub Actions</span>
