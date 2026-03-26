@@ -477,6 +477,270 @@ function initHubDemo() {
   }
 }
 
+/* --- Sprint Simulation --- */
+function initSprintSim() {
+  const startBtn = document.getElementById('sprint-start');
+  const log = document.getElementById('sprint-log');
+  if (!startBtn || !log) return;
+
+  const cols = { backlog: document.getElementById('col-backlog'), progress: document.getElementById('col-progress'), review: document.getElementById('col-review'), done: document.getElementById('col-done') };
+  const agents = { qa: document.getElementById('agent-qa'), dev1: document.getElementById('agent-dev1'), dev2: document.getElementById('agent-dev2'), manager: document.getElementById('agent-manager') };
+  const statusEls = { qa: document.getElementById('qa-status'), dev1: document.getElementById('dev1-status'), dev2: document.getElementById('dev2-status'), manager: document.getElementById('manager-status') };
+  const appBody = document.getElementById('sprint-app-main');
+  const bugOverlay = document.getElementById('app-bug-overlay');
+
+  let running = false, ticketId = 0, timers = [];
+
+  const bugTickets = [
+    { title: 'Price shows £0 for paid events', type: 'bug' },
+    { title: 'Sync fails on events with emojis in title', type: 'bug' },
+    { title: 'Calendar shows wrong date for multi-day events', type: 'bug' },
+  ];
+  const featureTickets = [
+    { title: 'Add bulk publish to all platforms', type: 'feature' },
+    { title: 'Export analytics as CSV', type: 'feature' },
+  ];
+  const improvementTickets = [
+    { title: 'Reduce sync time from 12s to <5s', type: 'improvement' },
+    { title: 'Add loading skeleton to event cards', type: 'improvement' },
+    { title: 'Improve conflict detection accuracy', type: 'improvement' },
+  ];
+
+  function addLog(text, type) {
+    const line = document.createElement('div');
+    line.className = `sprint-log-line sprint-log-line--${type}`;
+    const time = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    line.textContent = `[${time}] ${text}`;
+    log.appendChild(line);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function setAgentState(name, state, statusText) {
+    const el = agents[name];
+    const sEl = statusEls[name];
+    if (!el || !sEl) return;
+    el.classList.remove('sprint-agent--active', 'sprint-agent--busy');
+    if (state === 'active') el.classList.add('sprint-agent--active');
+    if (state === 'busy') el.classList.add('sprint-agent--busy');
+    sEl.textContent = statusText;
+    sEl.style.color = state === 'active' ? 'var(--accent)' : state === 'busy' ? 'var(--accent-secondary)' : '';
+  }
+
+  function createTicket(data) {
+    ticketId++;
+    const div = document.createElement('div');
+    div.className = `sprint-ticket sprint-ticket--${data.type}`;
+    div.id = `ticket-${ticketId}`;
+    div.innerHTML = `<div class="sprint-ticket-title">${data.title}</div><div class="sprint-ticket-meta">#${ticketId} · ${data.type}</div>`;
+    div.dataset.id = ticketId;
+    return { el: div, id: ticketId, ...data };
+  }
+
+  function moveTicket(ticket, colName) {
+    const col = cols[colName];
+    if (!col) return;
+    ticket.el.classList.add('sprint-ticket--moving');
+    setTimeout(() => {
+      ticket.el.classList.remove('sprint-ticket--moving');
+      col.appendChild(ticket.el);
+    }, 200);
+  }
+
+  function highlightApp(idx, cls) {
+    const ev = document.getElementById(`app-event-${idx}`);
+    if (ev) { ev.classList.add(cls); setTimeout(() => ev.classList.remove(cls), 2000); }
+  }
+
+  function delay(ms) { return new Promise(r => { const t = setTimeout(r, ms); timers.push(t); }); }
+
+  async function runSprint() {
+    running = true;
+    startBtn.disabled = true;
+    startBtn.textContent = 'Running...';
+
+    // Clear board
+    ['backlog', 'progress', 'review', 'done'].forEach(c => {
+      const col = cols[c];
+      col.querySelectorAll('.sprint-ticket').forEach(t => t.remove());
+    });
+
+    addLog('Manager: Reading sprint backlog...', 'manager');
+    setAgentState('manager', 'active', 'reading backlog');
+    await delay(800);
+
+    // Phase 1: QA scans the app via MCP and finds bugs
+    addLog('QA: Connecting to MCP server at localhost:3000/mcp/sse', 'qa');
+    setAgentState('qa', 'busy', 'connecting to MCP');
+    await delay(1000);
+    addLog('QA: mcp.call("get-events") → 282 events loaded', 'mcp');
+    await delay(600);
+    addLog('QA: mcp.call("capture-screenshot") → inspecting event list...', 'mcp');
+    setAgentState('qa', 'busy', 'testing app via MCP');
+    highlightApp(1, 'sprint-app-event--highlight');
+    await delay(800);
+    highlightApp(3, 'sprint-app-event--error');
+    if (bugOverlay) bugOverlay.style.display = '';
+    addLog('QA: BUG FOUND — Price shows £0 for paid events on Comedy Open Mic', 'error');
+    await delay(600);
+
+    // QA files bugs to backlog
+    const allTickets = [];
+    for (const b of bugTickets) {
+      const t = createTicket(b);
+      allTickets.push(t);
+      moveTicket(t, 'backlog');
+      addLog(`QA: Filed #${t.id} "${t.title}" to backlog`, 'qa');
+      await delay(400);
+    }
+    addLog('QA: mcp.call("get-analytics") → checking data accuracy...', 'mcp');
+    await delay(500);
+    for (const f of [...featureTickets, ...improvementTickets]) {
+      const t = createTicket(f);
+      allTickets.push(t);
+      moveTicket(t, 'backlog');
+      addLog(`Manager: Added #${t.id} "${t.title}" to sprint`, 'manager');
+      await delay(300);
+    }
+
+    setAgentState('manager', 'active', 'assigning work');
+    addLog('Manager: Sprint loaded — 8 tickets. Assigning to dev agents.', 'manager');
+    await delay(600);
+
+    // Phase 2: Devs pick up tickets
+    addLog('Manager: .manager-feedback.md updated → Dev1 picks up #1, Dev2 picks up #2', 'manager');
+    setAgentState('dev1', 'busy', `working on #1`);
+    setAgentState('dev2', 'busy', `working on #2`);
+    moveTicket(allTickets[0], 'progress');
+    moveTicket(allTickets[1], 'progress');
+    await delay(600);
+    addLog('Dev1: Reading .manager-feedback.md... picked up #1 "Price shows £0"', 'dev1');
+    addLog('Dev2: Reading .manager-feedback.md... picked up #2 "Sync fails on emoji titles"', 'dev2');
+    await delay(1500);
+
+    // Dev1 finishes, moves to review
+    addLog('Dev1: Fixed price guard — added null coalescing on ticket_price field', 'dev1');
+    addLog('Dev1: Running tests... 1,671 passing', 'dev1');
+    await delay(800);
+    addLog('Dev1: git commit -m "fix: add price null guard for paid events"', 'dev1');
+    moveTicket(allTickets[0], 'review');
+    setAgentState('dev1', 'active', 'committed #1');
+    if (bugOverlay) bugOverlay.style.display = 'none';
+    highlightApp(3, 'sprint-app-event--highlight');
+    const st3 = document.getElementById('app-status-3');
+    if (st3) st3.textContent = '£8';
+    await delay(600);
+
+    // Manager dispatches code review
+    addLog('Manager: Dispatching code-reviewer subagent for #1...', 'manager');
+    setAgentState('manager', 'busy', 'reviewing #1');
+    await delay(1200);
+    addLog('Manager: Code review PASSED ✓ — clean diff, tests green', 'manager');
+    addLog('QA: Picking up #1 for validation via MCP...', 'qa');
+    setAgentState('qa', 'busy', 'validating #1 via MCP');
+    await delay(1000);
+    addLog('QA: mcp.call("get-events", { filter: "paid" }) → prices correct ✓', 'mcp');
+    addLog('QA: #1 VERIFIED ✓ — moving to Done', 'qa');
+    moveTicket(allTickets[0], 'done');
+    setAgentState('qa', 'active', 'verified #1');
+    await delay(500);
+
+    // Dev2 finishes
+    addLog('Dev2: Fixed emoji encoding — wrapped title in encodeURIComponent', 'dev2');
+    addLog('Dev2: git commit -m "fix: encode event titles for sync API"', 'dev2');
+    moveTicket(allTickets[1], 'review');
+    setAgentState('dev2', 'active', 'committed #2');
+    await delay(800);
+
+    // QA rejects one
+    addLog('QA: Testing #2 via MCP... mcp.call("sync-meetup", { title: "Game Night 🎲" })', 'mcp');
+    await delay(1000);
+    addLog('QA: #2 FAILED — sync works but display still shows encoded chars', 'error');
+    addLog('QA: Sending #2 back to Dev2 with feedback', 'qa');
+    moveTicket(allTickets[1], 'progress');
+    setAgentState('dev2', 'busy', 'reworking #2');
+    await delay(600);
+
+    // Dev1 picks up next ticket
+    addLog('Dev1: Checking .manager-feedback.md... picking up #3 "Calendar wrong date"', 'dev1');
+    setAgentState('dev1', 'busy', 'working on #3');
+    moveTicket(allTickets[2], 'progress');
+    await delay(1000);
+
+    // Dev2 fixes and resubmits
+    addLog('Dev2: Fixed — decode on display side, encode only for API calls', 'dev2');
+    addLog('Dev2: git commit -m "fix: decode emoji titles for display after sync"', 'dev2');
+    moveTicket(allTickets[1], 'review');
+    await delay(800);
+    addLog('QA: Re-testing #2... mcp.call("sync-meetup", { title: "Game Night 🎲" })', 'mcp');
+    await delay(700);
+    addLog('QA: #2 VERIFIED ✓ — emoji displays correctly, sync works', 'qa');
+    moveTicket(allTickets[1], 'done');
+
+    // Dev1 finishes #3
+    addLog('Dev1: Fixed calendar offset — timezone-aware date parsing', 'dev1');
+    moveTicket(allTickets[2], 'review');
+    setAgentState('dev1', 'active', 'committed #3');
+    await delay(700);
+    addLog('QA: #3 VERIFIED ✓', 'qa');
+    moveTicket(allTickets[2], 'done');
+
+    // Both devs pick up remaining tickets in parallel
+    addLog('Dev1: Picking up #4 "Bulk publish"', 'dev1');
+    addLog('Dev2: Picking up #5 "Export CSV"', 'dev2');
+    setAgentState('dev1', 'busy', 'working on #4');
+    setAgentState('dev2', 'busy', 'working on #5');
+    moveTicket(allTickets[3], 'progress');
+    moveTicket(allTickets[4], 'progress');
+    await delay(1500);
+
+    // Quick completions
+    for (let i = 3; i < allTickets.length; i++) {
+      const dev = i % 2 === 0 ? 'dev1' : 'dev2';
+      addLog(`${dev === 'dev1' ? 'Dev1' : 'Dev2'}: Completed #${allTickets[i].id} "${allTickets[i].title}"`, dev);
+      moveTicket(allTickets[i], 'review');
+      await delay(500);
+      addLog(`QA: #${allTickets[i].id} VERIFIED ✓`, 'qa');
+      moveTicket(allTickets[i], 'done');
+      await delay(300);
+    }
+
+    // QA goes into proactive testing
+    addLog('QA: All tickets done. Entering proactive testing mode...', 'qa');
+    setAgentState('qa', 'busy', 'proactive testing');
+    await delay(800);
+    addLog('QA: mcp.call("capture-screenshot") → scanning for visual regressions...', 'mcp');
+    await delay(600);
+    addLog('QA: mcp.call("get-member-stats") → verifying data accuracy...', 'mcp');
+    await delay(600);
+    addLog('QA: No new issues found. Continuing to monitor...', 'qa');
+
+    // Idle state
+    setAgentState('dev1', 'active', 'watching for tasks');
+    setAgentState('dev2', 'active', 'watching for tasks');
+    setAgentState('qa', 'active', 'monitoring');
+    setAgentState('manager', 'active', 'sprint complete');
+    addLog('Manager: Sprint complete — 8/8 tickets done. Agents remain on standby.', 'manager');
+    addLog('System: Agents run autonomously forever. File watchers active. Waiting for next task...', 'system');
+
+    startBtn.disabled = false;
+    startBtn.textContent = 'Restart Sprint';
+    running = false;
+  }
+
+  startBtn.addEventListener('click', () => {
+    if (running) return;
+    // Clear log
+    log.innerHTML = '';
+    timers.forEach(clearTimeout);
+    timers = [];
+    ticketId = 0;
+    if (bugOverlay) bugOverlay.style.display = 'none';
+    const st3 = document.getElementById('app-status-3');
+    if (st3) st3.textContent = 'draft';
+    runSprint();
+  });
+}
+
 /* --- Init --- */
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
@@ -491,4 +755,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initMangoChat();
   initLazyIframes();
   initHubDemo();
+  initSprintSim();
 });

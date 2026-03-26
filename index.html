@@ -401,6 +401,114 @@
             </div>
           </div>
 
+          <!-- Interactive Sprint Simulation -->
+          <div class="sprint-sim" id="sprint-sim">
+            <div class="sprint-sim-header">
+              <h4>Live Sprint Simulation</h4>
+              <div class="sprint-sim-controls">
+                <button class="hub-demo-btn" id="sprint-start">Start Sprint</button>
+                <span class="sprint-speed-label" id="sprint-speed-label">1x</span>
+              </div>
+            </div>
+
+            <div class="sprint-layout">
+              <!-- Agents Panel -->
+              <div class="sprint-agents">
+                <div class="sprint-agent" id="agent-qa">
+                  <div class="sprint-agent-indicator"></div>
+                  <div class="sprint-agent-info">
+                    <strong>QA Agent</strong>
+                    <span class="sprint-agent-model">claude-opus</span>
+                    <span class="sprint-agent-status" id="qa-status">idle</span>
+                  </div>
+                </div>
+                <div class="sprint-agent" id="agent-dev1">
+                  <div class="sprint-agent-indicator"></div>
+                  <div class="sprint-agent-info">
+                    <strong>Dev Agent 1</strong>
+                    <span class="sprint-agent-model">claude-sonnet</span>
+                    <span class="sprint-agent-status" id="dev1-status">idle</span>
+                  </div>
+                </div>
+                <div class="sprint-agent" id="agent-dev2">
+                  <div class="sprint-agent-indicator"></div>
+                  <div class="sprint-agent-info">
+                    <strong>Dev Agent 2</strong>
+                    <span class="sprint-agent-model">claude-sonnet</span>
+                    <span class="sprint-agent-status" id="dev2-status">idle</span>
+                  </div>
+                </div>
+                <div class="sprint-agent" id="agent-manager">
+                  <div class="sprint-agent-indicator"></div>
+                  <div class="sprint-agent-info">
+                    <strong>Manager</strong>
+                    <span class="sprint-agent-model">claude-opus</span>
+                    <span class="sprint-agent-status" id="manager-status">idle</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Sprint Board -->
+              <div class="sprint-board">
+                <div class="sprint-col" id="col-backlog">
+                  <div class="sprint-col-header">Backlog</div>
+                </div>
+                <div class="sprint-col" id="col-progress">
+                  <div class="sprint-col-header">In Progress</div>
+                </div>
+                <div class="sprint-col" id="col-review">
+                  <div class="sprint-col-header">QA Review</div>
+                </div>
+                <div class="sprint-col" id="col-done">
+                  <div class="sprint-col-header">Done</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Live Log -->
+            <div class="sprint-log" id="sprint-log">
+              <div class="sprint-log-line sprint-log-line--system">Sprint simulation ready. Click "Start Sprint" to watch agents work autonomously.</div>
+            </div>
+
+            <!-- Mini App Preview (MCP controlled) -->
+            <div class="sprint-app-preview">
+              <div class="sprint-app-bar">
+                <span class="sprint-app-dot" style="background:#ef4444"></span>
+                <span class="sprint-app-dot" style="background:#f59e0b"></span>
+                <span class="sprint-app-dot" style="background:#22c55e"></span>
+                <span class="sprint-app-title">SocialiseHub — Live Preview</span>
+              </div>
+              <div class="sprint-app-body" id="sprint-app-body">
+                <div class="sprint-app-sidebar">
+                  <div class="sprint-app-nav-item sprint-app-nav-item--active">Events</div>
+                  <div class="sprint-app-nav-item">Analytics</div>
+                  <div class="sprint-app-nav-item">Members</div>
+                  <div class="sprint-app-nav-item">Settings</div>
+                </div>
+                <div class="sprint-app-main" id="sprint-app-main">
+                  <div class="sprint-app-event" id="app-event-1">
+                    <span class="sprint-app-event-name">Speed Friending Social</span>
+                    <span class="sprint-app-event-badge">meetup</span>
+                    <span class="sprint-app-event-status" id="app-status-1">synced</span>
+                  </div>
+                  <div class="sprint-app-event" id="app-event-2">
+                    <span class="sprint-app-event-name">Board Games Night</span>
+                    <span class="sprint-app-event-badge">meetup</span>
+                    <span class="sprint-app-event-status" id="app-status-2">synced</span>
+                  </div>
+                  <div class="sprint-app-event" id="app-event-3">
+                    <span class="sprint-app-event-name">Comedy Open Mic</span>
+                    <span class="sprint-app-event-badge">eventbrite</span>
+                    <span class="sprint-app-event-status" id="app-status-3">draft</span>
+                  </div>
+                  <div class="sprint-app-bug" id="app-bug-overlay" style="display:none">
+                    <span>BUG: Price shows £0 for paid events</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="project-tags">
             <span class="tag">Claude API</span>
             <span class="tag">MCP</span>
