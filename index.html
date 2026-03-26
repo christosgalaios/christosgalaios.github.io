@@ -414,6 +414,22 @@
             <div class="sprint-layout">
               <!-- Agents Panel -->
               <div class="sprint-agents">
+                <div class="sprint-agent sprint-agent--ceo" id="agent-ceo">
+                  <div class="sprint-agent-indicator"></div>
+                  <div class="sprint-agent-info">
+                    <strong>CEO</strong>
+                    <span class="sprint-agent-model">claude-opus</span>
+                    <span class="sprint-agent-status" id="ceo-status">idle</span>
+                  </div>
+                </div>
+                <div class="sprint-agent" id="agent-manager">
+                  <div class="sprint-agent-indicator"></div>
+                  <div class="sprint-agent-info">
+                    <strong>Manager</strong>
+                    <span class="sprint-agent-model">claude-opus</span>
+                    <span class="sprint-agent-status" id="manager-status">idle</span>
+                  </div>
+                </div>
                 <div class="sprint-agent" id="agent-qa">
                   <div class="sprint-agent-indicator"></div>
                   <div class="sprint-agent-info">
@@ -438,13 +454,21 @@
                     <span class="sprint-agent-status" id="dev2-status">idle</span>
                   </div>
                 </div>
-                <div class="sprint-agent" id="agent-manager">
-                  <div class="sprint-agent-indicator"></div>
-                  <div class="sprint-agent-info">
-                    <strong>Manager</strong>
-                    <span class="sprint-agent-model">claude-opus</span>
-                    <span class="sprint-agent-status" id="manager-status">idle</span>
-                  </div>
+              </div>
+
+              <!-- Live Files Panel -->
+              <div class="sprint-files" id="sprint-files">
+                <div class="sprint-file" id="file-ceo">
+                  <div class="sprint-file-name">ceo-directives.md</div>
+                  <div class="sprint-file-content" id="file-ceo-content">No active directives</div>
+                </div>
+                <div class="sprint-file" id="file-manager">
+                  <div class="sprint-file-name">.manager-feedback.md</div>
+                  <div class="sprint-file-content" id="file-manager-content">No active tasks</div>
+                </div>
+                <div class="sprint-file" id="file-learnings">
+                  <div class="sprint-file-name">cross-project-rules.md</div>
+                  <div class="sprint-file-content" id="file-learnings-content">0 rules</div>
                 </div>
               </div>
 

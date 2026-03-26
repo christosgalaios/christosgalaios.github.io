@@ -1617,6 +1617,54 @@ section {
   transition: color 0.3s;
 }
 
+.sprint-agent--ceo .sprint-agent-indicator { background: #f59e0b; }
+.sprint-agent--ceo.sprint-agent--active .sprint-agent-indicator { background: #f59e0b; box-shadow: 0 0 8px rgba(245,158,11,0.4); }
+.sprint-agent--ceo.sprint-agent--busy .sprint-agent-indicator { background: #f59e0b; box-shadow: 0 0 8px rgba(245,158,11,0.4); animation: agentPulse 1s ease infinite; }
+
+/* Live Files */
+.sprint-files {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+.sprint-file {
+  flex: 1;
+  min-width: 140px;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  transition: border-color 0.3s, background 0.3s;
+}
+
+.sprint-file--flash {
+  border-color: var(--accent);
+  background: rgba(34,197,94,0.05);
+}
+
+.sprint-file--flash-ceo {
+  border-color: #f59e0b;
+  background: rgba(245,158,11,0.05);
+}
+
+.sprint-file-name {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.sprint-file-content {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  max-height: 40px;
+  overflow: hidden;
+}
+
 /* Sprint Board */
 .sprint-board {
   display: grid;

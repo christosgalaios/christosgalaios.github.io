@@ -484,12 +484,15 @@ function initSprintSim() {
   if (!startBtn || !log) return;
 
   const cols = { backlog: document.getElementById('col-backlog'), progress: document.getElementById('col-progress'), review: document.getElementById('col-review'), done: document.getElementById('col-done') };
-  const agents = { qa: document.getElementById('agent-qa'), dev1: document.getElementById('agent-dev1'), dev2: document.getElementById('agent-dev2'), manager: document.getElementById('agent-manager') };
-  const statusEls = { qa: document.getElementById('qa-status'), dev1: document.getElementById('dev1-status'), dev2: document.getElementById('dev2-status'), manager: document.getElementById('manager-status') };
-  const appBody = document.getElementById('sprint-app-main');
+  const agents = { ceo: document.getElementById('agent-ceo'), qa: document.getElementById('agent-qa'), dev1: document.getElementById('agent-dev1'), dev2: document.getElementById('agent-dev2'), manager: document.getElementById('agent-manager') };
+  const statusEls = { ceo: document.getElementById('ceo-status'), qa: document.getElementById('qa-status'), dev1: document.getElementById('dev1-status'), dev2: document.getElementById('dev2-status'), manager: document.getElementById('manager-status') };
   const bugOverlay = document.getElementById('app-bug-overlay');
+  const fileCeo = document.getElementById('file-ceo-content');
+  const fileManager = document.getElementById('file-manager-content');
+  const fileLearnings = document.getElementById('file-learnings-content');
+  const fileEls = { ceo: document.getElementById('file-ceo'), manager: document.getElementById('file-manager'), learnings: document.getElementById('file-learnings') };
 
-  let running = false, ticketId = 0, timers = [];
+  let running = false, ticketId = 0, timers = [], learningsCount = 0;
 
   const bugTickets = [
     { title: 'Price shows £0 for paid events', type: 'bug' },
@@ -526,6 +529,24 @@ function initSprintSim() {
     sEl.style.color = state === 'active' ? 'var(--accent)' : state === 'busy' ? 'var(--accent-secondary)' : '';
   }
 
+  function flashFile(name, cls) {
+    const el = fileEls[name];
+    if (!el) return;
+    el.classList.add(cls || 'sprint-file--flash');
+    setTimeout(() => el.classList.remove(cls || 'sprint-file--flash'), 1500);
+  }
+
+  function updateFile(name, content) {
+    const map = { ceo: fileCeo, manager: fileManager, learnings: fileLearnings };
+    if (map[name]) map[name].textContent = content;
+  }
+
+  function addLearning(rule) {
+    learningsCount++;
+    updateFile('learnings', `${learningsCount} rule${learningsCount > 1 ? 's' : ''} — latest: "${rule}"`);
+    flashFile('learnings');
+  }
+
   function createTicket(data) {
     ticketId++;
     const div = document.createElement('div');
@@ -557,170 +578,230 @@ function initSprintSim() {
     running = true;
     startBtn.disabled = true;
     startBtn.textContent = 'Running...';
+    learningsCount = 0;
 
     // Clear board
     ['backlog', 'progress', 'review', 'done'].forEach(c => {
-      const col = cols[c];
-      col.querySelectorAll('.sprint-ticket').forEach(t => t.remove());
+      cols[c].querySelectorAll('.sprint-ticket').forEach(t => t.remove());
     });
+    updateFile('ceo', 'No active directives');
+    updateFile('manager', 'No active tasks');
+    updateFile('learnings', '0 rules');
 
-    addLog('Manager: Reading sprint backlog...', 'manager');
-    setAgentState('manager', 'active', 'reading backlog');
+    // === PHASE 1: CEO evaluates business state ===
+    addLog('CEO: Reading status-log.md... evaluating what shipped last sprint', 'system');
+    setAgentState('ceo', 'busy', 'reviewing results');
+    await delay(1000);
+    addLog('CEO: Revenue is £855 total. Growth is 540 new members in Jan but slowing. Need to ship faster.', 'system');
     await delay(800);
+    updateFile('ceo', 'DIRECTIVE: Fix all sync bugs. Revenue depends on accurate event data.');
+    flashFile('ceo', 'sprint-file--flash-ceo');
+    addLog('CEO: Writing directive → "Fix all sync bugs. Revenue depends on accurate event data."', 'system');
+    await delay(600);
+    addLog('CEO: Evaluating efficiency — last sprint took 3 feedback rounds on emoji bug. Too many.', 'system');
+    setAgentState('ceo', 'active', 'wrote directive');
 
-    // Phase 1: QA scans the app via MCP and finds bugs
+    // === PHASE 2: Manager reads directive, plans sprint ===
+    addLog('Manager: Reading ceo-directives.md...', 'manager');
+    setAgentState('manager', 'busy', 'reading CEO directive');
+    flashFile('ceo', 'sprint-file--flash');
+    await delay(800);
+    addLog('Manager: CEO wants sync bugs prioritized. Reprioritizing backlog.', 'manager');
+    await delay(500);
+
+    // QA scans app via MCP
     addLog('QA: Connecting to MCP server at localhost:3000/mcp/sse', 'qa');
     setAgentState('qa', 'busy', 'connecting to MCP');
-    await delay(1000);
-    addLog('QA: mcp.call("get-events") → 282 events loaded', 'mcp');
-    await delay(600);
-    addLog('QA: mcp.call("capture-screenshot") → inspecting event list...', 'mcp');
-    setAgentState('qa', 'busy', 'testing app via MCP');
-    highlightApp(1, 'sprint-app-event--highlight');
     await delay(800);
+    addLog('QA: mcp.call("get-events") → 282 events loaded', 'mcp');
+    await delay(500);
+    addLog('QA: mcp.call("capture-screenshot") → inspecting event list...', 'mcp');
+    setAgentState('qa', 'busy', 'testing via MCP');
+    highlightApp(1, 'sprint-app-event--highlight');
+    await delay(700);
     highlightApp(3, 'sprint-app-event--error');
     if (bugOverlay) bugOverlay.style.display = '';
-    addLog('QA: BUG FOUND — Price shows £0 for paid events on Comedy Open Mic', 'error');
-    await delay(600);
+    addLog('QA: BUG — Price shows £0 for Comedy Open Mic (paid event)', 'error');
+    await delay(500);
 
-    // QA files bugs to backlog
+    // QA files bugs
     const allTickets = [];
     for (const b of bugTickets) {
       const t = createTicket(b);
       allTickets.push(t);
       moveTicket(t, 'backlog');
-      addLog(`QA: Filed #${t.id} "${t.title}" to backlog`, 'qa');
-      await delay(400);
+      addLog(`QA: Filed #${t.id} "${t.title}"`, 'qa');
+      await delay(300);
     }
-    addLog('QA: mcp.call("get-analytics") → checking data accuracy...', 'mcp');
-    await delay(500);
     for (const f of [...featureTickets, ...improvementTickets]) {
       const t = createTicket(f);
       allTickets.push(t);
       moveTicket(t, 'backlog');
-      addLog(`Manager: Added #${t.id} "${t.title}" to sprint`, 'manager');
-      await delay(300);
+      addLog(`Manager: Queued #${t.id} "${t.title}"`, 'manager');
+      await delay(200);
     }
 
-    setAgentState('manager', 'active', 'assigning work');
-    addLog('Manager: Sprint loaded — 8 tickets. Assigning to dev agents.', 'manager');
-    await delay(600);
+    // Manager writes sprint plan
+    updateFile('manager', 'TASK: #1 price bug (Dev1)\nTASK: #2 emoji sync (Dev2)');
+    flashFile('manager');
+    setAgentState('manager', 'active', 'sprint planned');
+    addLog('Manager: Sprint planned — 8 tickets, bugs first per CEO directive. Writing .manager-feedback.md', 'manager');
+    await delay(500);
 
-    // Phase 2: Devs pick up tickets
-    addLog('Manager: .manager-feedback.md updated → Dev1 picks up #1, Dev2 picks up #2', 'manager');
-    setAgentState('dev1', 'busy', `working on #1`);
-    setAgentState('dev2', 'busy', `working on #2`);
+    // === PHASE 3: Devs pick up work ===
+    setAgentState('dev1', 'busy', 'working on #1');
+    setAgentState('dev2', 'busy', 'working on #2');
     moveTicket(allTickets[0], 'progress');
     moveTicket(allTickets[1], 'progress');
+    addLog('Dev1: File watcher triggered — new task in .manager-feedback.md → picking up #1', 'dev1');
+    addLog('Dev2: File watcher triggered — picking up #2 "Sync fails on emoji titles"', 'dev2');
     await delay(600);
-    addLog('Dev1: Reading .manager-feedback.md... picked up #1 "Price shows £0"', 'dev1');
-    addLog('Dev2: Reading .manager-feedback.md... picked up #2 "Sync fails on emoji titles"', 'dev2');
-    await delay(1500);
 
-    // Dev1 finishes, moves to review
-    addLog('Dev1: Fixed price guard — added null coalescing on ticket_price field', 'dev1');
-    addLog('Dev1: Running tests... 1,671 passing', 'dev1');
+    // CEO thinks while devs work
+    addLog('CEO: While devs work... evaluating business opportunities', 'system');
+    setAgentState('ceo', 'busy', 'strategic thinking');
     await delay(800);
-    addLog('Dev1: git commit -m "fix: add price null guard for paid events"', 'dev1');
+    addLog('CEO: Idea — auto-generate social media content from event data. Would 10x marketing reach.', 'system');
+    updateFile('ceo', 'DIRECTIVE: Explore content generation pipeline from event data');
+    flashFile('ceo', 'sprint-file--flash-ceo');
+    await delay(600);
+    addLog('Manager: Noted CEO directive — will add to next sprint after current bugs are fixed', 'manager');
+
+    // Dev1 finishes #1
+    await delay(800);
+    addLog('Dev1: Fixed — added ?? 0 fallback on ticket_price, parseFloat guard', 'dev1');
+    addLog('Dev1: Tests passing: 1,671/1,671 ✓', 'dev1');
+    addLog('Dev1: git commit -m "fix: price null guard for paid events"', 'dev1');
     moveTicket(allTickets[0], 'review');
     setAgentState('dev1', 'active', 'committed #1');
     if (bugOverlay) bugOverlay.style.display = 'none';
     highlightApp(3, 'sprint-app-event--highlight');
     const st3 = document.getElementById('app-status-3');
     if (st3) st3.textContent = '£8';
-    await delay(600);
-
-    // Manager dispatches code review
-    addLog('Manager: Dispatching code-reviewer subagent for #1...', 'manager');
-    setAgentState('manager', 'busy', 'reviewing #1');
-    await delay(1200);
-    addLog('Manager: Code review PASSED ✓ — clean diff, tests green', 'manager');
-    addLog('QA: Picking up #1 for validation via MCP...', 'qa');
-    setAgentState('qa', 'busy', 'validating #1 via MCP');
-    await delay(1000);
-    addLog('QA: mcp.call("get-events", { filter: "paid" }) → prices correct ✓', 'mcp');
-    addLog('QA: #1 VERIFIED ✓ — moving to Done', 'qa');
-    moveTicket(allTickets[0], 'done');
-    setAgentState('qa', 'active', 'verified #1');
     await delay(500);
 
-    // Dev2 finishes
-    addLog('Dev2: Fixed emoji encoding — wrapped title in encodeURIComponent', 'dev2');
-    addLog('Dev2: git commit -m "fix: encode event titles for sync API"', 'dev2');
-    moveTicket(allTickets[1], 'review');
-    setAgentState('dev2', 'active', 'committed #2');
-    await delay(800);
-
-    // QA rejects one
-    addLog('QA: Testing #2 via MCP... mcp.call("sync-meetup", { title: "Game Night 🎲" })', 'mcp');
+    // Manager dispatches code review subagent
+    addLog('Manager: Dispatching code-reviewer subagent (haiku) for #1...', 'manager');
+    setAgentState('manager', 'busy', 'code review #1');
     await delay(1000);
-    addLog('QA: #2 FAILED — sync works but display still shows encoded chars', 'error');
-    addLog('QA: Sending #2 back to Dev2 with feedback', 'qa');
+    addLog('Manager: Review PASSED ✓ — clean diff, no side effects', 'manager');
+    updateFile('manager', 'VERIFIED: #1 price bug\nTASK: #2 emoji (Dev2 WIP)');
+    flashFile('manager');
+
+    // QA validates via MCP
+    addLog('QA: mcp.call("get-events", { filter: "paid" }) → verifying prices...', 'mcp');
+    setAgentState('qa', 'busy', 'validating #1');
+    await delay(800);
+    addLog('QA: #1 VERIFIED ✓ — all paid events show correct prices', 'qa');
+    moveTicket(allTickets[0], 'done');
+
+    // LEARNING from fix
+    addLearning('Always use ?? defaults on price fields from external APIs');
+    addLog('Manager: LEARNING recorded → "Always use ?? defaults on price fields from external APIs"', 'manager');
+    await delay(400);
+
+    // Dev2 finishes #2
+    addLog('Dev2: Fixed — encodeURIComponent on sync, decode on display', 'dev2');
+    addLog('Dev2: git commit -m "fix: encode emoji titles for sync API"', 'dev2');
+    moveTicket(allTickets[1], 'review');
+    await delay(700);
+
+    // QA REJECTS
+    addLog('QA: mcp.call("sync-meetup", { title: "Game Night 🎲" })', 'mcp');
+    await delay(800);
+    addLog('QA: #2 REJECTED — sync works but display shows %F0%9F%8E%B2 instead of 🎲', 'error');
     moveTicket(allTickets[1], 'progress');
     setAgentState('dev2', 'busy', 'reworking #2');
-    await delay(600);
+    updateFile('manager', 'FEEDBACK #2: decode on display side, not just encode for API');
+    flashFile('manager');
+    await delay(500);
 
-    // Dev1 picks up next ticket
-    addLog('Dev1: Checking .manager-feedback.md... picking up #3 "Calendar wrong date"', 'dev1');
+    // CEO does performance review mid-sprint
+    addLog('CEO: Performance check — Dev2 needed rework on #2. Was the spec clear enough?', 'system');
+    setAgentState('ceo', 'busy', 'performance review');
+    await delay(600);
+    addLog('CEO: Verdict — Manager should specify both encode AND decode in task spec. Adding process rule.', 'system');
+    addLearning('Task specs for encoding must specify both encode path AND decode path');
+    await delay(400);
+    addLog('CEO: Dev2 response time is good. No action needed on agent side.', 'system');
+    setAgentState('ceo', 'active', 'review complete');
+
+    // Dev1 picks up #3, Dev2 reworks #2
+    addLog('Dev1: File watcher triggered → picking up #3 "Calendar wrong date"', 'dev1');
     setAgentState('dev1', 'busy', 'working on #3');
     moveTicket(allTickets[2], 'progress');
     await delay(1000);
-
-    // Dev2 fixes and resubmits
-    addLog('Dev2: Fixed — decode on display side, encode only for API calls', 'dev2');
-    addLog('Dev2: git commit -m "fix: decode emoji titles for display after sync"', 'dev2');
+    addLog('Dev2: Fixed — decode on display, encode only for API. Added test for round-trip.', 'dev2');
     moveTicket(allTickets[1], 'review');
-    await delay(800);
-    addLog('QA: Re-testing #2... mcp.call("sync-meetup", { title: "Game Night 🎲" })', 'mcp');
+    await delay(600);
+    addLog('QA: Re-testing #2... mcp.call("sync-meetup", { title: "🎲 Game Night" })', 'mcp');
     await delay(700);
-    addLog('QA: #2 VERIFIED ✓ — emoji displays correctly, sync works', 'qa');
+    addLog('QA: #2 VERIFIED ✓ — emoji round-trip works perfectly', 'qa');
     moveTicket(allTickets[1], 'done');
+    addLearning('Always test string encoding round-trips: encode → store → decode → display');
+    await delay(400);
 
     // Dev1 finishes #3
-    addLog('Dev1: Fixed calendar offset — timezone-aware date parsing', 'dev1');
+    addLog('Dev1: Fixed timezone offset — using UTC everywhere, convert on display only', 'dev1');
     moveTicket(allTickets[2], 'review');
-    setAgentState('dev1', 'active', 'committed #3');
-    await delay(700);
+    await delay(500);
     addLog('QA: #3 VERIFIED ✓', 'qa');
     moveTicket(allTickets[2], 'done');
 
-    // Both devs pick up remaining tickets in parallel
-    addLog('Dev1: Picking up #4 "Bulk publish"', 'dev1');
-    addLog('Dev2: Picking up #5 "Export CSV"', 'dev2');
-    setAgentState('dev1', 'busy', 'working on #4');
-    setAgentState('dev2', 'busy', 'working on #5');
-    moveTicket(allTickets[3], 'progress');
-    moveTicket(allTickets[4], 'progress');
-    await delay(1500);
+    // Manager reprioritizes based on CEO content generation directive
+    addLog('Manager: All bugs fixed. Reprioritizing — CEO wants content gen exploration.', 'manager');
+    setAgentState('manager', 'busy', 'reprioritizing');
+    updateFile('manager', 'PRIORITY CHANGE: #6 reduce sync time moved up (enables content gen pipeline)');
+    flashFile('manager');
+    await delay(600);
 
-    // Quick completions
+    // Remaining tickets — fast parallel
+    addLog('Dev1: Picking up #4 "Bulk publish"', 'dev1');
+    addLog('Dev2: Picking up #6 "Reduce sync time" (priority bumped by Manager)', 'dev2');
+    setAgentState('dev1', 'busy', 'working on #4');
+    setAgentState('dev2', 'busy', 'working on #6');
+    moveTicket(allTickets[3], 'progress');
+    moveTicket(allTickets[5], 'progress');
+    await delay(1200);
+
     for (let i = 3; i < allTickets.length; i++) {
       const dev = i % 2 === 0 ? 'dev1' : 'dev2';
       addLog(`${dev === 'dev1' ? 'Dev1' : 'Dev2'}: Completed #${allTickets[i].id} "${allTickets[i].title}"`, dev);
       moveTicket(allTickets[i], 'review');
-      await delay(500);
+      await delay(400);
       addLog(`QA: #${allTickets[i].id} VERIFIED ✓`, 'qa');
       moveTicket(allTickets[i], 'done');
-      await delay(300);
+      await delay(250);
     }
 
-    // QA goes into proactive testing
-    addLog('QA: All tickets done. Entering proactive testing mode...', 'qa');
-    setAgentState('qa', 'busy', 'proactive testing');
+    // === PHASE 4: CEO evaluates sprint results ===
+    addLog('CEO: Sprint complete. Reviewing results...', 'system');
+    setAgentState('ceo', 'busy', 'evaluating sprint');
     await delay(800);
-    addLog('QA: mcp.call("capture-screenshot") → scanning for visual regressions...', 'mcp');
+    addLog('CEO: 8/8 tickets shipped. 1 rework cycle (acceptable). Sync time reduced — content gen is unblocked.', 'system');
+    addLog('CEO: Process improvement — 3 permanent learnings added this sprint. Knowledge compounds.', 'system');
+    updateFile('ceo', 'SPRINT REVIEW: 8/8 shipped. Next priority: content generation pipeline.');
+    flashFile('ceo', 'sprint-file--flash-ceo');
     await delay(600);
-    addLog('QA: mcp.call("get-member-stats") → verifying data accuracy...', 'mcp');
-    await delay(600);
-    addLog('QA: No new issues found. Continuing to monitor...', 'qa');
 
-    // Idle state
-    setAgentState('dev1', 'active', 'watching for tasks');
-    setAgentState('dev2', 'active', 'watching for tasks');
-    setAgentState('qa', 'active', 'monitoring');
-    setAgentState('manager', 'active', 'sprint complete');
-    addLog('Manager: Sprint complete — 8/8 tickets done. Agents remain on standby.', 'manager');
-    addLog('System: Agents run autonomously forever. File watchers active. Waiting for next task...', 'system');
+    // QA proactive mode
+    addLog('QA: Entering proactive testing... mcp.call("capture-screenshot")', 'mcp');
+    setAgentState('qa', 'busy', 'proactive testing');
+    await delay(600);
+    addLog('QA: Running full regression... no new issues found', 'qa');
+    await delay(400);
+    addLog('QA: Testing edge cases — empty event titles, past dates, duplicate IDs...', 'qa');
+    await delay(500);
+    addLog('QA: All clean. Continuing to monitor. File watcher active.', 'qa');
+
+    // Final state
+    setAgentState('ceo', 'active', 'planning next sprint');
+    setAgentState('manager', 'active', 'writing next tasks');
+    setAgentState('dev1', 'active', 'file watcher active');
+    setAgentState('dev2', 'active', 'file watcher active');
+    setAgentState('qa', 'active', 'monitoring app');
+    updateFile('learnings', `${learningsCount} permanent rules — knowledge compounds across all projects`);
+    addLog('System: All agents on standby. File watchers active. CEO planning next sprint. The loop never ends.', 'system');
 
     startBtn.disabled = false;
     startBtn.textContent = 'Restart Sprint';
