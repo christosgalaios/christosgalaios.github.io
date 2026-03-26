@@ -27,17 +27,29 @@
         <a href="#education">Education</a>
         <a href="#contact">Contact</a>
       </div>
-      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <div class="nav-right">
+        <button class="theme-toggle" id="theme-toggle" aria-label="Switch to light mode">
+          <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
+      </div>
     </div>
   </nav>
+  <script>/* Theme init - prevent FOUC */(function(){try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark"){document.documentElement.setAttribute("data-theme",t)}else if(window.matchMedia("(prefers-color-scheme: light)").matches){document.documentElement.setAttribute("data-theme","light")}}catch(e){}})()</script>
 
   <main id="main-content">
 
     <!-- Hero -->
     <section class="hero" id="hero">
       <div class="hero-content">
+        <div class="hero-photo-wrapper">
+          <img src="assets/chris.png" alt="Christos Galaios" class="hero-photo" width="180" height="180" loading="eager">
+          <div class="hero-photo-ring"></div>
+          <div class="hero-photo-glow"></div>
+        </div>
         <h1 class="hero-name blur-reveal">CHRISTOS GALAIOS</h1>
         <p class="hero-tagline blur-reveal">Creative Engineer. AI-Directed Development.</p>
         <p class="hero-description blur-reveal">I architect solutions and direct AI to build them at production scale.</p>
@@ -107,6 +119,16 @@
             <div class="highlight-item">
               <span class="highlight-number">3</span>
               <span class="highlight-text">Platforms synced — Meetup (GraphQL), Eventbrite (DOM automation), Headfirst (scraping)</span>
+            </div>
+          </div>
+          <div class="socialise-palette-section">
+            <p class="project-desc project-desc--muted">Brand palette — AI-researched color theory from #E3705B base terracotta:</p>
+            <div class="socialise-palette">
+              <div class="palette-dot" style="background:#E3705B" title="Terracotta"></div>
+              <div class="palette-dot" style="background:#245C66" title="Deep Teal"></div>
+              <div class="palette-dot" style="background:#7EAA9C" title="Sage Green"></div>
+              <div class="palette-dot" style="background:#F4B942" title="Gold"></div>
+              <div class="palette-dot" style="background:#F7F4EC" title="Linen/Cream"></div>
             </div>
           </div>
           <div class="project-tags">
@@ -666,8 +688,50 @@
         <path d="M54 58 Q68 50 64 36" stroke="#E2725B" stroke-width="6" stroke-linecap="round" fill="none"/>
       </g>
     </svg>
-    <div class="mango-label">Mango</div>
+    <div class="mango-label">Ask me anything</div>
   </div>
+
+  <!-- Mango Chat Panel -->
+  <div class="mango-chat" id="mango-chat">
+    <div class="mango-chat-header">
+      <span>Chat with Mango</span>
+      <button class="mango-chat-close" id="mango-chat-close" aria-label="Close chat">&times;</button>
+    </div>
+    <div class="mango-chat-messages" id="mango-chat-messages">
+      <div class="mango-msg mango-msg--bot">Mrrp! I'm Mango, Christos's kitten assistant. Ask me anything about his experience, skills, or projects!</div>
+    </div>
+    <form class="mango-chat-input" id="mango-chat-form">
+      <input type="text" id="mango-chat-field" placeholder="Ask about Christos..." maxlength="500" autocomplete="off">
+      <button type="submit" aria-label="Send">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </form>
+  </div>
+
+  <!-- Floating Compass — Back to Top -->
+  <button class="floating-compass" id="compass" aria-label="Scroll to top" title="Back to top">
+    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="fc-n" x1="0.3" y1="0" x2="0.7" y2="1">
+          <stop offset="0%" stop-color="#0d5a3a"/>
+          <stop offset="100%" stop-color="#22C55E"/>
+        </linearGradient>
+        <linearGradient id="fc-s" x1="0.5" y1="0" x2="0.5" y2="1">
+          <stop offset="0%" stop-color="#22C55E"/>
+          <stop offset="100%" stop-color="#4ade80"/>
+        </linearGradient>
+      </defs>
+      <circle cx="20" cy="20" r="17" fill="none" stroke="#7a8494" stroke-width="1.2" opacity="0.35"/>
+      <circle cx="20" cy="20" r="13.5" fill="none" stroke="#7a8494" stroke-width="0.5" opacity="0.15"/>
+      <polygon points="20,1 17,5 20,3 23,5" fill="#22C55E" opacity="0.8"/>
+      <g id="compass-needle" style="transform-origin:20px 20px">
+        <path d="M20,3 L17,12 L14.5,17.5 L18,20 L20,17 L22,20 L25.5,17.5 L23,12 Z" fill="url(#fc-n)"/>
+        <path d="M20,37 L23,28 L25.5,22.5 L22,20 L20,23 L18,20 L14.5,22.5 L17,28 Z" fill="url(#fc-s)" opacity="0.3"/>
+        <circle cx="20" cy="20" r="2" fill="#e2e8f0"/>
+        <circle cx="20" cy="20" r="1" fill="#0d5a3a"/>
+      </g>
+    </svg>
+  </button>
 
   <footer class="footer">
     <div class="container">
