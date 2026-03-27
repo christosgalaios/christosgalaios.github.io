@@ -373,11 +373,18 @@
             </div>
           </div>
 
-          <!-- Embedded Demo -->
+          <!-- Embedded Demo — auto-plays on scroll, unloads when off-screen -->
           <div class="demo-embed">
-            <div class="demo-placeholder" data-src="https://christosgalaios.github.io/InteractiveCV/" data-title="Interactive CV Game">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="var(--accent)" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              <span>Click to play the Interactive CV</span>
+            <div class="browser-mockup browser-mockup--cv">
+              <div class="browser-bar">
+                <span class="browser-dot" style="background:#ef4444"></span>
+                <span class="browser-dot" style="background:#f59e0b"></span>
+                <span class="browser-dot" style="background:#22c55e"></span>
+                <span class="browser-url">christosgalaios.github.io/InteractiveCV</span>
+              </div>
+              <div class="browser-viewport browser-viewport--cv">
+                <iframe class="app-live-iframe cv-iframe" data-src="https://christosgalaios.github.io/InteractiveCV/" title="Interactive CV Game" loading="lazy" allowfullscreen></iframe>
+              </div>
             </div>
           </div>
 

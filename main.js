@@ -2780,7 +2780,7 @@ function startShader(canvas) {
 
 /* --- Offscreen Unloader --- */
 function initOffscreenUnloader() {
-  const sections = document.querySelectorAll('.sprint-sim, .hub-demo, .pipeline-sim, .cicd-panel, .cv-battle, .project-card--app-demo');
+  const sections = document.querySelectorAll('.sprint-sim, .hub-demo, .pipeline-sim, .cicd-panel, .cv-battle, .project-card--app-demo, .project-showcase--dark');
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
