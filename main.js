@@ -232,6 +232,221 @@ function playSound(type) {
       noise.stop(t + 0.2);
       break;
     }
+    case 'drag': {
+      // Soft pickup whoosh
+      vol.gain.setValueAtTime(0.2 * masterVolume, t);
+      vol.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+      const osc = audioCtx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(300, t);
+      osc.frequency.exponentialRampToValueAtTime(500, t + 0.15);
+      osc.connect(vol);
+      osc.start(t);
+      osc.stop(t + 0.15);
+      break;
+    }
+    case 'drop': {
+      // Soft thud/bounce
+      vol.gain.setValueAtTime(0.25 * masterVolume, t);
+      vol.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+      const osc = audioCtx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(150, t);
+      osc.frequency.exponentialRampToValueAtTime(60, t + 0.15);
+      osc.connect(vol);
+      osc.start(t);
+      osc.stop(t + 0.15);
+      break;
+    }
+    case 'charge': {
+      // Rising tension hum
+      vol.gain.setValueAtTime(0.15 * masterVolume, t);
+      vol.gain.linearRampToValueAtTime(0.3 * masterVolume, t + 1.2);
+      vol.gain.exponentialRampToValueAtTime(0.001, t + 1.5);
+      const osc = audioCtx.createOscillator();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(80, t);
+      osc.frequency.exponentialRampToValueAtTime(400, t + 1.5);
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(200, t);
+      filter.frequency.linearRampToValueAtTime(800, t + 1.5);
+      osc.connect(filter);
+      filter.connect(vol);
+      osc.start(t);
+      osc.stop(t + 1.5);
+      break;
+    }
+    case 'screech': {
+      // Cat screech during flight
+      vol.gain.setValueAtTime(0.2 * masterVolume, t);
+      vol.gain.linearRampToValueAtTime(0.15 * masterVolume, t + 0.3);
+      vol.gain.exponentialRampToValueAtTime(0.001, t + 0.8);
+      const osc = audioCtx.createOscillator();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(800, t);
+      osc.frequency.linearRampToValueAtTime(1200, t + 0.1);
+      osc.frequency.linearRampToValueAtTime(600, t + 0.4);
+      osc.frequency.linearRampToValueAtTime(900, t + 0.6);
+      osc.frequency.exponentialRampToValueAtTime(400, t + 0.8);
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = 1000;
+      filter.Q.value = 2;
+      osc.connect(filter);
+      filter.connect(vol);
+      osc.start(t);
+      osc.stop(t + 0.8);
+      break;
+    }
+    case 'impact': {
+      // Heavy landing thud
+      vol.gain.setValueAtTime(0.3 * masterVolume, t);
+      vol.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+      const osc = audioCtx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(100, t);
+      osc.frequency.exponentialRampToValueAtTime(30, t + 0.25);
+      osc.connect(vol);
+      osc.start(t);
+      osc.stop(t + 0.25);
+      // Add noise burst
+      const bufferSize = audioCtx.sampleRate * 0.08 | 0;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.5;
+      const noise = audioCtx.createBufferSource();
+      noise.buffer = buffer;
+      const nVol = audioCtx.createGain();
+      nVol.gain.setValueAtTime(0.2 * masterVolume, t);
+      nVol.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+      noise.connect(nVol);
+      nVol.connect(audioCtx.destination);
+      noise.start(t);
+      noise.stop(t + 0.08);
+      break;
+    }
+    case 'snore': {
+      // Tiny snore
+      vol.gain.setValueAtTime(0.15 * masterVolume, t);
+      vol.gain.linearRampToValueAtTime(0.2 * masterVolume, t + 0.2);
+      vol.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+      const osc = audioCtx.createOscillator();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(60, t);
+      osc.frequency.linearRampToValueAtTime(80, t + 0.2);
+      osc.frequency.linearRampToValueAtTime(50, t + 0.5);
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 200;
+      osc.connect(filter);
+      filter.connect(vol);
+      osc.start(t);
+      osc.stop(t + 0.5);
+      break;
+    }
+    case 'meow': {
+      // Short meow
+      vol.gain.setValueAtTime(0.2 * masterVolume, t);
+      vol.gain.linearRampToValueAtTime(0.25 * masterVolume, t + 0.1);
+      vol.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+      const osc = audioCtx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(500, t);
+      osc.frequency.linearRampToValueAtTime(700, t + 0.1);
+      osc.frequency.linearRampToValueAtTime(400, t + 0.35);
+      osc.connect(vol);
+      osc.start(t);
+      osc.stop(t + 0.35);
+      break;
+    }
+    case 'pop': {
+      // Quick pop for elements appearing
+      vol.gain.setValueAtTime(0.2 * masterVolume, t);
+      vol.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
+      const osc = audioCtx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1000, t);
+      osc.frequency.exponentialRampToValueAtTime(600, t + 0.06);
+      osc.connect(vol);
+      osc.start(t);
+      osc.stop(t + 0.06);
+      break;
+    }
+    case 'success': {
+      // Two-note ascending chime
+      vol.gain.setValueAtTime(0.25 * masterVolume, t);
+      vol.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+      const osc1 = audioCtx.createOscillator();
+      osc1.type = 'sine';
+      osc1.frequency.value = 523;
+      osc1.connect(vol);
+      osc1.start(t);
+      osc1.stop(t + 0.15);
+      const osc2 = audioCtx.createOscillator();
+      osc2.type = 'sine';
+      osc2.frequency.value = 784;
+      const v2 = audioCtx.createGain();
+      v2.gain.setValueAtTime(0.25 * masterVolume, t + 0.15);
+      v2.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+      osc2.connect(v2);
+      v2.connect(audioCtx.destination);
+      osc2.start(t + 0.15);
+      osc2.stop(t + 0.4);
+      break;
+    }
+    case 'error': {
+      // Low buzz for errors/conflicts
+      vol.gain.setValueAtTime(0.2 * masterVolume, t);
+      vol.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+      const osc = audioCtx.createOscillator();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(100, t);
+      osc.frequency.linearRampToValueAtTime(80, t + 0.3);
+      osc.connect(vol);
+      osc.start(t);
+      osc.stop(t + 0.3);
+      break;
+    }
+    case 'activate': {
+      // Short blip for node/step activation
+      vol.gain.setValueAtTime(0.18 * masterVolume, t);
+      vol.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+      const osc = audioCtx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(660, t);
+      osc.frequency.exponentialRampToValueAtTime(880, t + 0.08);
+      osc.connect(vol);
+      osc.start(t);
+      osc.stop(t + 0.08);
+      break;
+    }
+    case 'send': {
+      // Quick upward swoosh for sending
+      vol.gain.setValueAtTime(0.2 * masterVolume, t);
+      vol.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+      const osc = audioCtx.createOscillator();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(400, t);
+      osc.frequency.exponentialRampToValueAtTime(1200, t + 0.1);
+      osc.connect(vol);
+      osc.start(t);
+      osc.stop(t + 0.1);
+      break;
+    }
+    case 'receive': {
+      // Soft downward blip for receiving
+      vol.gain.setValueAtTime(0.18 * masterVolume, t);
+      vol.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+      const osc = audioCtx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(800, t);
+      osc.frequency.exponentialRampToValueAtTime(500, t + 0.12);
+      osc.connect(vol);
+      osc.start(t);
+      osc.stop(t + 0.12);
+      break;
+    }
   }
 }
 
@@ -379,12 +594,14 @@ function initRollingDigits() {
 /* --- Scroll Reveal --- */
 function initScrollReveal() {
   if (prefersReducedMotion) { document.querySelectorAll('.reveal').forEach(el => el.classList.add('reveal--visible')); return; }
+  let lastRevealSound = 0;
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (!entry.isIntersecting) return;
       const siblings = Array.from(entry.target.parentElement?.querySelectorAll(':scope > .reveal') || []);
       entry.target.style.transitionDelay = `${Math.max(0, siblings.indexOf(entry.target)) * 100}ms`;
       entry.target.classList.add('reveal--visible');
+      if (Date.now() - lastRevealSound > 200) { playSound('whoosh'); lastRevealSound = Date.now(); }
       observer.unobserve(entry.target);
     });
   }, { threshold: 0.1 });
@@ -405,6 +622,7 @@ function initNav() {
     const isOpen = links.classList.toggle('nav-links--open');
     toggle.classList.toggle('nav-toggle--active', isOpen);
     toggle.setAttribute('aria-expanded', String(isOpen));
+    playSound('click');
   });
   links.querySelectorAll('a').forEach(a => {
     a.addEventListener('click', () => { links.classList.remove('nav-links--open'); toggle.classList.remove('nav-toggle--active'); toggle.setAttribute('aria-expanded', 'false'); playSound('click'); });
@@ -503,7 +721,7 @@ function initCompass() {
   }
   requestAnimationFrame(animate);
 
-  compass.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  compass.addEventListener('click', () => { window.scrollTo({ top: 0, behavior: 'smooth' }); playSound('whoosh'); });
 }
 
 /* --- Mango Mascot --- */
@@ -525,7 +743,7 @@ function initMango() {
   function resetIdleTimer() {
     clearTimeout(idleTimer); clearTimeout(sleepTimer);
     if (isDragging || isFlying) return;
-    idleTimer = setTimeout(() => { setPose('clean'); sleepTimer = setTimeout(() => setPose('sleep'), 20000); }, 15000);
+    idleTimer = setTimeout(() => { setPose('clean'); playSound('meow'); sleepTimer = setTimeout(() => { setPose('sleep'); playSound('snore'); }, 20000); }, 15000);
   }
 
   const mangoSvg = mango.querySelector('.mango-svg');
@@ -565,6 +783,7 @@ function initMango() {
       setPose('carried');
       mango.style.cursor = 'grabbing';
       mango.style.transition = 'none';
+      playSound('drag');
       // Show compass as drop target
       if (compass) compass.classList.add('floating-compass--drop-target');
     }
@@ -584,6 +803,7 @@ function initMango() {
       mango.style.transform = `translate(${currentX}px, 0px)`;
       if (compass) compass.classList.remove('floating-compass--drop-target');
       setPose('playful');
+      playSound('drop');
       setTimeout(() => {
         setPose('wave');
         mango.classList.remove('mango--idle');
@@ -593,9 +813,9 @@ function initMango() {
     } else if (downTime && !hasMoved && Date.now() - downTime < 300) {
       // Short tap = toggle chat
       if (chatPanel) {
-        const opening = !chatPanel.classList.contains('mango-chat--open');
+        const wasOpen = chatPanel.classList.contains('mango-chat--open');
         chatPanel.classList.toggle('mango-chat--open');
-        if (opening) playSound('purr');
+        playSound(wasOpen ? 'click' : 'purr');
       }
       resetIdleTimer();
     }
@@ -627,12 +847,14 @@ function initMango() {
         mango.classList.add('mango--cannon-ready');
         compass.classList.add('floating-compass--loaded');
         setPose('curious');
+        playSound('charge');
       }
     } else {
       if (mango.classList.contains('mango--cannon-ready')) {
         mango.classList.remove('mango--cannon-ready');
         compass.classList.remove('floating-compass--loaded');
         setPose('carried');
+        playSound('click');
       }
     }
   });
@@ -706,6 +928,7 @@ function initMango() {
       mango.classList.remove('mango--in-cannon');
       setPose('playful');
       playSound('pew');
+      playSound('screech');
 
       // Use CURRENT cursor position at moment of fire (not drop)
       // This lets the user aim during the 1.5s charge
@@ -755,6 +978,7 @@ function initMango() {
           mango.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
           mango.style.transform = `translate(${currentX}px, 0px)`;
           setPose('wave');
+          playSound('impact');
           // Delay idle state so label doesn't appear during bounce-back
           mango.classList.remove('mango--idle');
           setTimeout(() => mango.classList.add('mango--idle'), 800);
@@ -778,7 +1002,7 @@ function initMangoChat() {
   const close = document.getElementById('mango-chat-close');
   if (!chat || !form || !field || !messages || !close) return;
 
-  close.addEventListener('click', () => chat.classList.remove('mango-chat--open'));
+  close.addEventListener('click', () => { chat.classList.remove('mango-chat--open'); playSound('click'); });
 
   function addMsg(text, type) {
     const div = document.createElement('div');
@@ -832,12 +1056,14 @@ function initMangoChat() {
     if (!msg) return;
     field.value = '';
     addMsg(msg, 'user');
+    playSound('send');
 
     const loading = addMsg('Mango is thinking...', 'loading');
     // Simulate AI thinking delay
     setTimeout(() => {
       loading.remove();
       addMsg(getReply(msg), 'bot');
+      playSound('receive');
     }, 600 + Math.random() * 800);
   });
 }
@@ -870,6 +1096,7 @@ function initHubDemo() {
         panel.classList.add('hub-panel--active');
         panel.classList.add('skeleton-loading');
         setTimeout(() => panel.classList.remove('skeleton-loading'), 300);
+        playSound('click');
       }
     });
   });
@@ -903,6 +1130,7 @@ function initHubDemo() {
 
   if (syncBtn) {
     syncBtn.addEventListener('click', () => {
+      playSound('click');
       syncBtn.disabled = true;
       syncLog.innerHTML = '';
       if (syncEventList) syncEventList.innerHTML = '';
@@ -920,6 +1148,7 @@ function initHubDemo() {
           row.innerHTML = `<span class="sync-event-name">${name}</span><span class="sync-event-src sync-event-src--${platform}">${platform}</span>`;
           syncEventList.appendChild(row);
           syncEventList.scrollTop = syncEventList.scrollHeight;
+          playSound('pop');
         }, delay);
       }
 
@@ -930,6 +1159,7 @@ function initHubDemo() {
         line.textContent = '> Connecting to Meetup GraphQL API...';
         syncLog.appendChild(line);
         platforms[0]?.classList.add('sync-platform--active');
+        playSound('activate');
         arrows.forEach((a, i) => { if (i < 3) { setTimeout(() => { a.classList.add('sync-arrow--pulse'); setTimeout(() => a.classList.remove('sync-arrow--pulse'), 500); }, i * 150); }});
       }, 0);
 
@@ -953,6 +1183,7 @@ function initHubDemo() {
         syncLog.appendChild(line);
         syncLog.scrollTop = syncLog.scrollHeight;
         platforms[3]?.classList.add('sync-platform--active');
+        playSound('activate');
         [3,4].forEach((a, i) => { setTimeout(() => { arrows[a]?.classList.add('sync-arrow--pulse'); setTimeout(() => arrows[a]?.classList.remove('sync-arrow--pulse'), 500); }, i * 150); });
       }, ebStart);
 
@@ -976,6 +1207,7 @@ function initHubDemo() {
         syncLog.appendChild(line);
         syncLog.scrollTop = syncLog.scrollHeight;
         platforms[4]?.classList.add('sync-platform--active');
+        playSound('activate');
       }, hfStart);
 
       headfirstEvents.forEach((ev, i) => addEvent(ev, 'headfirst', hfStart + 300 + i * 350));
@@ -1006,6 +1238,7 @@ function initHubDemo() {
         const rows = syncEventList?.querySelectorAll('.sync-event-row');
         if (rows && rows[0]) rows[0].classList.add('sync-event-row--conflict');
         if (rows && rows[5]) rows[5].classList.add('sync-event-row--conflict');
+        playSound('error');
       }, endStart + 400);
       setTimeout(() => {
         const total = meetupEvents.length + eventbriteEvents.length + headfirstEvents.length;
@@ -1017,6 +1250,7 @@ function initHubDemo() {
         syncStatus.textContent = `${total} synced`;
         syncBtn.disabled = false;
         syncBtn.textContent = 'Run Again';
+        playSound('success');
       }, endStart + 800);
     });
   }
@@ -1079,7 +1313,7 @@ function initHubDemo() {
       entries.forEach(entry => {
         if (!entry.isIntersecting) return;
         container.querySelectorAll('.hub-bar').forEach((bar, i) => {
-          setTimeout(() => { bar.style.height = `${(data[i] / max) * 100}%`; }, i * 60);
+          setTimeout(() => { bar.style.height = `${(data[i] / max) * 100}%`; playSound('tick'); }, i * 60);
         });
         observer.unobserve(entry.target);
       });
@@ -1173,6 +1407,7 @@ function initHubDemo() {
   // === RANGE SELECTOR ===
   document.querySelectorAll('.analytics-range').forEach(btn => {
     btn.addEventListener('click', () => {
+      playSound('click');
       document.querySelectorAll('.analytics-range').forEach(b => b.classList.remove('analytics-range--active'));
       btn.classList.add('analytics-range--active');
       // Re-render charts with filtered data
@@ -1215,6 +1450,7 @@ function initHubDemo() {
       btn.className = 'mcp-tool-btn';
       btn.textContent = tool.name;
       btn.addEventListener('click', () => {
+        playSound('click');
         const cmd = document.createElement('div');
         cmd.className = 'mcp-line mcp-line--cmd';
         cmd.textContent = `> mcp.call("${tool.name}")`;
@@ -1225,6 +1461,7 @@ function initHubDemo() {
           res.textContent = tool.result;
           terminal.appendChild(res);
           terminal.scrollTop = terminal.scrollHeight;
+          playSound('receive');
         }, 300 + Math.random() * 400);
         terminal.scrollTop = terminal.scrollHeight;
       });
@@ -1318,12 +1555,15 @@ function initSprintSim() {
     if (state === 'busy') el.classList.add('sprint-agent--busy');
     sEl.textContent = statusText;
     sEl.style.color = state === 'active' ? 'var(--accent)' : state === 'busy' ? 'var(--accent-secondary)' : '';
+    if (state === 'active') playSound('activate');
+    if (state === 'busy') playSound('tick');
   }
 
   function flashFile(name, cls) {
     const el = fileEls[name];
     if (!el) return;
     el.classList.add(cls || 'sprint-file--flash');
+    playSound('tick');
     setTimeout(() => el.classList.remove(cls || 'sprint-file--flash'), 1500);
   }
 
@@ -1345,6 +1585,7 @@ function initSprintSim() {
     div.id = `ticket-${ticketId}`;
     div.innerHTML = `<div class="sprint-ticket-title">${data.title}</div><div class="sprint-ticket-meta">#${ticketId} · ${data.type}</div>`;
     div.dataset.id = ticketId;
+    playSound('pop');
     return { el: div, id: ticketId, ...data };
   }
 
@@ -1355,6 +1596,7 @@ function initSprintSim() {
     setTimeout(() => {
       ticket.el.classList.remove('sprint-ticket--moving');
       col.appendChild(ticket.el);
+      playSound('whoosh');
     }, 200);
   }
 
@@ -1411,7 +1653,7 @@ function initSprintSim() {
     highlightApp(1, 'sprint-app-event--highlight');
     await delay(700);
     highlightApp(3, 'sprint-app-event--error');
-    if (bugOverlay) bugOverlay.style.display = '';
+    if (bugOverlay) { bugOverlay.style.display = ''; playSound('error'); }
     addLog('QA: BUG — Price shows £0 for Comedy Open Mic (paid event)', 'error');
     await delay(500);
 
@@ -1593,6 +1835,7 @@ function initSprintSim() {
     setAgentState('qa', 'active', 'monitoring app');
     updateFile('learnings', `${learningsCount} permanent rules — knowledge compounds across all projects`);
     addLog('System: All agents on standby. File watchers active. CEO planning next sprint. The loop never ends.', 'system');
+    playSound('success');
 
     startBtn.disabled = false;
     startBtn.textContent = 'Restart Sprint';
@@ -1601,6 +1844,7 @@ function initSprintSim() {
 
   startBtn.addEventListener('click', () => {
     if (running) return;
+    playSound('click');
     // Clear log
     log.innerHTML = '';
     timers.forEach(clearTimeout);
@@ -1665,9 +1909,10 @@ function initPipelineSim() {
     logEl.appendChild(l);
     logEl.scrollTop = logEl.scrollHeight;
   }
-  function activate(i) { nodes.forEach((n,j) => { n.classList.toggle('pipeline-node--active', j === i); if (j < i) n.classList.add('pipeline-node--done'); }); }
+  function activate(i) { nodes.forEach((n,j) => { n.classList.toggle('pipeline-node--active', j === i); if (j < i) n.classList.add('pipeline-node--done'); }); playSound('activate'); }
 
   btn.addEventListener('click', async () => {
+    playSound('click');
     btn.disabled = true;
     logEl.innerHTML = '';
     nodes.forEach(n => n.classList.remove('pipeline-node--active', 'pipeline-node--done'));
@@ -1704,6 +1949,7 @@ function initPipelineSim() {
     if (counter) { let c = 44; const iv = setInterval(() => { c++; counter.textContent = c; if (c >= 45) clearInterval(iv); }, 100); }
     await d(500);
     nodes.forEach(n => { n.classList.remove('pipeline-node--active'); n.classList.add('pipeline-node--done'); });
+    playSound('success');
     log('Pipeline complete. Next run: tomorrow 03:00 UTC. Zero human intervention.', 'info');
     btn.disabled = false;
     btn.textContent = 'Run Again';
@@ -1718,6 +1964,7 @@ function initAugmentDemo() {
   if (!btn || !safeEl || !stepsEl) return;
 
   btn.addEventListener('click', async () => {
+    playSound('click');
     btn.disabled = true;
     safeEl.textContent = '';
     stepsEl.innerHTML = '';
@@ -1727,6 +1974,7 @@ function initAugmentDemo() {
       s.className = `augment-step augment-step--${cls}`;
       s.textContent = t;
       stepsEl.appendChild(s);
+      playSound('activate');
     }
 
     step('Step 1: Normalizing field names...', 'normalize');
@@ -1777,11 +2025,13 @@ function initIdeaGenerator() {
   ];
 
   btn.addEventListener('click', () => {
+    playSound('click');
     btn.disabled = true;
     btn.textContent = 'Analyzing data...';
     results.innerHTML = '';
     ideas.forEach((idea, i) => {
       setTimeout(() => {
+        playSound('pop');
         const card = document.createElement('div');
         card.className = 'idea-card';
         card.innerHTML = `<div class="idea-card-name">${idea.name}</div>
@@ -1811,11 +2061,13 @@ function initContentPrompts() {
   ];
 
   btn.addEventListener('click', () => {
+    playSound('click');
     btn.disabled = true;
     btn.textContent = 'Generating...';
     output.innerHTML = '';
     prompts.forEach((p, i) => {
       setTimeout(() => {
+        playSound('pop');
         const card = document.createElement('div');
         card.className = 'prompt-card';
         card.innerHTML = `<div class="prompt-card-platform">${p.platform}</div>
@@ -1849,6 +2101,7 @@ function initEnhancedScoring() {
   const newBtn = document.getElementById('score-btn');
 
   newBtn.addEventListener('click', () => {
+    playSound('click');
     newBtn.disabled = true;
     newBtn.textContent = 'AI Analyzing...';
     const scoreEls = document.querySelectorAll('[data-event]');
@@ -1859,6 +2112,7 @@ function initEnhancedScoring() {
         el.classList.add('hub-event-score--visible');
         el.classList.add(s.score >= 80 ? 'hub-event-score--high' : s.score >= 65 ? 'hub-event-score--mid' : 'hub-event-score--low');
 
+        playSound('pop');
         // Add suggestion below event
         const event = el.closest('.hub-event');
         if (event && !event.querySelector('.hub-event-suggestion')) {
@@ -1889,6 +2143,7 @@ function initCICDDemo() {
       gitSteps.forEach((s, i) => {
         setTimeout(() => {
           s.classList.add('cicd-git-step--active');
+          playSound('activate');
           setTimeout(() => {
             s.classList.remove('cicd-git-step--active');
             s.classList.add('cicd-git-step--done');
@@ -1912,6 +2167,7 @@ function initCICDDemo() {
         setTimeout(() => {
           h.classList.add(`cicd-hook--${hookStates[i]}`);
           h.querySelector('.cicd-hook-status').textContent = hookResults[i];
+          playSound('pop');
         }, i * 500 + 300);
       });
       hookObs.unobserve(entry.target);
@@ -1926,12 +2182,14 @@ function initCICDDemo() {
 
   if (ciBtn) {
     ciBtn.addEventListener('click', async () => {
+      playSound('click');
       ciBtn.disabled = true;
       ciNodes.forEach(n => n.classList.remove('cicd-pipe-node--active', 'cicd-pipe-node--done'));
       if (testCount) testCount.textContent = '0/1,671';
 
       for (let i = 0; i < ciNodes.length; i++) {
         ciNodes[i].classList.add('cicd-pipe-node--active');
+        playSound('activate');
         if (i === 3 && testCount) {
           // Animate test counter
           let count = 0;
@@ -1948,6 +2206,7 @@ function initCICDDemo() {
         ciNodes[i].classList.remove('cicd-pipe-node--active');
         ciNodes[i].classList.add('cicd-pipe-node--done');
       }
+      playSound('success');
       ciBtn.disabled = false;
       ciBtn.textContent = 'Run Again';
     });
@@ -1959,9 +2218,9 @@ function initCICDDemo() {
   const testObs = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (!entry.isIntersecting) return;
-      setTimeout(() => { if (testBars.hub) testBars.hub.style.width = '100%'; }, 200);
-      setTimeout(() => { if (testBars.app) testBars.app.style.width = '32.8%'; }, 400);
-      setTimeout(() => { if (testBars.dg) testBars.dg.style.width = '2.4%'; }, 600);
+      setTimeout(() => { if (testBars.hub) { testBars.hub.style.width = '100%'; playSound('tick'); } }, 200);
+      setTimeout(() => { if (testBars.app) { testBars.app.style.width = '32.8%'; playSound('tick'); } }, 400);
+      setTimeout(() => { if (testBars.dg) { testBars.dg.style.width = '2.4%'; playSound('tick'); } }, 600);
       // Count up total
       if (totalEl) {
         let c = 0;
@@ -1984,7 +2243,7 @@ function initCICDDemo() {
       entries.forEach(entry => {
         if (!entry.isIntersecting) return;
         nsEvents.forEach((ev, i) => {
-          setTimeout(() => ev.classList.add('nightshift-event--visible'), i * 400);
+          setTimeout(() => { ev.classList.add('nightshift-event--visible'); playSound('pop'); }, i * 400);
         });
         nsObs.unobserve(entry.target);
       });
@@ -2000,6 +2259,7 @@ function initCICDDemo() {
       envNodes.forEach((n, i) => {
         setTimeout(() => {
           n.classList.add('cicd-env--active');
+          playSound('activate');
           setTimeout(() => {
             n.classList.remove('cicd-env--active');
             n.classList.add('cicd-env--done');
@@ -2021,6 +2281,7 @@ function initAppDemo() {
   // Tab navigation
   navBtns.forEach(btn => {
     btn.addEventListener('click', () => {
+      playSound('click');
       navBtns.forEach(b => b.classList.remove('phone-nav-btn--active'));
       pages.forEach(p => p.classList.remove('app-page--active'));
       btn.classList.add('phone-nav-btn--active');
@@ -2059,6 +2320,7 @@ function initAppDemo() {
     card.addEventListener('click', () => {
       if (card.classList.contains('app-event-card--joined')) return;
       card.classList.add('app-event-card--joined');
+      playSound('pop');
       const xp = parseInt(card.dataset.xp) || 20;
       totalXP += xp;
       updateXP();
@@ -2069,6 +2331,7 @@ function initAppDemo() {
   document.querySelectorAll('.app-reaction').forEach(r => {
     r.addEventListener('click', () => {
       r.classList.toggle('app-reaction--active');
+      playSound('click');
       const num = parseInt(r.textContent.match(/\d+/)?.[0] || '0');
       const emoji = r.textContent.match(/[^\d\s]+/)?.[0] || '';
       r.textContent = `${emoji} ${r.classList.contains('app-reaction--active') ? num + 1 : Math.max(0, num - 1)}`;
@@ -2080,15 +2343,16 @@ function initAppDemo() {
 function initLightbox() {
   document.querySelectorAll('.project-screenshot').forEach(img => {
     img.addEventListener('click', () => {
+      playSound('click');
       const lb = document.createElement('div');
       lb.className = 'lightbox';
       const clone = document.createElement('img');
       clone.src = img.src;
       clone.alt = img.alt;
       lb.appendChild(clone);
-      lb.addEventListener('click', () => lb.remove());
+      lb.addEventListener('click', () => { playSound('click'); lb.remove(); });
       document.addEventListener('keydown', function esc(e) {
-        if (e.key === 'Escape') { lb.remove(); document.removeEventListener('keydown', esc); }
+        if (e.key === 'Escape') { playSound('click'); lb.remove(); document.removeEventListener('keydown', esc); }
       });
       document.body.appendChild(lb);
     });
