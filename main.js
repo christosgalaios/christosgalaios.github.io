@@ -205,12 +205,25 @@ function initMango() {
     idleTimer = setTimeout(() => { setPose('clean'); sleepTimer = setTimeout(() => setPose('sleep'), 20000); }, 15000);
   }
 
-  mango.addEventListener('pointerdown', (e) => {
+  const mangoSvg = mango.querySelector('.mango-svg');
+  const mangoLabel = mango.querySelector('.mango-label');
+  const chatPanel = document.getElementById('mango-chat');
+
+  // Stop chat panel from triggering mango drag/click
+  if (chatPanel) {
+    chatPanel.addEventListener('pointerdown', (e) => e.stopPropagation());
+    chatPanel.addEventListener('click', (e) => e.stopPropagation());
+  }
+
+  // Only drag from the SVG or label, not the chat
+  function onMangoDown(e) {
     isDragging = true; mango.setPointerCapture(e.pointerId);
     startX = e.clientX - currentX; startY = e.clientY - currentY;
     setPose('carried'); mango.style.cursor = 'grabbing'; mango.style.transition = 'none';
     e.preventDefault();
-  });
+  }
+  if (mangoSvg) mangoSvg.addEventListener('pointerdown', onMangoDown);
+  if (mangoLabel) mangoLabel.addEventListener('pointerdown', onMangoDown);
 
   document.addEventListener('pointermove', (e) => {
     if (!isDragging) return;
@@ -227,14 +240,15 @@ function initMango() {
     setTimeout(() => { setPose('wave'); resetIdleTimer(); }, 800);
   });
 
-  // Click opens chat
-  let lastPointerDown = 0;
-  mango.addEventListener('pointerdown', () => { lastPointerDown = Date.now(); });
-  mango.addEventListener('click', (e) => {
-    if (Date.now() - lastPointerDown > 300) return; // was a drag
-    const chat = document.getElementById('mango-chat');
-    if (chat) chat.classList.toggle('mango-chat--open');
-  });
+  // Click on SVG/label opens chat (not on chat panel itself)
+  let lastDown = 0, dragDist = 0;
+  function onClickDown(e) { lastDown = Date.now(); dragDist = 0; }
+  function onClickUp(e) {
+    if (Date.now() - lastDown > 300 || dragDist > 10) return;
+    if (chatPanel) chatPanel.classList.toggle('mango-chat--open');
+  }
+  if (mangoSvg) { mangoSvg.addEventListener('pointerdown', onClickDown); mangoSvg.addEventListener('click', onClickUp); }
+  if (mangoLabel) { mangoLabel.addEventListener('pointerdown', onClickDown); mangoLabel.addEventListener('click', onClickUp); }
 
   setPose('wave'); resetIdleTimer();
 }
