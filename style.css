@@ -3949,14 +3949,68 @@ section {
   margin-right: auto;
 }
 
-/* Compact cards — smaller projects */
-.project-card--compact {
-  min-width: 0;
-  max-width: 400px;
-  justify-self: center;
+/* Socialise Website — full width with browser mockup */
+.project-card--socialise-web {
+  margin-top: var(--space-lg);
 }
-.project-card--compact .project-desc {
-  word-break: break-word;
+.browser-mockup--socialise-web {
+  width: 100%;
+  max-width: 100%;
+  margin: 1.5rem 0;
+}
+.browser-mockup--socialise-web .browser-viewport iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 143%;
+  height: 143%;
+  transform: scale(0.7);
+  transform-origin: top left;
+  border: none;
+}
+.project-card--socialise-web .project-tags {
+  justify-content: center;
+}
+.project-card--socialise-web .project-links {
+  justify-content: center;
+}
+
+/* Edge AI Robot — full width with media grid */
+.project-card--robot {
+  margin-top: var(--space-lg);
+}
+.robot-media-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 280px 280px auto;
+  gap: var(--space-md);
+  margin: 1.5rem 0;
+}
+.robot-photo,
+.robot-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+}
+.robot-photo--selfie {
+  grid-column: 1 / -1;
+  max-height: 350px;
+  object-position: center 30%;
+}
+.project-card--robot .project-tags {
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .robot-media-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+  .robot-photo,
+  .robot-video {
+    height: 250px;
+  }
 }
 
 .devguide-compass-demo {
@@ -4536,6 +4590,12 @@ html.theme-transition *::after {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  justify-content: center;
+}
+
+/* Compact cards — center tags */
+.project-card--compact .project-tags {
+  justify-content: center;
 }
 
 /* DevGuide Articles */

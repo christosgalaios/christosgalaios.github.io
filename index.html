@@ -571,6 +571,7 @@
 
             <!-- Agents Row -->
             <div class="sprint-agents">
+                <div class="sprint-agent" id="agent-ceo">
                   <div class="sprint-agent-indicator"></div>
                   <div class="sprint-agent-info">
                     <strong>CEO</strong>
@@ -816,48 +817,69 @@
             </div>
         </article>
 
-        <!-- ======= Small Cards Row ======= -->
-        <div class="projects-small">
+        <!-- Socialise Website — Full Width -->
+        <article class="project-card project-card--socialise-web reveal">
+          <div class="project-card-inner">
+            <div class="project-header">
+              <h3 class="project-name">Socialise Website</h3>
+            </div>
+            <p class="project-role">Marketing Landing Page</p>
+            <p class="project-desc">Pure vanilla HTML/CSS/JS (~1,100 lines). Mouse-tracking spotlight effects, scroll reveal animations, parallax depth. Custom domain, no frameworks needed.</p>
 
-          <!-- Socialise Website -->
-          <article class="project-card project-card--compact reveal">
-            <div class="project-card-inner">
-              <div class="project-header">
-                <h3 class="project-name">Socialise Website</h3>
+            <div class="browser-mockup browser-mockup--socialise-web">
+              <div class="browser-bar">
+                <span class="browser-dot" style="background:#ef4444"></span>
+                <span class="browser-dot" style="background:#f59e0b"></span>
+                <span class="browser-dot" style="background:#22c55e"></span>
+                <span class="browser-url">www.socialise.events</span>
               </div>
-              <p class="project-role">Marketing Landing Page</p>
-              <p class="project-desc">Pure vanilla HTML/CSS/JS (~1,100 lines). Mouse-tracking spotlight effects, scroll reveal animations, parallax depth. Custom domain, no frameworks needed.</p>
-              <div class="project-tags">
-                <span class="tag">HTML</span>
-                <span class="tag">CSS</span>
-                <span class="tag">JavaScript</span>
-                <span class="tag">GitHub Pages</span>
-              </div>
-              <div class="project-links">
-                <a href="https://www.socialise.events" target="_blank" rel="noopener noreferrer" class="project-cta">Visit Live Site →</a>
+              <div class="browser-viewport">
+                <iframe src="https://www.socialise.events" title="Socialise Website — Live Preview" loading="lazy" allowfullscreen></iframe>
               </div>
             </div>
-          </article>
 
-          <!-- Edge AI Robot -->
-          <article class="project-card project-card--compact reveal">
-            <div class="project-card-inner">
-              <div class="project-header">
-                <h3 class="project-name">Edge AI Robot</h3>
-                <span class="project-stat">Work in Progress</span>
-              </div>
-              <p class="project-role">Physical Computing with LLMs</p>
-              <p class="project-desc">LLM-brained autonomous robot on Raspberry Pi 5 with Hailo 10H neural accelerator. Computer vision, object detection, autonomous navigation.</p>
-              <div class="project-tags">
-                <span class="tag">Python</span>
-                <span class="tag">Raspberry Pi</span>
-                <span class="tag">Hailo 10H</span>
-                <span class="tag">Computer Vision</span>
-              </div>
+            <div class="project-tags">
+              <span class="tag">HTML</span>
+              <span class="tag">CSS</span>
+              <span class="tag">JavaScript</span>
+              <span class="tag">GitHub Pages</span>
             </div>
-          </article>
+            <div class="project-links">
+              <a href="https://www.socialise.events" target="_blank" rel="noopener noreferrer" class="project-cta">Visit Live Site →</a>
+            </div>
+          </div>
+        </article>
 
-        </div>
+        <!-- Edge AI Robot — Full Width -->
+        <article class="project-card project-card--robot reveal">
+          <div class="project-card-inner">
+            <div class="project-header">
+              <h3 class="project-name">Edge AI Robot</h3>
+              <span class="project-stat">Work in Progress</span>
+            </div>
+            <p class="project-role">Physical Computing with LLMs</p>
+            <p class="project-desc">LLM-brained autonomous robot on Raspberry Pi 5 with Hailo 10H neural accelerator. Computer vision, object detection, autonomous navigation.</p>
+
+            <div class="robot-media-grid">
+              <img src="assets/robot-workbench.jpeg" alt="Robot chassis with Raspberry Pi and components on workbench" class="robot-photo" loading="lazy">
+              <img src="assets/robot-side.jpg" alt="Edge AI Robot side view with tank treads and articulated arm" class="robot-photo" loading="lazy">
+              <video class="robot-video" autoplay muted loop playsinline>
+                <source src="assets/robot-demo.mp4" type="video/mp4">
+              </video>
+              <video class="robot-video" autoplay muted loop playsinline>
+                <source src="assets/robot-arm.mp4" type="video/mp4">
+              </video>
+              <img src="assets/robot-selfie.jpg" alt="Christos holding the Edge AI Robot" class="robot-photo robot-photo--selfie" loading="lazy">
+            </div>
+
+            <div class="project-tags">
+              <span class="tag">Python</span>
+              <span class="tag">Raspberry Pi</span>
+              <span class="tag">Hailo 10H</span>
+              <span class="tag">Computer Vision</span>
+            </div>
+          </div>
+        </article>
       </div>
     </section>
 
