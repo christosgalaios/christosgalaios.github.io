@@ -438,6 +438,103 @@ function initHubDemo() {
   renderChart(membersChart, memberData, 'var(--accent)', '');
   renderChart(revenueChart, revenueData, 'var(--accent-secondary)', '£');
 
+  // === HEATMAP ===
+  const heatmap = document.getElementById('heatmap');
+  if (heatmap) {
+    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const hours = ['8am', '10am', '12pm', '2pm', '4pm', '6pm', '7pm', '8pm', '9pm', '10pm', '11pm', '12am'];
+    // Real-shaped data: [day][hour] avg attendance
+    const data = [
+      [0,3,0,7,8,7,0,0,0,0,0,0],   // Mon
+      [1,1,0,0,0,7,10,0,0,0,0,0],   // Tue
+      [0,0,0,0,4,8,10,6,0,0,0,0],   // Wed
+      [0,0,0,0,0,8,15,11,0,0,0,0],  // Thu
+      [0,0,0,1,14,9,21,11,4,0,4,0], // Fri
+      [12,2,37,19,8,14,21,5,0,1,0,0],// Sat
+      [7,8,15,49,10,3,19,3,0,0,0,2],// Sun
+    ];
+    // Column headers
+    const spacer = document.createElement('div');
+    heatmap.appendChild(spacer);
+    hours.forEach(h => {
+      const lbl = document.createElement('div');
+      lbl.className = 'heatmap-col-label';
+      lbl.textContent = h;
+      heatmap.appendChild(lbl);
+    });
+    // Rows
+    const maxVal = 49;
+    days.forEach((day, di) => {
+      const rowLabel = document.createElement('div');
+      rowLabel.className = 'heatmap-row-label';
+      rowLabel.textContent = day;
+      heatmap.appendChild(rowLabel);
+      data[di].forEach((val, hi) => {
+        const cell = document.createElement('div');
+        cell.className = 'heatmap-cell';
+        const intensity = val / maxVal;
+        cell.style.background = val === 0 ? 'rgba(255,255,255,0.02)' : `rgba(34,197,94,${0.1 + intensity * 0.7})`;
+        cell.dataset.tooltip = `${day} ${hours[hi]}: avg ${val} attendees`;
+        heatmap.appendChild(cell);
+      });
+    });
+  }
+
+  // === CATEGORY BARS ===
+  const catContainer = document.getElementById('category-bars');
+  if (catContainer) {
+    const categories = [
+      { name: 'Speed Friending', fill: 88, color: 'var(--accent)' },
+      { name: 'Hiking', fill: 70, color: '#22C55E' },
+      { name: 'Comedy', fill: 65, color: '#3B82F6' },
+      { name: 'Pub Quiz', fill: 55, color: '#a855f7' },
+      { name: 'Board Games', fill: 50, color: '#f59e0b' },
+      { name: 'Pottery', fill: 32, color: '#ef4444' },
+    ];
+    categories.forEach(cat => {
+      const row = document.createElement('div');
+      row.className = 'category-bar-row';
+      row.innerHTML = `<span class="category-bar-label">${cat.name}</span>
+        <div class="category-bar"><div class="category-bar-fill" style="width:0;background:${cat.color}"></div></div>
+        <span class="category-bar-value">${cat.fill}%</span>`;
+      catContainer.appendChild(row);
+    });
+    const catObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        catContainer.querySelectorAll('.category-bar-fill').forEach((fill, i) => {
+          setTimeout(() => { fill.style.width = categories[i].fill + '%'; }, i * 150);
+        });
+        catObs.unobserve(entry.target);
+      });
+    }, { threshold: 0.3 });
+    catObs.observe(catContainer);
+  }
+
+  // === RANGE SELECTOR ===
+  document.querySelectorAll('.analytics-range').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.analytics-range').forEach(b => b.classList.remove('analytics-range--active'));
+      btn.classList.add('analytics-range--active');
+      // Re-render charts with filtered data
+      const range = parseInt(btn.dataset.range);
+      const mSlice = range > 0 ? memberData.slice(-range) : memberData;
+      const rSlice = range > 0 ? revenueData.slice(-range) : revenueData;
+      const mSliceMonths = range > 0 ? months.slice(-range) : months;
+      if (membersChart) { membersChart.innerHTML = ''; renderChart(membersChart, mSlice, 'var(--accent)', ''); }
+      if (revenueChart) { revenueChart.innerHTML = ''; renderChart(revenueChart, rSlice, 'var(--accent-secondary)', '£'); }
+      // Trigger animation
+      membersChart?.querySelectorAll('.hub-bar').forEach((bar, i) => {
+        const max = Math.max(...mSlice);
+        setTimeout(() => { bar.style.height = `${(mSlice[i] / max) * 100}%`; }, i * 60);
+      });
+      revenueChart?.querySelectorAll('.hub-bar').forEach((bar, i) => {
+        const max = Math.max(...rSlice);
+        setTimeout(() => { bar.style.height = `${(rSlice[i] / max) * 100}%`; }, i * 60);
+      });
+    });
+  });
+
   // === MCP TAB ===
   const terminal = document.getElementById('mcp-terminal');
   const toolsGrid = document.getElementById('mcp-tools-grid');

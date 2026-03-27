@@ -177,20 +177,46 @@
 
             <!-- Analytics Tab -->
             <div class="hub-panel" id="hub-panel-analytics">
+              <!-- Time range selector -->
+              <div class="analytics-controls">
+                <button class="analytics-range analytics-range--active" data-range="6">6 mo</button>
+                <button class="analytics-range" data-range="12">1 yr</button>
+                <button class="analytics-range" data-range="0">All</button>
+              </div>
+
               <div class="hub-chart-row">
                 <div class="hub-chart">
                   <h4>Member Growth</h4>
                   <div class="hub-bars" id="hub-members-chart"></div>
                 </div>
                 <div class="hub-chart">
-                  <h4>Monthly Revenue</h4>
+                  <h4>Monthly Revenue (&pound;)</h4>
                   <div class="hub-bars" id="hub-revenue-chart"></div>
                 </div>
               </div>
+
+              <!-- Attendance Heatmap -->
+              <div class="heatmap-section">
+                <h4>Attendance Heatmap — Day &times; Time</h4>
+                <div class="heatmap" id="heatmap"></div>
+                <div class="heatmap-legend">
+                  <span class="heatmap-legend-low">0</span>
+                  <div class="heatmap-legend-bar"></div>
+                  <span class="heatmap-legend-high">45+</span>
+                </div>
+              </div>
+
+              <!-- Category Performance -->
+              <div class="category-section">
+                <h4>Fill Rate by Category</h4>
+                <div class="category-bars" id="category-bars"></div>
+              </div>
+
               <div class="hub-chart-stats">
                 <div class="hub-chart-stat"><span class="hub-chart-stat-num">3,112</span><span>Total Members</span></div>
                 <div class="hub-chart-stat"><span class="hub-chart-stat-num">282</span><span>Events Synced</span></div>
                 <div class="hub-chart-stat"><span class="hub-chart-stat-num">&pound;855</span><span>Total Revenue</span></div>
+                <div class="hub-chart-stat"><span class="hub-chart-stat-num">45%</span><span>Avg Fill Rate</span></div>
               </div>
             </div>
 
