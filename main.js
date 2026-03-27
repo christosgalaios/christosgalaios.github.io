@@ -100,28 +100,78 @@ function initTextScramble() {
   requestAnimationFrame(tick);
 }
 
-/* --- Counter Animation --- */
-function animateCounters() {
+/* --- Rolling Digit Ticker --- */
+function initRollingDigits() {
   const stats = document.querySelectorAll('.stat');
   if (!stats.length) return;
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      const el = entry.target.querySelector('.stat-number');
-      const target = parseInt(entry.target.dataset.target, 10);
-      const suffix = entry.target.dataset.suffix || '';
-      if (prefersReducedMotion) { el.textContent = target.toLocaleString() + suffix; observer.unobserve(entry.target); return; }
-      const duration = 1500, start = performance.now();
-      function update(now) {
-        const progress = Math.min((now - start) / duration, 1);
-        el.textContent = Math.floor((1 - Math.pow(1 - progress, 3)) * target).toLocaleString() + suffix;
-        if (progress < 1) requestAnimationFrame(update);
+
+  stats.forEach(stat => {
+    const numEl = stat.querySelector('.stat-number');
+    const target = parseInt(stat.dataset.target, 10);
+    const suffix = stat.dataset.suffix || '';
+    const digits = target.toLocaleString().split('');
+
+    numEl.textContent = '';
+    const digitEls = [];
+
+    digits.forEach((char) => {
+      if (char === ',') {
+        const sep = document.createElement('span');
+        sep.className = 'digit-separator';
+        sep.textContent = ',';
+        numEl.appendChild(sep);
+        return;
       }
-      requestAnimationFrame(update);
-      observer.unobserve(entry.target);
+      const col = document.createElement('span');
+      col.className = 'digit-col';
+      const strip = document.createElement('span');
+      strip.className = 'digit-strip';
+      for (let d = 0; d <= 9; d++) {
+        const s = document.createElement('span');
+        s.textContent = d;
+        strip.appendChild(s);
+      }
+      col.appendChild(strip);
+      numEl.appendChild(col);
+      digitEls.push({ strip, target: parseInt(char, 10) });
     });
-  }, { threshold: 0.5 });
-  stats.forEach(s => observer.observe(s));
+
+    if (suffix) {
+      const suf = document.createElement('span');
+      suf.className = 'digit-suffix';
+      suf.textContent = suffix;
+      numEl.appendChild(suf);
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        if (prefersReducedMotion) {
+          digitEls.forEach(d => {
+            d.strip.style.transform = `translateY(-${d.target * 1.2}em)`;
+          });
+          const suf = numEl.querySelector('.digit-suffix');
+          if (suf) suf.classList.add('digit-suffix--visible');
+          observer.unobserve(entry.target);
+          return;
+        }
+        const totalDigits = digitEls.length;
+        digitEls.forEach((d, idx) => {
+          const delay = (totalDigits - 1 - idx) * 150;
+          setTimeout(() => {
+            d.strip.style.transform = `translateY(-${d.target * 1.2}em)`;
+            if (typeof playSound === 'function') playSound('tick');
+          }, delay);
+        });
+        const suf = numEl.querySelector('.digit-suffix');
+        if (suf) {
+          setTimeout(() => suf.classList.add('digit-suffix--visible'), totalDigits * 150 + 200);
+        }
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.5 });
+    observer.observe(stat);
+  });
 }
 
 /* --- Scroll Reveal --- */
@@ -1973,7 +2023,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   initBlurReveal();
   initTextScramble();
-  animateCounters();
+  initRollingDigits();
   initScrollReveal();
   initScrollProgress();
   initNav();

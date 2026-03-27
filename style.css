@@ -463,13 +463,50 @@ section {
   text-align: center;
 }
 
+/* Rolling Digit Ticker */
 .stat-number {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  height: 1.2em;
+  line-height: 1.2;
   font-family: var(--font-mono);
   font-weight: 700;
   font-size: clamp(2rem, 4vw, 3rem);
   color: var(--accent);
+}
+.digit-col {
+  display: inline-block;
+  height: 1.2em;
+  overflow: hidden;
+  position: relative;
+}
+.digit-strip {
+  display: flex;
+  flex-direction: column;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.digit-strip span {
+  display: block;
+  height: 1.2em;
   line-height: 1.2;
+  text-align: center;
+}
+.digit-separator {
+  display: inline-block;
+  width: 0.3em;
+}
+.digit-suffix {
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+}
+.digit-suffix--visible {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .digit-strip { transition: none; }
+  .digit-suffix { transition: none; opacity: 1; }
 }
 
 .stat-label {
