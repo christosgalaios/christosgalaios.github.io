@@ -209,46 +209,63 @@ function initMango() {
   const mangoLabel = mango.querySelector('.mango-label');
   const chatPanel = document.getElementById('mango-chat');
 
-  // Stop chat panel from triggering mango drag/click
+  // Stop chat panel from triggering mango interactions
   if (chatPanel) {
     chatPanel.addEventListener('pointerdown', (e) => e.stopPropagation());
     chatPanel.addEventListener('click', (e) => e.stopPropagation());
   }
 
-  // Only drag from the SVG or label, not the chat
+  let downX = 0, downY = 0, downTime = 0, hasMoved = false;
+
   function onMangoDown(e) {
-    isDragging = true; mango.setPointerCapture(e.pointerId);
-    startX = e.clientX - currentX; startY = e.clientY - currentY;
-    setPose('carried'); mango.style.cursor = 'grabbing'; mango.style.transition = 'none';
+    downX = e.clientX;
+    downY = e.clientY;
+    downTime = Date.now();
+    hasMoved = false;
+    startX = e.clientX - currentX;
+    startY = e.clientY - currentY;
+    mango.setPointerCapture(e.pointerId);
     e.preventDefault();
   }
+
   if (mangoSvg) mangoSvg.addEventListener('pointerdown', onMangoDown);
   if (mangoLabel) mangoLabel.addEventListener('pointerdown', onMangoDown);
 
   document.addEventListener('pointermove', (e) => {
-    if (!isDragging) return;
-    currentX = e.clientX - startX; currentY = e.clientY - startY;
-    mango.style.transform = `translate(${currentX}px, ${currentY}px)`;
+    if (!downTime) return;
+    const dx = e.clientX - downX;
+    const dy = e.clientY - downY;
+    // Only start drag after 5px movement
+    if (!isDragging && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) {
+      isDragging = true;
+      hasMoved = true;
+      setPose('carried');
+      mango.style.cursor = 'grabbing';
+      mango.style.transition = 'none';
+    }
+    if (isDragging) {
+      currentX = e.clientX - startX;
+      currentY = e.clientY - startY;
+      mango.style.transform = `translate(${currentX}px, ${currentY}px)`;
+    }
   });
 
   document.addEventListener('pointerup', () => {
-    if (!isDragging) return;
-    isDragging = false; mango.style.cursor = 'grab';
-    mango.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
-    currentY = 0; mango.style.transform = `translate(${currentX}px, 0px)`;
-    setPose('playful');
-    setTimeout(() => { setPose('wave'); resetIdleTimer(); }, 800);
+    if (isDragging) {
+      isDragging = false;
+      mango.style.cursor = 'grab';
+      mango.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+      currentY = 0;
+      mango.style.transform = `translate(${currentX}px, 0px)`;
+      setPose('playful');
+      setTimeout(() => { setPose('wave'); resetIdleTimer(); }, 800);
+    } else if (downTime && !hasMoved && Date.now() - downTime < 300) {
+      // Short tap = toggle chat
+      if (chatPanel) chatPanel.classList.toggle('mango-chat--open');
+      resetIdleTimer();
+    }
+    downTime = 0;
   });
-
-  // Click on SVG/label opens chat (not on chat panel itself)
-  let lastDown = 0, dragDist = 0;
-  function onClickDown(e) { lastDown = Date.now(); dragDist = 0; }
-  function onClickUp(e) {
-    if (Date.now() - lastDown > 300 || dragDist > 10) return;
-    if (chatPanel) chatPanel.classList.toggle('mango-chat--open');
-  }
-  if (mangoSvg) { mangoSvg.addEventListener('pointerdown', onClickDown); mangoSvg.addEventListener('click', onClickUp); }
-  if (mangoLabel) { mangoLabel.addEventListener('pointerdown', onClickDown); mangoLabel.addEventListener('click', onClickUp); }
 
   setPose('wave'); resetIdleTimer();
 }
