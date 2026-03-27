@@ -271,7 +271,11 @@ function initMango() {
 
   // === Compass Cannon Easter Egg ===
   const compass = document.getElementById('compass');
-  let cannonTimeout = null, isFlying = false;
+  let isFlying = false;
+  let mouseX = 0, mouseY = 0;
+
+  // Track mouse globally for power/angle calculation
+  document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
 
   function isOverCompass() {
     if (!compass) return false;
@@ -283,7 +287,6 @@ function initMango() {
   }
 
   // Check during drag
-  const origMove = document.onpointermove;
   document.addEventListener('pointermove', () => {
     if (!isDragging || isFlying) return;
     if (isOverCompass()) {
@@ -302,52 +305,64 @@ function initMango() {
   });
 
   // On drop over compass = fire!
-  const origUp = document.onpointerup;
   document.addEventListener('pointerup', () => {
     if (!mango.classList.contains('mango--cannon-ready') || isFlying) return;
 
-    // Lock mango in compass position
     isFlying = true;
     isDragging = false;
     mango.classList.remove('mango--cannon-ready');
     setPose('celebrate');
-
-    // Charge for 1.5s
     compass.classList.add('floating-compass--loaded');
-    const compassRect = compass.getBoundingClientRect();
-    const needle = document.getElementById('compass-needle');
-    const needleRotation = needle ? parseFloat(needle.style.transform.replace(/[^-\d.]/g, '')) || 0 : 0;
+
+    // Snapshot cursor position at moment of drop for angle + power
+    const fireMouseX = mouseX;
+    const fireMouseY = mouseY;
 
     setTimeout(() => {
       compass.classList.remove('floating-compass--loaded');
       compass.classList.add('floating-compass--firing');
       setPose('playful');
 
-      // Calculate launch direction from compass needle angle
-      const angleRad = (needleRotation - 90) * (Math.PI / 180);
-      const launchDist = Math.min(window.innerWidth, window.innerHeight) * 0.6;
-      const targetX = Math.cos(angleRad) * launchDist;
-      const targetY = Math.sin(angleRad) * launchDist;
+      // Calculate angle from compass center to cursor position
+      const cr = compass.getBoundingClientRect();
+      const compassCx = cr.left + cr.width / 2;
+      const compassCy = cr.top + cr.height / 2;
+      const dx = fireMouseX - compassCx;
+      const dy = fireMouseY - compassCy;
+      const angleRad = Math.atan2(dy, dx);
 
-      // Animate mango flying in an arc
+      // Power = distance from compass to cursor, clamped
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const minPower = 150;
+      const maxPower = Math.min(window.innerWidth, window.innerHeight) * 0.8;
+      const power = Math.min(Math.max(dist * 1.5, minPower), maxPower);
+
+      // Launch target
+      const targetX = Math.cos(angleRad) * power;
+      const targetY = Math.sin(angleRad) * power;
+
+      // Arc height scales with power
+      const arcHeight = -(power * 0.5);
+
+      // Duration scales with power
+      const duration = 500 + power * 0.8;
+
       mango.classList.add('mango--flying');
       const startX = currentX;
       const startY = currentY;
-      const duration = 800;
-      const start = performance.now();
+      const startTime = performance.now();
 
       function fly(now) {
-        const t = Math.min((now - start) / duration, 1);
+        const t = Math.min((now - startTime) / duration, 1);
         const ease = 1 - Math.pow(1 - t, 2);
-        // Arc: parabolic vertical offset
-        const arcHeight = -200 * Math.sin(t * Math.PI);
+        const arc = arcHeight * Math.sin(t * Math.PI);
         const x = startX + targetX * ease;
-        const y = startY + targetY * ease + arcHeight;
-        mango.style.transform = `translate(${x}px, ${y}px) rotate(${t * 720}deg)`;
+        const y = startY + targetY * ease + arc;
+        const spin = t * (360 + power * 0.5);
+        mango.style.transform = `translate(${x}px, ${y}px) rotate(${spin}deg)`;
         if (t < 1) {
           requestAnimationFrame(fly);
         } else {
-          // Land — spring back to bottom
           mango.classList.remove('mango--flying');
           compass.classList.remove('floating-compass--firing');
           currentX = x;
