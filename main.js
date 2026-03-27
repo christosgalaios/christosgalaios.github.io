@@ -281,7 +281,12 @@ function initMango() {
       mango.style.transform = `translate(${currentX}px, 0px)`;
       if (compass) compass.classList.remove('floating-compass--drop-target');
       setPose('playful');
-      setTimeout(() => { setPose('wave'); resetIdleTimer(); }, 800);
+      setTimeout(() => {
+        setPose('wave');
+        mango.classList.remove('mango--idle');
+        setTimeout(() => mango.classList.add('mango--idle'), 600);
+        resetIdleTimer();
+      }, 800);
     } else if (downTime && !hasMoved && Date.now() - downTime < 300) {
       // Short tap = toggle chat
       if (chatPanel) chatPanel.classList.toggle('mango-chat--open');
@@ -442,6 +447,9 @@ function initMango() {
           mango.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
           mango.style.transform = `translate(${currentX}px, 0px)`;
           setPose('wave');
+          // Delay idle state so label doesn't appear during bounce-back
+          mango.classList.remove('mango--idle');
+          setTimeout(() => mango.classList.add('mango--idle'), 800);
           isFlying = false;
           resetIdleTimer();
         }

@@ -2726,7 +2726,7 @@ section {
   overflow: hidden;
   background: var(--bg-card);
   box-shadow: 0 12px 40px rgba(0,0,0,0.3);
-  width: 420px;
+  width: 560px;
   flex-shrink: 0;
 }
 
@@ -2757,12 +2757,19 @@ section {
 }
 
 .browser-viewport {
-  height: 380px;
+  position: relative;
+  padding-bottom: 56.25%;
+  overflow: hidden;
 }
 
 .browser-viewport .app-live-iframe {
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 200%;
+  transform: scale(0.5);
+  transform-origin: top left;
 }
 
 @media (max-width: 1024px) {
@@ -2772,7 +2779,7 @@ section {
   }
   .browser-mockup {
     width: 100%;
-    max-width: 420px;
+    max-width: 560px;
   }
 }
 
@@ -3547,6 +3554,9 @@ section {
    ============================================ */
 .project-card--devguide-wide {
   grid-column: 1 / -1;
+  max-width: var(--container-max);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .devguide-compass-demo {
@@ -3645,6 +3655,14 @@ section {
   font-weight: 700;
   font-size: 1.5rem;
   color: var(--accent);
+}
+
+.project-card--devguide-wide .project-tags {
+  justify-content: center;
+}
+
+.project-card--devguide-wide .project-links {
+  justify-content: center;
 }
 
 /* ============================================
