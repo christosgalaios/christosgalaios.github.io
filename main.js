@@ -2411,6 +2411,101 @@ function initEasterEggs() {
   // === 5. Canvas Swarm — already in initMatrixRain() ===
 }
 
+/* --- Contact Shader --- */
+function initContactShader() {
+  const canvas = document.getElementById('contact-shader');
+  if (!canvas || prefersReducedMotion) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      observer.disconnect();
+      startShader(canvas);
+    }
+  }, { threshold: 0.1 });
+  observer.observe(canvas.parentElement);
+}
+
+function startShader(canvas) {
+  const gl = canvas.getContext('webgl');
+  if (!gl) return;
+
+  function resize() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+    gl.viewport(0, 0, canvas.width, canvas.height);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const vertSrc = `
+    attribute vec2 pos;
+    void main() { gl_Position = vec4(pos, 0, 1); }
+  `;
+  const fragSrc = `
+    precision mediump float;
+    uniform float u_time;
+    uniform vec2 u_res;
+
+    void main() {
+      vec2 uv = gl_FragCoord.xy / u_res;
+      float t = u_time * 0.3;
+
+      float d1 = length(uv - vec2(0.3 + sin(t * 0.7) * 0.2, 0.5 + cos(t * 0.5) * 0.3));
+      float d2 = length(uv - vec2(0.7 + cos(t * 0.6) * 0.2, 0.4 + sin(t * 0.8) * 0.3));
+      float d3 = length(uv - vec2(0.5 + sin(t * 0.4) * 0.3, 0.6 + cos(t * 0.9) * 0.2));
+
+      float blob = smoothstep(0.4, 0.0, d1) + smoothstep(0.35, 0.0, d2) + smoothstep(0.3, 0.0, d3);
+      blob = clamp(blob, 0.0, 1.0);
+
+      vec3 green = vec3(0.133, 0.773, 0.369);
+      vec3 teal = vec3(0.231, 0.510, 0.957);
+      vec3 col = mix(teal, green, blob * 0.8 + sin(t + uv.x * 3.0) * 0.2);
+
+      gl_FragColor = vec4(col * blob * 0.6, blob * 0.5);
+    }
+  `;
+
+  function compile(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+      console.warn('Shader compile error:', gl.getShaderInfoLog(s));
+      return null;
+    }
+    return s;
+  }
+
+  const vert = compile(gl.VERTEX_SHADER, vertSrc);
+  const frag = compile(gl.FRAGMENT_SHADER, fragSrc);
+  if (!vert || !frag) return;
+
+  const prog = gl.createProgram();
+  gl.attachShader(prog, vert);
+  gl.attachShader(prog, frag);
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const posLoc = gl.getAttribLocation(prog, 'pos');
+  gl.enableVertexAttribArray(posLoc);
+  gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+
+  const uTime = gl.getUniformLocation(prog, 'u_time');
+  const uRes = gl.getUniformLocation(prog, 'u_res');
+
+  function render(t) {
+    gl.uniform1f(uTime, t * 0.001);
+    gl.uniform2f(uRes, canvas.width, canvas.height);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    requestAnimationFrame(render);
+  }
+  requestAnimationFrame(render);
+}
+
 /* --- Init --- */
 document.addEventListener('DOMContentLoaded', () => {
   initSoundSystem();
@@ -2439,6 +2534,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initEnhancedScoring();
   initCICDDemo();
   initMatrixRain();
+  initContactShader();
   initLightbox();
   initEasterEggs();
 });
