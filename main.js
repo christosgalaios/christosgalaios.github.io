@@ -2844,6 +2844,368 @@ function initOffscreenUnloader() {
   sections.forEach(s => observer.observe(s));
 }
 
+/* --- Timeline Analytics Chart --- */
+function initTimelineChart() {
+  const canvas = document.getElementById('timeline-chart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const wrap = document.getElementById('timeline-chart-wrap');
+  const legendEl = document.getElementById('timeline-legend');
+  const tooltip = document.getElementById('timeline-tooltip');
+  const projBtn = document.getElementById('timeline-proj-btn');
+  const projRange = document.getElementById('timeline-proj-range');
+
+  // Series config matching SocialiseHub
+  const SERIES = [
+    { key: 'attendees', label: 'Attendees', color: '#3b82f6', type: 'line', axis: 'left', dash: [] },
+    { key: 'events', label: 'Events', color: '#22c55e', type: 'line', axis: 'left', dash: [5, 5] },
+    { key: 'revenue', label: 'Revenue', color: '#f59e0b', type: 'bar', axis: 'right', dash: [], prefix: '£' },
+    { key: 'members', label: 'Total Members', color: '#8b5cf6', type: 'line', axis: 'right', dash: [] },
+    { key: 'newMembers', label: 'New Members', color: '#d4a017', type: 'line', axis: 'left', dash: [3, 3] },
+    { key: 'fillRate', label: 'Avg Fill Rate %', color: '#E2725B', type: 'line', axis: 'left', dash: [], suffix: '%' },
+    { key: 'avgTicket', label: 'Avg Ticket Price', color: '#3b82f6', type: 'line', axis: 'right', dash: [], prefix: '£' },
+    { key: 'paidCount', label: 'Paid Events', color: '#2D5F5D', type: 'line', axis: 'left', dash: [] },
+    { key: 'freeCount', label: 'Free Events', color: '#7C3AED', type: 'line', axis: 'left', dash: [4, 4] },
+    { key: 'cancellations', label: 'Cancellations', color: '#ef4444', type: 'line', axis: 'left', dash: [] },
+  ];
+
+  // 12 months of fake but realistic data
+  const months = ['Apr 25','May 25','Jun 25','Jul 25','Aug 25','Sep 25','Oct 25','Nov 25','Dec 25','Jan 26','Feb 26','Mar 26'];
+  const data = [
+    { attendees: 120, events: 8, revenue: 340, members: 1850, newMembers: 85, fillRate: 32, avgTicket: 4.5, paidCount: 3, freeCount: 5, cancellations: 2 },
+    { attendees: 185, events: 11, revenue: 520, members: 1935, newMembers: 110, fillRate: 36, avgTicket: 4.8, paidCount: 5, freeCount: 6, cancellations: 1 },
+    { attendees: 240, events: 14, revenue: 680, members: 2070, newMembers: 135, fillRate: 38, avgTicket: 5.0, paidCount: 6, freeCount: 8, cancellations: 3 },
+    { attendees: 310, events: 18, revenue: 790, members: 2240, newMembers: 170, fillRate: 41, avgTicket: 5.2, paidCount: 8, freeCount: 10, cancellations: 2 },
+    { attendees: 280, events: 16, revenue: 720, members: 2380, newMembers: 140, fillRate: 39, avgTicket: 5.1, paidCount: 7, freeCount: 9, cancellations: 4 },
+    { attendees: 350, events: 20, revenue: 880, members: 2540, newMembers: 160, fillRate: 43, avgTicket: 5.3, paidCount: 9, freeCount: 11, cancellations: 2 },
+    { attendees: 420, events: 24, revenue: 1050, members: 2720, newMembers: 180, fillRate: 46, avgTicket: 5.5, paidCount: 11, freeCount: 13, cancellations: 3 },
+    { attendees: 380, events: 22, revenue: 950, members: 2870, newMembers: 150, fillRate: 44, avgTicket: 5.4, paidCount: 10, freeCount: 12, cancellations: 5 },
+    { attendees: 290, events: 17, revenue: 680, members: 2980, newMembers: 110, fillRate: 40, avgTicket: 5.2, paidCount: 8, freeCount: 9, cancellations: 3 },
+    { attendees: 340, events: 19, revenue: 820, members: 3050, newMembers: 120, fillRate: 42, avgTicket: 5.3, paidCount: 9, freeCount: 10, cancellations: 2 },
+    { attendees: 410, events: 23, revenue: 980, members: 3112, newMembers: 145, fillRate: 45, avgTicket: 5.5, paidCount: 10, freeCount: 13, cancellations: 1 },
+    { attendees: 460, events: 26, revenue: 1120, members: 3250, newMembers: 165, fillRate: 48, avgTicket: 5.7, paidCount: 12, freeCount: 14, cancellations: 2 },
+  ];
+
+  let visible = {};
+  SERIES.forEach(s => { visible[s.key] = true; });
+  // Start with only a few visible to not overwhelm
+  ['fillRate', 'avgTicket', 'paidCount', 'freeCount', 'cancellations'].forEach(k => { visible[k] = false; });
+
+  let showProjections = false;
+  let projMonths = 6;
+
+  // Linear regression for projections
+  function project(key, horizon) {
+    const vals = data.map(d => d[key]);
+    const n = vals.length;
+    let sx = 0, sy = 0, sxx = 0, sxy = 0;
+    for (let i = 0; i < n; i++) {
+      sx += i; sy += vals[i]; sxx += i * i; sxy += i * vals[i];
+    }
+    const slope = (n * sxy - sx * sy) / (n * sxx - sx * sx);
+    const intercept = (sy - slope * sx) / n;
+    const projected = [];
+    for (let i = 1; i <= horizon; i++) {
+      let v = intercept + slope * (n - 1 + i);
+      if (key === 'fillRate') v = Math.min(100, Math.max(0, v));
+      else v = Math.max(0, v);
+      projected.push(Math.round(v * 10) / 10);
+    }
+    return projected;
+  }
+
+  function projMonthLabels(horizon) {
+    const lastMonth = months[months.length - 1];
+    const [mStr, yStr] = lastMonth.split(' ');
+    const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    let mi = monthNames.indexOf(mStr);
+    let yr = parseInt(yStr, 10);
+    const labels = [];
+    for (let i = 0; i < horizon; i++) {
+      mi++;
+      if (mi >= 12) { mi = 0; yr++; }
+      labels.push(monthNames[mi] + ' ' + yr);
+    }
+    return labels;
+  }
+
+  // Build legend
+  function buildLegend() {
+    legendEl.innerHTML = '';
+    SERIES.forEach(s => {
+      const btn = document.createElement('button');
+      btn.className = 'timeline-legend-btn' + (visible[s.key] ? ' timeline-legend-btn--active' : '');
+      btn.style.setProperty('--btn-bg', s.color + '1A');
+      btn.style.setProperty('--btn-border', visible[s.key] ? s.color : 'var(--border)');
+      btn.innerHTML = `<span class="timeline-legend-swatch" style="background:${s.color}${visible[s.key] ? '' : ';opacity:0.3'}"></span>${s.label}`;
+      btn.addEventListener('click', () => {
+        visible[s.key] = !visible[s.key];
+        playSound('click');
+        buildLegend();
+        draw();
+      });
+      legendEl.appendChild(btn);
+    });
+  }
+
+  // Projections toggle
+  projBtn.addEventListener('click', () => {
+    showProjections = !showProjections;
+    projBtn.classList.toggle('timeline-proj-btn--active', showProjections);
+    projRange.disabled = !showProjections;
+    playSound('click');
+    draw();
+  });
+  projRange.addEventListener('change', () => {
+    projMonths = parseInt(projRange.value, 10);
+    playSound('click');
+    draw();
+  });
+
+  // Canvas drawing
+  function draw() {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = 380 * dpr;
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = '380px';
+    ctx.scale(dpr, dpr);
+    const W = rect.width;
+    const H = 380;
+    ctx.clearRect(0, 0, W, H);
+
+    const pad = { top: 20, right: 60, bottom: 40, left: 50 };
+    const chartW = W - pad.left - pad.right;
+    const chartH = H - pad.top - pad.bottom;
+
+    // Build full dataset (actual + projections)
+    let allMonths = [...months];
+    let allData = data.map(d => ({ ...d }));
+    let projStart = data.length;
+    if (showProjections) {
+      const pLabels = projMonthLabels(projMonths);
+      allMonths = allMonths.concat(pLabels);
+      for (let i = 0; i < projMonths; i++) {
+        const point = {};
+        SERIES.forEach(s => {
+          if (visible[s.key]) {
+            const proj = project(s.key, projMonths);
+            point[s.key] = proj[i];
+          }
+        });
+        allData.push(point);
+      }
+    }
+
+    const n = allMonths.length;
+    const barWidth = Math.max(8, (chartW / n) * 0.4);
+
+    // Calculate Y scales
+    function getMax(keys, axisFilter) {
+      let max = 0;
+      const filteredKeys = keys.filter(k => {
+        const s = SERIES.find(s => s.key === k);
+        return s && s.axis === axisFilter && visible[k];
+      });
+      allData.forEach(d => {
+        filteredKeys.forEach(k => {
+          if (d[k] !== undefined && d[k] > max) max = d[k];
+        });
+      });
+      return max * 1.15 || 100;
+    }
+    const leftMax = getMax(SERIES.map(s => s.key), 'left');
+    const rightMax = getMax(SERIES.map(s => s.key), 'right');
+
+    function xPos(i) { return pad.left + (i / (n - 1)) * chartW; }
+    function yPos(val, axis) {
+      const max = axis === 'left' ? leftMax : rightMax;
+      return pad.top + chartH - (val / max) * chartH;
+    }
+
+    // Background
+    ctx.fillStyle = 'rgba(0,0,0,0)';
+    ctx.fillRect(0, 0, W, H);
+
+    // Grid lines
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3, 3]);
+    for (let i = 0; i <= 5; i++) {
+      const y = pad.top + (chartH / 5) * i;
+      ctx.beginPath();
+      ctx.moveTo(pad.left, y);
+      ctx.lineTo(pad.left + chartW, y);
+      ctx.stroke();
+    }
+    ctx.setLineDash([]);
+
+    // Projection zone shading
+    if (showProjections && projStart < n) {
+      const x1 = xPos(projStart - 0.5);
+      ctx.fillStyle = 'rgba(226,114,91,0.04)';
+      ctx.fillRect(x1, pad.top, pad.left + chartW - x1, chartH);
+    }
+
+    // X-axis labels
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.font = '10px monospace';
+    ctx.textAlign = 'center';
+    const labelStep = n > 18 ? 3 : n > 12 ? 2 : 1;
+    for (let i = 0; i < n; i += labelStep) {
+      ctx.fillText(allMonths[i], xPos(i), H - pad.bottom + 20);
+    }
+
+    // Y-axis labels (left)
+    ctx.textAlign = 'right';
+    for (let i = 0; i <= 5; i++) {
+      const val = Math.round((leftMax / 5) * (5 - i));
+      ctx.fillText(val, pad.left - 8, pad.top + (chartH / 5) * i + 4);
+    }
+
+    // Y-axis labels (right)
+    ctx.textAlign = 'left';
+    for (let i = 0; i <= 5; i++) {
+      const val = Math.round((rightMax / 5) * (5 - i));
+      ctx.fillText('£' + val, pad.left + chartW + 8, pad.top + (chartH / 5) * i + 4);
+    }
+
+    // Draw bars first (behind lines)
+    SERIES.filter(s => s.type === 'bar' && visible[s.key]).forEach(s => {
+      allData.forEach((d, i) => {
+        if (d[s.key] === undefined) return;
+        const x = xPos(i) - barWidth / 2;
+        const y = yPos(d[s.key], s.axis);
+        const h = yPos(0, s.axis) - y;
+        const isProj = i >= projStart && showProjections;
+        ctx.fillStyle = s.color + (isProj ? '26' : '59'); // 15% vs 35% opacity
+        ctx.fillRect(x, y, barWidth, h);
+      });
+    });
+
+    // Draw lines
+    SERIES.filter(s => s.type === 'line' && visible[s.key]).forEach(s => {
+      // Actual data line
+      ctx.strokeStyle = s.color;
+      ctx.lineWidth = 2;
+      ctx.setLineDash(s.dash);
+      ctx.beginPath();
+      let started = false;
+      const limit = showProjections ? projStart : n;
+      for (let i = 0; i < limit; i++) {
+        if (allData[i][s.key] === undefined) continue;
+        const x = xPos(i);
+        const y = yPos(allData[i][s.key], s.axis);
+        if (!started) { ctx.moveTo(x, y); started = true; }
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      // Projection line (dashed, lower opacity)
+      if (showProjections && projStart < n) {
+        ctx.strokeStyle = s.color + '80'; // 50% opacity
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        // Start from last real point
+        const lastReal = projStart - 1;
+        if (allData[lastReal][s.key] !== undefined) {
+          ctx.moveTo(xPos(lastReal), yPos(allData[lastReal][s.key], s.axis));
+          for (let i = projStart; i < n; i++) {
+            if (allData[i][s.key] === undefined) continue;
+            ctx.lineTo(xPos(i), yPos(allData[i][s.key], s.axis));
+          }
+          ctx.stroke();
+        }
+      }
+      ctx.setLineDash([]);
+    });
+
+    // Draw data points
+    SERIES.filter(s => s.type === 'line' && visible[s.key]).forEach(s => {
+      allData.forEach((d, i) => {
+        if (d[s.key] === undefined) return;
+        const isProj = i >= projStart && showProjections;
+        const x = xPos(i);
+        const y = yPos(d[s.key], s.axis);
+        ctx.beginPath();
+        ctx.arc(x, y, isProj ? 2.5 : 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = isProj ? s.color + '80' : s.color;
+        ctx.fill();
+      });
+    });
+
+    // Store positions for tooltip
+    canvas._chartData = { allMonths, allData, n, projStart, xPos, yPos, pad, chartW, chartH };
+  }
+
+  // Tooltip
+  canvas.addEventListener('mousemove', (e) => {
+    const cd = canvas._chartData;
+    if (!cd) return;
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+
+    // Find closest month
+    let closest = -1, closestDist = Infinity;
+    for (let i = 0; i < cd.n; i++) {
+      const x = cd.xPos(i);
+      const d = Math.abs(mx - x);
+      if (d < closestDist) { closestDist = d; closest = i; }
+    }
+    if (closest < 0 || closestDist > 30) { tooltip.style.display = 'none'; return; }
+
+    const d = cd.allData[closest];
+    const isProj = closest >= cd.projStart && showProjections;
+    let html = `<div class="timeline-tooltip-title">${cd.allMonths[closest]}${isProj ? ' <span class="timeline-tooltip-proj">(projected)</span>' : ''}</div>`;
+    SERIES.forEach(s => {
+      if (!visible[s.key] || d[s.key] === undefined) return;
+      const val = (s.prefix || '') + (typeof d[s.key] === 'number' ? d[s.key].toLocaleString() : d[s.key]) + (s.suffix || '');
+      html += `<div class="timeline-tooltip-row"><span><span class="timeline-tooltip-dot" style="background:${s.color}"></span>${s.label}</span><span>${val}</span></div>`;
+    });
+    tooltip.innerHTML = html;
+    tooltip.style.display = 'block';
+
+    // Position tooltip
+    let tx = cd.xPos(closest) + 15;
+    if (tx + 160 > rect.width) tx = cd.xPos(closest) - 175;
+    let ty = my - 20;
+    if (ty < 0) ty = 10;
+    tooltip.style.left = tx + 'px';
+    tooltip.style.top = ty + 'px';
+
+    // Vertical crosshair
+    draw();
+    const dpr = window.devicePixelRatio || 1;
+    ctx.save();
+    ctx.scale(1/dpr, 1/dpr); // undo the dpr scale for pixel-perfect line
+    ctx.scale(dpr, dpr);
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath();
+    ctx.moveTo(cd.xPos(closest), cd.pad.top);
+    ctx.lineTo(cd.xPos(closest), cd.pad.top + cd.chartH);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+  });
+
+  canvas.addEventListener('mouseleave', () => {
+    tooltip.style.display = 'none';
+    draw();
+  });
+
+  // Resize handler
+  window.addEventListener('resize', () => draw());
+
+  // Init
+  buildLegend();
+  draw();
+}
+
 /* --- Init --- */
 document.addEventListener('DOMContentLoaded', () => {
   initSoundSystem();
@@ -2865,6 +3227,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initMangoChat();
   initLazyIframes();
   initHubDemo();
+  initTimelineChart();
   initSprintSim();
   initAugmentDemo();
   initIdeaGenerator();

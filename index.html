@@ -186,6 +186,27 @@
 
             <!-- Analytics Tab -->
             <div class="hub-panel" id="hub-panel-analytics">
+              <!-- Timeline Chart -->
+              <div class="timeline-chart-wrap" id="timeline-chart-wrap">
+                <div class="timeline-chart-header">
+                  <h4>Analytics Timeline</h4>
+                  <div class="timeline-chart-controls">
+                    <button class="timeline-proj-btn" id="timeline-proj-btn">
+                      <span class="timeline-proj-icon"></span> Projections
+                    </button>
+                    <select class="timeline-proj-range" id="timeline-proj-range" disabled>
+                      <option value="3">3 months</option>
+                      <option value="6" selected>6 months</option>
+                      <option value="12">12 months</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="timeline-legend" id="timeline-legend"></div>
+                <div class="timeline-chart-container">
+                  <canvas id="timeline-chart" width="800" height="380"></canvas>
+                  <div class="timeline-tooltip" id="timeline-tooltip"></div>
+                </div>
+              </div>
               <!-- Time range selector -->
               <div class="analytics-controls">
                 <button class="analytics-range analytics-range--active" data-range="6">6 mo</button>

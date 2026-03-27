@@ -1760,6 +1760,143 @@ section {
 .analytics-range:hover { color: var(--text-secondary); border-color: var(--border-hover); }
 .analytics-range--active { color: var(--accent); border-color: var(--accent); background: rgba(34,197,94,0.08); }
 
+/* Timeline Chart */
+.timeline-chart-wrap {
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.timeline-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+.timeline-chart-header h4 {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+.timeline-chart-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.timeline-proj-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.timeline-proj-btn--active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(34,197,94,0.1);
+}
+.timeline-proj-icon {
+  display: inline-block;
+  width: 16px;
+  border-top: 2px dashed currentColor;
+}
+.timeline-proj-range {
+  padding: 0.25rem 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+}
+.timeline-proj-range:disabled {
+  opacity: 0.4;
+}
+.timeline-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+.timeline-legend-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.timeline-legend-btn--active {
+  background: var(--btn-bg);
+  color: var(--text-primary);
+  border-color: var(--btn-border);
+}
+.timeline-legend-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+.timeline-chart-container {
+  position: relative;
+}
+.timeline-chart-container canvas {
+  width: 100%;
+  height: 380px;
+  display: block;
+}
+.timeline-tooltip {
+  position: absolute;
+  display: none;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-primary);
+  pointer-events: none;
+  z-index: 10;
+  min-width: 140px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+.timeline-tooltip-title {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: var(--text-secondary);
+}
+.timeline-tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.1rem 0;
+}
+.timeline-tooltip-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  margin-right: 0.25rem;
+  vertical-align: middle;
+}
+.timeline-tooltip-proj {
+  opacity: 0.6;
+  font-style: italic;
+}
+
 /* Heatmap */
 .heatmap-section {
   margin: 1.5rem 0;
