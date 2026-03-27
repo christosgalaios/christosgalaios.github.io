@@ -2470,18 +2470,15 @@ section {
    ============================================ */
 .reveal {
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
 }
 
 .reveal--visible {
-  opacity: 1;
-  transform: none;
+  animation: revealIn 0.5s ease-out forwards;
 }
 
-/* Once revealed AND tiltable, use fast tilt transition instead of slow reveal */
-.tiltable.reveal--visible {
-  transition: transform 0.1s ease-out, border-color 0.2s, box-shadow 0.2s;
+@keyframes revealIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: none; }
 }
 
 /* ============================================
