@@ -1910,17 +1910,18 @@ section {
 }
 
 .sprint-layout {
-  display: grid;
-  grid-template-columns: 160px 1fr;
+  display: flex;
+  flex-direction: column;
   border-bottom: 1px solid var(--border);
 }
 
 /* Agents Panel */
 .sprint-agents {
-  border-right: 1px solid var(--border);
-  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+  padding: 0.75rem 1rem;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
   gap: 0.5rem;
 }
 
@@ -2007,11 +2008,11 @@ section {
 
 /* Live Files */
 .sprint-files {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 0.5rem;
   padding: 0.75rem 1rem;
   border-bottom: 1px solid var(--border);
-  overflow-x: auto;
 }
 
 .sprint-file {
@@ -2054,13 +2055,14 @@ section {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 0;
-  min-height: 220px;
+  min-height: 180px;
+  width: 100%;
 }
 
 .sprint-col {
   border-right: 1px solid var(--border);
-  padding: 0.5rem;
-  min-height: 200px;
+  padding: 0.75rem;
+  min-height: 160px;
   min-width: 0;
 }
 
@@ -2255,9 +2257,8 @@ section {
 }
 
 @media (max-width: 768px) {
-  .sprint-layout { grid-template-columns: 1fr; }
-  .sprint-agents { flex-direction: row; flex-wrap: wrap; border-right: none; border-bottom: 1px solid var(--border); }
   .sprint-board { grid-template-columns: repeat(2, 1fr); }
+  .sprint-files { grid-template-columns: 1fr; }
   .hub-events-list { grid-template-columns: 1fr; }
   .hub-chart-row { grid-template-columns: 1fr; }
   .sync-flow { flex-direction: column; }
