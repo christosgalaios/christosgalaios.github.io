@@ -267,6 +267,100 @@ function initMango() {
     downTime = 0;
   });
 
+  // === Compass Cannon Easter Egg ===
+  const compass = document.getElementById('compass');
+  let cannonTimeout = null, isFlying = false;
+
+  function isOverCompass() {
+    if (!compass) return false;
+    const mr = mango.getBoundingClientRect();
+    const cr = compass.getBoundingClientRect();
+    const mx = mr.left + mr.width / 2;
+    const my = mr.top + mr.height / 2;
+    return mx > cr.left - 20 && mx < cr.right + 20 && my > cr.top - 20 && my < cr.bottom + 20;
+  }
+
+  // Check during drag
+  const origMove = document.onpointermove;
+  document.addEventListener('pointermove', () => {
+    if (!isDragging || isFlying) return;
+    if (isOverCompass()) {
+      if (!mango.classList.contains('mango--cannon-ready')) {
+        mango.classList.add('mango--cannon-ready');
+        compass.classList.add('floating-compass--loaded');
+        setPose('curious');
+      }
+    } else {
+      if (mango.classList.contains('mango--cannon-ready')) {
+        mango.classList.remove('mango--cannon-ready');
+        compass.classList.remove('floating-compass--loaded');
+        setPose('carried');
+      }
+    }
+  });
+
+  // On drop over compass = fire!
+  const origUp = document.onpointerup;
+  document.addEventListener('pointerup', () => {
+    if (!mango.classList.contains('mango--cannon-ready') || isFlying) return;
+
+    // Lock mango in compass position
+    isFlying = true;
+    isDragging = false;
+    mango.classList.remove('mango--cannon-ready');
+    setPose('celebrate');
+
+    // Charge for 1.5s
+    compass.classList.add('floating-compass--loaded');
+    const compassRect = compass.getBoundingClientRect();
+    const needle = document.getElementById('compass-needle');
+    const needleRotation = needle ? parseFloat(needle.style.transform.replace(/[^-\d.]/g, '')) || 0 : 0;
+
+    setTimeout(() => {
+      compass.classList.remove('floating-compass--loaded');
+      compass.classList.add('floating-compass--firing');
+      setPose('playful');
+
+      // Calculate launch direction from compass needle angle
+      const angleRad = (needleRotation - 90) * (Math.PI / 180);
+      const launchDist = Math.min(window.innerWidth, window.innerHeight) * 0.6;
+      const targetX = Math.cos(angleRad) * launchDist;
+      const targetY = Math.sin(angleRad) * launchDist;
+
+      // Animate mango flying in an arc
+      mango.classList.add('mango--flying');
+      const startX = currentX;
+      const startY = currentY;
+      const duration = 800;
+      const start = performance.now();
+
+      function fly(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - t, 2);
+        // Arc: parabolic vertical offset
+        const arcHeight = -200 * Math.sin(t * Math.PI);
+        const x = startX + targetX * ease;
+        const y = startY + targetY * ease + arcHeight;
+        mango.style.transform = `translate(${x}px, ${y}px) rotate(${t * 720}deg)`;
+        if (t < 1) {
+          requestAnimationFrame(fly);
+        } else {
+          // Land — spring back to bottom
+          mango.classList.remove('mango--flying');
+          compass.classList.remove('floating-compass--firing');
+          currentX = x;
+          currentY = 0;
+          mango.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+          mango.style.transform = `translate(${currentX}px, 0px)`;
+          setPose('wave');
+          isFlying = false;
+          resetIdleTimer();
+        }
+      }
+      requestAnimationFrame(fly);
+    }, 1500);
+  });
+
   setPose('wave'); resetIdleTimer();
 }
 
