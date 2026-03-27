@@ -72,15 +72,30 @@ function ensureAudioCtx() {
   if (audioCtx.state === 'suspended') audioCtx.resume();
 }
 
-function playSound(type) {
+function playSound(type, sourceEl) {
   if (!soundEnabled || !audioCtx) return;
+  // Proximity volume: if a source element is passed, scale volume by how visible it is
+  let proximityScale = 1;
+  if (sourceEl) {
+    const rect = sourceEl.getBoundingClientRect();
+    const vh = window.innerHeight;
+    // How much of the element's center is within the viewport
+    const center = rect.top + rect.height / 2;
+    if (center < -rect.height || center > vh + rect.height) return; // fully off-screen, skip sound
+    const distFromCenter = Math.abs(center - vh / 2);
+    const maxDist = vh / 2 + rect.height / 2;
+    proximityScale = Math.max(0, 1 - (distFromCenter / maxDist));
+    proximityScale = proximityScale * proximityScale; // ease-in curve for faster falloff
+    if (proximityScale < 0.05) return; // too quiet, skip
+  }
   const t = audioCtx.currentTime;
   const vol = audioCtx.createGain();
   vol.connect(audioCtx.destination);
+  const mv = masterVolume * proximityScale;
 
   switch (type) {
     case 'click': {
-      vol.gain.setValueAtTime(0.2 * masterVolume, t);
+      vol.gain.setValueAtTime(0.2 * mv, t);
       vol.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
       const osc = audioCtx.createOscillator();
       osc.type = 'square';
@@ -93,7 +108,7 @@ function playSound(type) {
     }
     case 'whoosh': {
       vol.gain.setValueAtTime(0, t);
-      vol.gain.linearRampToValueAtTime(0.15 * masterVolume, t + 0.05);
+      vol.gain.linearRampToValueAtTime(0.15 * mv, t + 0.05);
       vol.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
       const bufferSize = audioCtx.sampleRate * 0.2 | 0;
       const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
@@ -112,7 +127,7 @@ function playSound(type) {
       break;
     }
     case 'tick': {
-      vol.gain.setValueAtTime(0.15 * masterVolume, t);
+      vol.gain.setValueAtTime(0.15 * mv, t);
       vol.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
       const osc = audioCtx.createOscillator();
       osc.type = 'sine';
@@ -123,7 +138,7 @@ function playSound(type) {
       break;
     }
     case 'toggle': {
-      vol.gain.setValueAtTime(0.25 * masterVolume, t);
+      vol.gain.setValueAtTime(0.25 * mv, t);
       vol.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
       const osc = audioCtx.createOscillator();
       osc.type = 'triangle';
@@ -136,7 +151,7 @@ function playSound(type) {
       break;
     }
     case 'glass': {
-      vol.gain.setValueAtTime(0.15 * masterVolume, t);
+      vol.gain.setValueAtTime(0.15 * mv, t);
       vol.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
       const osc = audioCtx.createOscillator();
       osc.type = 'sine';
@@ -148,8 +163,8 @@ function playSound(type) {
       break;
     }
     case 'purr': {
-      vol.gain.setValueAtTime(0.25 * masterVolume, t);
-      vol.gain.linearRampToValueAtTime(0.2 * masterVolume, t + 0.15);
+      vol.gain.setValueAtTime(0.25 * mv, t);
+      vol.gain.linearRampToValueAtTime(0.2 * mv, t + 0.15);
       vol.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
       const osc = audioCtx.createOscillator();
       osc.type = 'sawtooth';
@@ -172,7 +187,7 @@ function playSound(type) {
       break;
     }
     case 'pew': {
-      vol.gain.setValueAtTime(0.3 * masterVolume, t);
+      vol.gain.setValueAtTime(0.3 * mv, t);
       vol.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
       const osc = audioCtx.createOscillator();
       osc.type = 'sine';
@@ -184,7 +199,7 @@ function playSound(type) {
       break;
     }
     case 'typewriter': {
-      vol.gain.setValueAtTime(0.1 * masterVolume, t);
+      vol.gain.setValueAtTime(0.1 * mv, t);
       vol.gain.exponentialRampToValueAtTime(0.001, t + 0.02);
       const osc = audioCtx.createOscillator();
       osc.type = 'square';
@@ -195,8 +210,8 @@ function playSound(type) {
       break;
     }
     case 'easter': {
-      vol.gain.setValueAtTime(0.3 * masterVolume, t);
-      vol.gain.linearRampToValueAtTime(0.2 * masterVolume, t + 0.3);
+      vol.gain.setValueAtTime(0.3 * mv, t);
+      vol.gain.linearRampToValueAtTime(0.2 * mv, t + 0.3);
       vol.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
       const notes = [523, 659, 784];
       notes.forEach((freq, i) => {
@@ -205,7 +220,7 @@ function playSound(type) {
         osc.frequency.value = freq;
         const g = audioCtx.createGain();
         g.gain.setValueAtTime(0, t + i * 0.1);
-        g.gain.linearRampToValueAtTime(0.3 * masterVolume, t + i * 0.1 + 0.05);
+        g.gain.linearRampToValueAtTime(0.3 * mv, t + i * 0.1 + 0.05);
         g.gain.exponentialRampToValueAtTime(0.001, t + i * 0.1 + 0.4);
         osc.connect(g);
         g.connect(audioCtx.destination);
@@ -215,7 +230,7 @@ function playSound(type) {
       break;
     }
     case 'glitch': {
-      vol.gain.setValueAtTime(0.2 * masterVolume, t);
+      vol.gain.setValueAtTime(0.2 * mv, t);
       vol.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
       const bufferSize = audioCtx.sampleRate * 0.2 | 0;
       const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
@@ -234,7 +249,7 @@ function playSound(type) {
     }
     case 'drag': {
       // Soft pickup whoosh
-      vol.gain.setValueAtTime(0.2 * masterVolume, t);
+      vol.gain.setValueAtTime(0.2 * mv, t);
       vol.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
       const osc = audioCtx.createOscillator();
       osc.type = 'sine';
@@ -247,7 +262,7 @@ function playSound(type) {
     }
     case 'drop': {
       // Soft thud/bounce
-      vol.gain.setValueAtTime(0.25 * masterVolume, t);
+      vol.gain.setValueAtTime(0.25 * mv, t);
       vol.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
       const osc = audioCtx.createOscillator();
       osc.type = 'sine';
@@ -260,8 +275,8 @@ function playSound(type) {
     }
     case 'charge': {
       // Rising tension hum
-      vol.gain.setValueAtTime(0.15 * masterVolume, t);
-      vol.gain.linearRampToValueAtTime(0.3 * masterVolume, t + 1.2);
+      vol.gain.setValueAtTime(0.15 * mv, t);
+      vol.gain.linearRampToValueAtTime(0.3 * mv, t + 1.2);
       vol.gain.exponentialRampToValueAtTime(0.001, t + 1.5);
       const osc = audioCtx.createOscillator();
       osc.type = 'sawtooth';
@@ -279,8 +294,8 @@ function playSound(type) {
     }
     case 'screech': {
       // Cat screech during flight
-      vol.gain.setValueAtTime(0.2 * masterVolume, t);
-      vol.gain.linearRampToValueAtTime(0.15 * masterVolume, t + 0.3);
+      vol.gain.setValueAtTime(0.2 * mv, t);
+      vol.gain.linearRampToValueAtTime(0.15 * mv, t + 0.3);
       vol.gain.exponentialRampToValueAtTime(0.001, t + 0.8);
       const osc = audioCtx.createOscillator();
       osc.type = 'sawtooth';
@@ -301,7 +316,7 @@ function playSound(type) {
     }
     case 'impact': {
       // Heavy landing thud
-      vol.gain.setValueAtTime(0.3 * masterVolume, t);
+      vol.gain.setValueAtTime(0.3 * mv, t);
       vol.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
       const osc = audioCtx.createOscillator();
       osc.type = 'sine';
@@ -318,7 +333,7 @@ function playSound(type) {
       const noise = audioCtx.createBufferSource();
       noise.buffer = buffer;
       const nVol = audioCtx.createGain();
-      nVol.gain.setValueAtTime(0.2 * masterVolume, t);
+      nVol.gain.setValueAtTime(0.2 * mv, t);
       nVol.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
       noise.connect(nVol);
       nVol.connect(audioCtx.destination);
@@ -328,8 +343,8 @@ function playSound(type) {
     }
     case 'snore': {
       // Tiny snore
-      vol.gain.setValueAtTime(0.15 * masterVolume, t);
-      vol.gain.linearRampToValueAtTime(0.2 * masterVolume, t + 0.2);
+      vol.gain.setValueAtTime(0.15 * mv, t);
+      vol.gain.linearRampToValueAtTime(0.2 * mv, t + 0.2);
       vol.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
       const osc = audioCtx.createOscillator();
       osc.type = 'sawtooth';
@@ -347,8 +362,8 @@ function playSound(type) {
     }
     case 'meow': {
       // Short meow
-      vol.gain.setValueAtTime(0.2 * masterVolume, t);
-      vol.gain.linearRampToValueAtTime(0.25 * masterVolume, t + 0.1);
+      vol.gain.setValueAtTime(0.2 * mv, t);
+      vol.gain.linearRampToValueAtTime(0.25 * mv, t + 0.1);
       vol.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
       const osc = audioCtx.createOscillator();
       osc.type = 'sine';
@@ -362,7 +377,7 @@ function playSound(type) {
     }
     case 'pop': {
       // Quick pop for elements appearing
-      vol.gain.setValueAtTime(0.2 * masterVolume, t);
+      vol.gain.setValueAtTime(0.2 * mv, t);
       vol.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
       const osc = audioCtx.createOscillator();
       osc.type = 'sine';
@@ -375,7 +390,7 @@ function playSound(type) {
     }
     case 'success': {
       // Two-note ascending chime
-      vol.gain.setValueAtTime(0.25 * masterVolume, t);
+      vol.gain.setValueAtTime(0.25 * mv, t);
       vol.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
       const osc1 = audioCtx.createOscillator();
       osc1.type = 'sine';
@@ -387,7 +402,7 @@ function playSound(type) {
       osc2.type = 'sine';
       osc2.frequency.value = 784;
       const v2 = audioCtx.createGain();
-      v2.gain.setValueAtTime(0.25 * masterVolume, t + 0.15);
+      v2.gain.setValueAtTime(0.25 * mv, t + 0.15);
       v2.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
       osc2.connect(v2);
       v2.connect(audioCtx.destination);
@@ -397,7 +412,7 @@ function playSound(type) {
     }
     case 'error': {
       // Low buzz for errors/conflicts
-      vol.gain.setValueAtTime(0.2 * masterVolume, t);
+      vol.gain.setValueAtTime(0.2 * mv, t);
       vol.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
       const osc = audioCtx.createOscillator();
       osc.type = 'square';
@@ -410,7 +425,7 @@ function playSound(type) {
     }
     case 'activate': {
       // Short blip for node/step activation
-      vol.gain.setValueAtTime(0.18 * masterVolume, t);
+      vol.gain.setValueAtTime(0.18 * mv, t);
       vol.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
       const osc = audioCtx.createOscillator();
       osc.type = 'sine';
@@ -423,7 +438,7 @@ function playSound(type) {
     }
     case 'send': {
       // Quick upward swoosh for sending
-      vol.gain.setValueAtTime(0.2 * masterVolume, t);
+      vol.gain.setValueAtTime(0.2 * mv, t);
       vol.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
       const osc = audioCtx.createOscillator();
       osc.type = 'triangle';
@@ -436,7 +451,7 @@ function playSound(type) {
     }
     case 'receive': {
       // Soft downward blip for receiving
-      vol.gain.setValueAtTime(0.18 * masterVolume, t);
+      vol.gain.setValueAtTime(0.18 * mv, t);
       vol.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
       const osc = audioCtx.createOscillator();
       osc.type = 'sine';
@@ -577,7 +592,7 @@ function initRollingDigits() {
           const delay = (totalDigits - 1 - idx) * 150;
           setTimeout(() => {
             d.strip.style.transform = `translateY(-${d.target * 1.2}em)`;
-            if (typeof playSound === 'function') playSound('tick');
+            if (typeof playSound === 'function') playSound('tick', stat);
           }, delay);
         });
         const suf = numEl.querySelector('.digit-suffix');
@@ -601,7 +616,7 @@ function initScrollReveal() {
       const siblings = Array.from(entry.target.parentElement?.querySelectorAll(':scope > .reveal') || []);
       entry.target.style.transitionDelay = `${Math.max(0, siblings.indexOf(entry.target)) * 100}ms`;
       entry.target.classList.add('reveal--visible');
-      if (Date.now() - lastRevealSound > 200) { playSound('whoosh'); lastRevealSound = Date.now(); }
+      if (Date.now() - lastRevealSound > 200) { playSound('whoosh', entry.target); lastRevealSound = Date.now(); }
       observer.unobserve(entry.target);
     });
   }, { threshold: 0.1 });
@@ -847,7 +862,7 @@ function initMango() {
         mango.classList.add('mango--cannon-ready');
         compass.classList.add('floating-compass--loaded');
         setPose('curious');
-        playSound('charge');
+        playSound('charge', compass);
       }
     } else {
       if (mango.classList.contains('mango--cannon-ready')) {
@@ -928,7 +943,7 @@ function initMango() {
       mango.classList.remove('mango--in-cannon');
       setPose('playful');
       playSound('pew');
-      playSound('screech');
+      playSound('screech', mango);
 
       // Use CURRENT cursor position at moment of fire (not drop)
       // This lets the user aim during the 1.5s charge
@@ -978,7 +993,7 @@ function initMango() {
           mango.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
           mango.style.transform = `translate(${currentX}px, 0px)`;
           setPose('wave');
-          playSound('impact');
+          playSound('impact', mango);
           // Delay idle state so label doesn't appear during bounce-back
           mango.classList.remove('mango--idle');
           setTimeout(() => mango.classList.add('mango--idle'), 800);
@@ -1085,6 +1100,8 @@ function initLazyIframes() {
 
 /* --- Hub Interactive Demo --- */
 function initHubDemo() {
+  const hubEl = document.querySelector('.hub-demo');
+
   // Tab switching
   document.querySelectorAll('.hub-tab').forEach(tab => {
     tab.addEventListener('click', () => {
@@ -1096,7 +1113,7 @@ function initHubDemo() {
         panel.classList.add('hub-panel--active');
         panel.classList.add('skeleton-loading');
         setTimeout(() => panel.classList.remove('skeleton-loading'), 300);
-        playSound('click');
+        playSound('click', hubEl);
       }
     });
   });
@@ -1130,7 +1147,7 @@ function initHubDemo() {
 
   if (syncBtn) {
     syncBtn.addEventListener('click', () => {
-      playSound('click');
+      playSound('click', hubEl);
       syncBtn.disabled = true;
       syncLog.innerHTML = '';
       if (syncEventList) syncEventList.innerHTML = '';
@@ -1148,7 +1165,7 @@ function initHubDemo() {
           row.innerHTML = `<span class="sync-event-name">${name}</span><span class="sync-event-src sync-event-src--${platform}">${platform}</span>`;
           syncEventList.appendChild(row);
           syncEventList.scrollTop = syncEventList.scrollHeight;
-          playSound('pop');
+          playSound('pop', hubEl);
         }, delay);
       }
 
@@ -1159,7 +1176,7 @@ function initHubDemo() {
         line.textContent = '> Connecting to Meetup GraphQL API...';
         syncLog.appendChild(line);
         platforms[0]?.classList.add('sync-platform--active');
-        playSound('activate');
+        playSound('activate', hubEl);
         arrows.forEach((a, i) => { if (i < 3) { setTimeout(() => { a.classList.add('sync-arrow--pulse'); setTimeout(() => a.classList.remove('sync-arrow--pulse'), 500); }, i * 150); }});
       }, 0);
 
@@ -1183,7 +1200,7 @@ function initHubDemo() {
         syncLog.appendChild(line);
         syncLog.scrollTop = syncLog.scrollHeight;
         platforms[3]?.classList.add('sync-platform--active');
-        playSound('activate');
+        playSound('activate', hubEl);
         [3,4].forEach((a, i) => { setTimeout(() => { arrows[a]?.classList.add('sync-arrow--pulse'); setTimeout(() => arrows[a]?.classList.remove('sync-arrow--pulse'), 500); }, i * 150); });
       }, ebStart);
 
@@ -1207,7 +1224,7 @@ function initHubDemo() {
         syncLog.appendChild(line);
         syncLog.scrollTop = syncLog.scrollHeight;
         platforms[4]?.classList.add('sync-platform--active');
-        playSound('activate');
+        playSound('activate', hubEl);
       }, hfStart);
 
       headfirstEvents.forEach((ev, i) => addEvent(ev, 'headfirst', hfStart + 300 + i * 350));
@@ -1238,7 +1255,7 @@ function initHubDemo() {
         const rows = syncEventList?.querySelectorAll('.sync-event-row');
         if (rows && rows[0]) rows[0].classList.add('sync-event-row--conflict');
         if (rows && rows[5]) rows[5].classList.add('sync-event-row--conflict');
-        playSound('error');
+        playSound('error', hubEl);
       }, endStart + 400);
       setTimeout(() => {
         const total = meetupEvents.length + eventbriteEvents.length + headfirstEvents.length;
@@ -1250,7 +1267,7 @@ function initHubDemo() {
         syncStatus.textContent = `${total} synced`;
         syncBtn.disabled = false;
         syncBtn.textContent = 'Run Again';
-        playSound('success');
+        playSound('success', hubEl);
       }, endStart + 800);
     });
   }
@@ -1313,7 +1330,7 @@ function initHubDemo() {
       entries.forEach(entry => {
         if (!entry.isIntersecting) return;
         container.querySelectorAll('.hub-bar').forEach((bar, i) => {
-          setTimeout(() => { bar.style.height = `${(data[i] / max) * 100}%`; playSound('tick'); }, i * 60);
+          setTimeout(() => { bar.style.height = `${(data[i] / max) * 100}%`; playSound('tick', hubEl); }, i * 60);
         });
         observer.unobserve(entry.target);
       });
@@ -1407,7 +1424,7 @@ function initHubDemo() {
   // === RANGE SELECTOR ===
   document.querySelectorAll('.analytics-range').forEach(btn => {
     btn.addEventListener('click', () => {
-      playSound('click');
+      playSound('click', hubEl);
       document.querySelectorAll('.analytics-range').forEach(b => b.classList.remove('analytics-range--active'));
       btn.classList.add('analytics-range--active');
       // Re-render charts with filtered data
@@ -1450,7 +1467,7 @@ function initHubDemo() {
       btn.className = 'mcp-tool-btn';
       btn.textContent = tool.name;
       btn.addEventListener('click', () => {
-        playSound('click');
+        playSound('click', hubEl);
         const cmd = document.createElement('div');
         cmd.className = 'mcp-line mcp-line--cmd';
         cmd.textContent = `> mcp.call("${tool.name}")`;
@@ -1461,7 +1478,7 @@ function initHubDemo() {
           res.textContent = tool.result;
           terminal.appendChild(res);
           terminal.scrollTop = terminal.scrollHeight;
-          playSound('receive');
+          playSound('receive', hubEl);
         }, 300 + Math.random() * 400);
         terminal.scrollTop = terminal.scrollHeight;
       });
@@ -1472,6 +1489,7 @@ function initHubDemo() {
 
 /* --- Sprint Simulation --- */
 function initSprintSim() {
+  const sim = document.getElementById('sprint-sim');
   const startBtn = document.getElementById('sprint-start');
   const log = document.getElementById('sprint-log');
   if (!startBtn || !log) return;
@@ -1535,7 +1553,7 @@ function initSprintSim() {
       if (i < fullText.length) {
         line.textContent += fullText[i];
         log.scrollTop = log.scrollHeight;
-        if (typeof playSound === 'function') playSound('typewriter');
+        if (typeof playSound === 'function') playSound('typewriter', sim);
         i++;
         setTimeout(typeChar, 25 + Math.random() * 15);
       } else {
@@ -1555,15 +1573,15 @@ function initSprintSim() {
     if (state === 'busy') el.classList.add('sprint-agent--busy');
     sEl.textContent = statusText;
     sEl.style.color = state === 'active' ? 'var(--accent)' : state === 'busy' ? 'var(--accent-secondary)' : '';
-    if (state === 'active') playSound('activate');
-    if (state === 'busy') playSound('tick');
+    if (state === 'active') playSound('activate', sim);
+    if (state === 'busy') playSound('tick', sim);
   }
 
   function flashFile(name, cls) {
     const el = fileEls[name];
     if (!el) return;
     el.classList.add(cls || 'sprint-file--flash');
-    playSound('tick');
+    playSound('tick', sim);
     setTimeout(() => el.classList.remove(cls || 'sprint-file--flash'), 1500);
   }
 
@@ -1585,7 +1603,7 @@ function initSprintSim() {
     div.id = `ticket-${ticketId}`;
     div.innerHTML = `<div class="sprint-ticket-title">${data.title}</div><div class="sprint-ticket-meta">#${ticketId} · ${data.type}</div>`;
     div.dataset.id = ticketId;
-    playSound('pop');
+    playSound('pop', sim);
     return { el: div, id: ticketId, ...data };
   }
 
@@ -1596,7 +1614,7 @@ function initSprintSim() {
     setTimeout(() => {
       ticket.el.classList.remove('sprint-ticket--moving');
       col.appendChild(ticket.el);
-      playSound('whoosh');
+      playSound('whoosh', sim);
     }, 200);
   }
 
@@ -1653,7 +1671,7 @@ function initSprintSim() {
     highlightApp(1, 'sprint-app-event--highlight');
     await delay(700);
     highlightApp(3, 'sprint-app-event--error');
-    if (bugOverlay) { bugOverlay.style.display = ''; playSound('error'); }
+    if (bugOverlay) { bugOverlay.style.display = ''; playSound('error', sim); }
     addLog('QA: BUG — Price shows £0 for Comedy Open Mic (paid event)', 'error');
     await delay(500);
 
@@ -1835,7 +1853,7 @@ function initSprintSim() {
     setAgentState('qa', 'active', 'monitoring app');
     updateFile('learnings', `${learningsCount} permanent rules — knowledge compounds across all projects`);
     addLog('System: All agents on standby. File watchers active. CEO planning next sprint. The loop never ends.', 'system');
-    playSound('success');
+    playSound('success', sim);
 
     startBtn.disabled = false;
     startBtn.textContent = 'Restart Sprint';
@@ -1844,7 +1862,7 @@ function initSprintSim() {
 
   startBtn.addEventListener('click', () => {
     if (running) return;
-    playSound('click');
+    playSound('click', sim);
     // Clear log
     log.innerHTML = '';
     timers.forEach(clearTimeout);
@@ -1894,6 +1912,7 @@ function initDevGuideCompass() {
 
 /* --- DevGuide Pipeline Sim --- */
 function initPipelineSim() {
+  const pipeEl = document.getElementById('pipeline-sim');
   const btn = document.getElementById('pipeline-run-btn');
   const logEl = document.getElementById('pipeline-log');
   const counter = document.getElementById('pipeline-article-count');
@@ -1909,10 +1928,10 @@ function initPipelineSim() {
     logEl.appendChild(l);
     logEl.scrollTop = logEl.scrollHeight;
   }
-  function activate(i) { nodes.forEach((n,j) => { n.classList.toggle('pipeline-node--active', j === i); if (j < i) n.classList.add('pipeline-node--done'); }); playSound('activate'); }
+  function activate(i) { nodes.forEach((n,j) => { n.classList.toggle('pipeline-node--active', j === i); if (j < i) n.classList.add('pipeline-node--done'); }); playSound('activate', pipeEl); }
 
   btn.addEventListener('click', async () => {
-    playSound('click');
+    playSound('click', pipeEl);
     btn.disabled = true;
     logEl.innerHTML = '';
     nodes.forEach(n => n.classList.remove('pipeline-node--active', 'pipeline-node--done'));
@@ -1949,7 +1968,7 @@ function initPipelineSim() {
     if (counter) { let c = 44; const iv = setInterval(() => { c++; counter.textContent = c; if (c >= 45) clearInterval(iv); }, 100); }
     await d(500);
     nodes.forEach(n => { n.classList.remove('pipeline-node--active'); n.classList.add('pipeline-node--done'); });
-    playSound('success');
+    playSound('success', pipeEl);
     log('Pipeline complete. Next run: tomorrow 03:00 UTC. Zero human intervention.', 'info');
     btn.disabled = false;
     btn.textContent = 'Run Again';
@@ -1958,13 +1977,14 @@ function initPipelineSim() {
 
 /* --- Hub: AI Augment Demo --- */
 function initAugmentDemo() {
+  const augEl = document.getElementById('hub-panel-augment');
   const btn = document.getElementById('augment-btn');
   const safeEl = document.getElementById('augment-safe');
   const stepsEl = document.getElementById('augment-steps');
   if (!btn || !safeEl || !stepsEl) return;
 
   btn.addEventListener('click', async () => {
-    playSound('click');
+    playSound('click', augEl);
     btn.disabled = true;
     safeEl.textContent = '';
     stepsEl.innerHTML = '';
@@ -1974,7 +1994,7 @@ function initAugmentDemo() {
       s.className = `augment-step augment-step--${cls}`;
       s.textContent = t;
       stepsEl.appendChild(s);
-      playSound('activate');
+      playSound('activate', augEl);
     }
 
     step('Step 1: Normalizing field names...', 'normalize');
@@ -2013,6 +2033,7 @@ function initAugmentDemo() {
 
 /* --- Hub: Idea Generator --- */
 function initIdeaGenerator() {
+  const ideasEl = document.getElementById('hub-panel-ideas');
   const btn = document.getElementById('ideas-btn');
   const results = document.getElementById('ideas-results');
   if (!btn || !results) return;
@@ -2025,13 +2046,13 @@ function initIdeaGenerator() {
   ];
 
   btn.addEventListener('click', () => {
-    playSound('click');
+    playSound('click', ideasEl);
     btn.disabled = true;
     btn.textContent = 'Analyzing data...';
     results.innerHTML = '';
     ideas.forEach((idea, i) => {
       setTimeout(() => {
-        playSound('pop');
+        playSound('pop', ideasEl);
         const card = document.createElement('div');
         card.className = 'idea-card';
         card.innerHTML = `<div class="idea-card-name">${idea.name}</div>
@@ -2050,6 +2071,7 @@ function initIdeaGenerator() {
 
 /* --- Hub: Content Prompts --- */
 function initContentPrompts() {
+  const promptsEl = document.getElementById('hub-panel-prompts');
   const btn = document.getElementById('prompts-btn');
   const output = document.getElementById('prompts-output');
   if (!btn || !output) return;
@@ -2061,13 +2083,13 @@ function initContentPrompts() {
   ];
 
   btn.addEventListener('click', () => {
-    playSound('click');
+    playSound('click', promptsEl);
     btn.disabled = true;
     btn.textContent = 'Generating...';
     output.innerHTML = '';
     prompts.forEach((p, i) => {
       setTimeout(() => {
-        playSound('pop');
+        playSound('pop', promptsEl);
         const card = document.createElement('div');
         card.className = 'prompt-card';
         card.innerHTML = `<div class="prompt-card-platform">${p.platform}</div>
@@ -2082,6 +2104,7 @@ function initContentPrompts() {
 
 /* --- Hub: Enhanced AI Score with Suggestions --- */
 function initEnhancedScoring() {
+  const scoreEl = document.getElementById('hub-panel-events');
   const btn = document.getElementById('score-btn');
   if (!btn) return;
 
@@ -2101,7 +2124,7 @@ function initEnhancedScoring() {
   const newBtn = document.getElementById('score-btn');
 
   newBtn.addEventListener('click', () => {
-    playSound('click');
+    playSound('click', scoreEl);
     newBtn.disabled = true;
     newBtn.textContent = 'AI Analyzing...';
     const scoreEls = document.querySelectorAll('[data-event]');
@@ -2112,7 +2135,7 @@ function initEnhancedScoring() {
         el.classList.add('hub-event-score--visible');
         el.classList.add(s.score >= 80 ? 'hub-event-score--high' : s.score >= 65 ? 'hub-event-score--mid' : 'hub-event-score--low');
 
-        playSound('pop');
+        playSound('pop', scoreEl);
         // Add suggestion below event
         const event = el.closest('.hub-event');
         if (event && !event.querySelector('.hub-event-suggestion')) {
@@ -2132,6 +2155,7 @@ function initEnhancedScoring() {
 
 /* --- CI/CD Pipeline Demo --- */
 function initCICDDemo() {
+  const cicdEl = document.querySelector('.cicd-panel');
   const section = document.getElementById('cicd-demo');
   if (!section) return;
 
@@ -2143,7 +2167,7 @@ function initCICDDemo() {
       gitSteps.forEach((s, i) => {
         setTimeout(() => {
           s.classList.add('cicd-git-step--active');
-          playSound('activate');
+          playSound('activate', cicdEl);
           setTimeout(() => {
             s.classList.remove('cicd-git-step--active');
             s.classList.add('cicd-git-step--done');
@@ -2167,7 +2191,7 @@ function initCICDDemo() {
         setTimeout(() => {
           h.classList.add(`cicd-hook--${hookStates[i]}`);
           h.querySelector('.cicd-hook-status').textContent = hookResults[i];
-          playSound('pop');
+          playSound('pop', cicdEl);
         }, i * 500 + 300);
       });
       hookObs.unobserve(entry.target);
@@ -2182,14 +2206,14 @@ function initCICDDemo() {
 
   if (ciBtn) {
     ciBtn.addEventListener('click', async () => {
-      playSound('click');
+      playSound('click', cicdEl);
       ciBtn.disabled = true;
       ciNodes.forEach(n => n.classList.remove('cicd-pipe-node--active', 'cicd-pipe-node--done'));
       if (testCount) testCount.textContent = '0/1,671';
 
       for (let i = 0; i < ciNodes.length; i++) {
         ciNodes[i].classList.add('cicd-pipe-node--active');
-        playSound('activate');
+        playSound('activate', cicdEl);
         if (i === 3 && testCount) {
           // Animate test counter
           let count = 0;
@@ -2206,7 +2230,7 @@ function initCICDDemo() {
         ciNodes[i].classList.remove('cicd-pipe-node--active');
         ciNodes[i].classList.add('cicd-pipe-node--done');
       }
-      playSound('success');
+      playSound('success', cicdEl);
       ciBtn.disabled = false;
       ciBtn.textContent = 'Run Again';
     });
@@ -2218,9 +2242,9 @@ function initCICDDemo() {
   const testObs = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (!entry.isIntersecting) return;
-      setTimeout(() => { if (testBars.hub) { testBars.hub.style.width = '100%'; playSound('tick'); } }, 200);
-      setTimeout(() => { if (testBars.app) { testBars.app.style.width = '32.8%'; playSound('tick'); } }, 400);
-      setTimeout(() => { if (testBars.dg) { testBars.dg.style.width = '2.4%'; playSound('tick'); } }, 600);
+      setTimeout(() => { if (testBars.hub) { testBars.hub.style.width = '100%'; playSound('tick', cicdEl); } }, 200);
+      setTimeout(() => { if (testBars.app) { testBars.app.style.width = '32.8%'; playSound('tick', cicdEl); } }, 400);
+      setTimeout(() => { if (testBars.dg) { testBars.dg.style.width = '2.4%'; playSound('tick', cicdEl); } }, 600);
       // Count up total
       if (totalEl) {
         let c = 0;
@@ -2243,7 +2267,7 @@ function initCICDDemo() {
       entries.forEach(entry => {
         if (!entry.isIntersecting) return;
         nsEvents.forEach((ev, i) => {
-          setTimeout(() => { ev.classList.add('nightshift-event--visible'); playSound('pop'); }, i * 400);
+          setTimeout(() => { ev.classList.add('nightshift-event--visible'); playSound('pop', cicdEl); }, i * 400);
         });
         nsObs.unobserve(entry.target);
       });
@@ -2259,7 +2283,7 @@ function initCICDDemo() {
       envNodes.forEach((n, i) => {
         setTimeout(() => {
           n.classList.add('cicd-env--active');
-          playSound('activate');
+          playSound('activate', cicdEl);
           setTimeout(() => {
             n.classList.remove('cicd-env--active');
             n.classList.add('cicd-env--done');
@@ -2274,6 +2298,7 @@ function initCICDDemo() {
 
 /* --- SocialiseApp Phone Demo --- */
 function initAppDemo() {
+  const appEl = document.querySelector('.project-card--app-demo');
   const navBtns = document.querySelectorAll('.phone-nav-btn');
   const pages = document.querySelectorAll('.app-page');
   if (!navBtns.length) return;
@@ -2281,7 +2306,7 @@ function initAppDemo() {
   // Tab navigation
   navBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-      playSound('click');
+      playSound('click', appEl);
       navBtns.forEach(b => b.classList.remove('phone-nav-btn--active'));
       pages.forEach(p => p.classList.remove('app-page--active'));
       btn.classList.add('phone-nav-btn--active');
@@ -2320,7 +2345,7 @@ function initAppDemo() {
     card.addEventListener('click', () => {
       if (card.classList.contains('app-event-card--joined')) return;
       card.classList.add('app-event-card--joined');
-      playSound('pop');
+      playSound('pop', appEl);
       const xp = parseInt(card.dataset.xp) || 20;
       totalXP += xp;
       updateXP();
@@ -2331,7 +2356,7 @@ function initAppDemo() {
   document.querySelectorAll('.app-reaction').forEach(r => {
     r.addEventListener('click', () => {
       r.classList.toggle('app-reaction--active');
-      playSound('click');
+      playSound('click', appEl);
       const num = parseInt(r.textContent.match(/\d+/)?.[0] || '0');
       const emoji = r.textContent.match(/[^\d\s]+/)?.[0] || '';
       r.textContent = `${emoji} ${r.classList.contains('app-reaction--active') ? num + 1 : Math.max(0, num - 1)}`;
