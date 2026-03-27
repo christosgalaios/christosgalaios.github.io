@@ -742,6 +742,7 @@ section {
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: var(--space-xl);
+  margin-top: var(--space-lg);
   margin-bottom: var(--space-lg);
   transition: border-color 0.3s;
 }
