@@ -73,6 +73,26 @@ html {
   background: var(--text-muted);
 }
 
+/* Scroll Progress Bar */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent-secondary), var(--accent));
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.scroll-progress--visible {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-progress { transition: none; }
+}
+
 [data-theme="light"] * {
   scrollbar-color: var(--border) transparent;
 }

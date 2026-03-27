@@ -1809,12 +1809,33 @@ function initParticles() {
   requestAnimationFrame(draw);
 }
 
+/* --- Scroll Progress --- */
+function initScrollProgress() {
+  const bar = document.getElementById('scroll-progress');
+  if (!bar) return;
+  const heroHeight = document.getElementById('hero')?.offsetHeight || window.innerHeight;
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      const scrollY = window.scrollY;
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = maxScroll > 0 ? (scrollY / maxScroll) * 100 : 0;
+      bar.style.width = pct + '%';
+      bar.classList.toggle('scroll-progress--visible', scrollY > heroHeight);
+      ticking = false;
+    });
+  });
+}
+
 /* --- Init --- */
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   initBlurReveal();
   animateCounters();
   initScrollReveal();
+  initScrollProgress();
   initNav();
   initCardTilt();
   initCVCards();
