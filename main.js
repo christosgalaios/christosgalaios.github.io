@@ -248,9 +248,6 @@ function initMangoChat() {
   const close = document.getElementById('mango-chat-close');
   if (!chat || !form || !field || !messages || !close) return;
 
-  const ENDPOINT = 'https://esifhltywxujunfvlgcc.supabase.co/functions/v1/mango-chat';
-  let history = [];
-
   close.addEventListener('click', () => chat.classList.remove('mango-chat--open'));
 
   function addMsg(text, type) {
@@ -262,31 +259,56 @@ function initMangoChat() {
     return div;
   }
 
-  form.addEventListener('submit', async (e) => {
+  // Smart keyword-matched demo responses
+  const responses = [
+    { keys: ['node', 'nodejs', 'backend', 'express', 'server'], reply: "Purrr, great question! Chris never wrote Node.js by hand — he directed AI to build an entire Electron + Express desktop app with 1,671 tests. He understands the architecture deeply because he architected it. That's actually more impressive than typing it out manually." },
+    { keys: ['react', 'frontend', 'ui'], reply: "Chris built SocialiseApp in React 19 with Framer Motion, Zustand, real-time chat, and a gamification system — 548 tests! Plus he hand-coded the Socialise marketing site in pure vanilla JS. The guy thinks in components and UX." },
+    { keys: ['python', 'ml', 'ai', 'machine learning'], reply: "Chris built the DevGuide content pipeline in Python — zero external dependencies, runs autonomously daily via GitHub Actions. He's also building an LLM-brained robot on Raspberry Pi 5 with a Hailo neural accelerator. Edge AI is his playground! *purrs*" },
+    { keys: ['unity', 'c#', 'csharp', 'game', 'games'], reply: "Meow! Games are where Chris started — 5 years of C#, Unity DOTS/Burst, 10,000+ concurrent entities, shipped 2 commercial titles. His BSc thesis on educational games for children with ADHD was published by IEEE. Games built his engineering brain." },
+    { keys: ['team', 'lead', 'management', 'manage'], reply: "Chris led 12 engineers (4 senior!) at Koffee Cup in the Meta VR ecosystem. He owned the 6-environment release pipeline, was primary technical contact for Meta, and helped secure 'Elite' vendor status. He doesn't just code — he runs teams. *proud purr*" },
+    { keys: ['agent', 'agentic', 'autonomous', 'multi-agent', 'workflow'], reply: "THIS is where Chris really shines! He built a full CEO/Manager/Agent system where AI agents run sprints autonomously — code review, QA via MCP, night shift mode, permanent learnings. It's literally a studio encoded into AI. No one else is doing this." },
+    { keys: ['mcp', 'tool', 'tools'], reply: "Chris built a production MCP server with 55+ tools over SSE! LLMs can query databases, trigger browser automation, capture screenshots, validate UI state — all through structured tool calls. The QA agent literally operates the app autonomously." },
+    { keys: ['test', 'testing', 'tdd', 'quality'], reply: "2,100+ tests across all projects! 1,671 in SocialiseHub alone across 33 test suites. Chris doesn't just write code — he proves it works. And remember, all of this was AI-directed. The tests are real, the coverage is real. *impressed meow*" },
+    { keys: ['experience', 'years', 'background', 'history'], reply: "5+ years: Virtually Sports (Unity, shipped 2 titles), Koffee Cup (promoted to Tech Lead in 12 months, led 12 engineers for Meta VR), then independent building the Socialise platform with autonomous AI agents. First Class Honours BSc, IEEE published. The trajectory speaks for itself!" },
+    { keys: ['hire', 'why', 'should', 'value', 'bring'], reply: "Here's the thing — Chris spent 5 years learning how studios ACTUALLY work. Then he encoded all of that into AI agents that ship production code autonomously. You're not hiring a developer. You're hiring someone who multiplies output by directing AI at scale. That's the future. *confident purr*" },
+    { keys: ['salary', 'pay', 'money', 'cost', 'rate'], reply: "Mrrp! I'm just a kitten, I don't do salary negotiations! But I can tell you — someone who ships production apps with 1,671 tests without touching the code? That's a force multiplier. Reach out to Chris directly to chat numbers!" },
+    { keys: ['vr', 'meta', 'quest', 'horizon'], reply: "Chris spent 3 years in the Meta VR ecosystem at Koffee Cup — client-side authoritative networking for zero-latency feedback, haptic proximity systems, locked 72Hz on constrained hardware. The client cited his haptic system as THE key factor in expanding the prototype to a full product!" },
+    { keys: ['typescript', 'ts'], reply: "Chris mastered TypeScript and the proprietary Meta Horizon engine from zero prior experience — earned a promotion to Tech Lead within 12 months! He learns fast because he uses AI to accelerate onboarding. That's the pattern: unknown stack → AI-assisted mastery → ship production code." },
+    { keys: ['hello', 'hi', 'hey', 'sup', 'yo'], reply: "Mrrp! Hey there! I'm Mango, Chris's kitten assistant. Ask me anything about his experience, skills, or projects — I'll give you the real scoop! *waves paw*" },
+    { keys: ['who', 'about', 'christos', 'chris'], reply: "Chris is a Creative Engineer based in Bristol, UK. 5+ years shipping production software, from Unity games to Meta VR to full-stack web platforms. Now he directs AI agents to build at scale — 2,100+ tests, 55+ MCP tools, 4 autonomous codebases. He thinks different. *purrs proudly*" },
+    { keys: ['socialise', 'events', 'platform', 'startup'], reply: "Socialise is Chris's own platform — a social events community in Bristol with 3,100+ members. He built the entire tech stack: desktop operations app (Hub), consumer web platform (App), marketing site, content generation pipeline, and the AI agent system that manages it all. One person. Full stack. AI-powered." },
+    { keys: ['education', 'degree', 'university', 'study'], reply: "BSc Computer Games Programming with First Class Honours from Middlesex University! His thesis on educational games for children with ADHD was published by IEEE. Before that, he studied Mechanical Engineering of Automation in Athens — the automation DNA runs deep! *scholarly meow*" },
+  ];
+
+  const fallbacks = [
+    "Mrrp! I'm not sure about that specific thing, but I can tell you Chris ships production software at a pace most teams can't match. Ask me about his projects, skills, or experience!",
+    "Interesting question! While I don't have the exact answer, I know Chris picks up new things incredibly fast — he went from zero TypeScript to Tech Lead in 12 months. Whatever the challenge, he'll figure it out. *confident purr*",
+    "Hmm, that's a new one for this kitten! But here's what I know: Chris has 2,100+ tests across his projects, leads AI agents autonomously, and thinks about UX details like compass needles tracking your cursor. Ask me something specific about his work!",
+  ];
+
+  let fallbackIdx = 0;
+
+  function getReply(msg) {
+    const lower = msg.toLowerCase();
+    for (const r of responses) {
+      if (r.keys.some(k => lower.includes(k))) return r.reply;
+    }
+    return fallbacks[fallbackIdx++ % fallbacks.length];
+  }
+
+  form.addEventListener('submit', (e) => {
     e.preventDefault();
     const msg = field.value.trim();
     if (!msg) return;
     field.value = '';
     addMsg(msg, 'user');
-    history.push({ role: 'user', content: msg });
 
     const loading = addMsg('Mango is thinking...', 'loading');
-
-    try {
-      const res = await fetch(ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: msg, history: history.slice(-6) }),
-      });
-      const data = await res.json();
+    // Simulate AI thinking delay
+    setTimeout(() => {
       loading.remove();
-      const reply = data.reply || data.error || 'Mrrp! Something went wrong.';
-      addMsg(reply, 'bot');
-      history.push({ role: 'assistant', content: reply });
-    } catch {
-      loading.remove();
-      addMsg('Mrrp! I couldn\'t connect. Try again later!', 'bot');
-    }
+      addMsg(getReply(msg), 'bot');
+    }, 600 + Math.random() * 800);
   });
 }
 
