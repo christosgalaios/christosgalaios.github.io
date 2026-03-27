@@ -755,6 +755,7 @@ section {
   margin-top: var(--space-lg);
   margin-bottom: var(--space-lg);
   transition: border-color 0.3s;
+  overflow: hidden;
 }
 
 .project-showcase:hover {
@@ -2605,7 +2606,7 @@ section {
 /* Small cards row */
 .projects-small {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--space-lg);
   margin-top: var(--space-lg);
 }
@@ -3916,10 +3917,9 @@ section {
   margin-right: auto;
 }
 
-/* Compact cards — smaller projects, centered pair */
+/* Compact cards — smaller projects, fill grid as equal pair */
 .project-card--compact {
-  max-width: 480px;
-  justify-self: center;
+  /* No max-width — let them fill their grid column equally */
 }
 
 .devguide-compass-demo {
