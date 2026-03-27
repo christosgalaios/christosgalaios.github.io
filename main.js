@@ -36,6 +36,7 @@ function initTheme() {
 /* --- Blur Text Reveal --- */
 function initBlurReveal() {
   document.querySelectorAll('.blur-reveal').forEach((el, elIndex) => {
+    if (el.classList.contains('hero-name')) return;
     const text = el.textContent.trim();
     el.textContent = '';
     text.split(/\s+/).forEach((word, i, arr) => {
@@ -51,6 +52,52 @@ function initBlurReveal() {
       setTimeout(() => span.classList.add('blur-word--visible'), 200 + (elIndex * 400) + (i * 100));
     });
   });
+}
+
+/* --- Text Scramble (Hero Name) --- */
+function initTextScramble() {
+  const el = document.querySelector('.hero-name');
+  if (!el) return;
+  const finalText = el.textContent.trim();
+  if (prefersReducedMotion) { el.style.opacity = '1'; return; }
+
+  const scrambleChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*<>{}[]';
+  el.style.fontFamily = 'var(--font-mono)';
+  el.style.opacity = '1';
+  el.textContent = '';
+
+  const spans = [];
+  for (let i = 0; i < finalText.length; i++) {
+    const span = document.createElement('span');
+    span.style.display = 'inline-block';
+    span.style.minWidth = finalText[i] === ' ' ? '0.3em' : '';
+    span.textContent = finalText[i] === ' ' ? '\u00A0' : scrambleChars[Math.random() * scrambleChars.length | 0];
+    el.appendChild(span);
+    spans.push({ el: span, final: finalText[i], settled: finalText[i] === ' ' });
+  }
+
+  const start = performance.now();
+  function tick(now) {
+    const elapsed = now - start;
+    let allDone = true;
+    for (let i = 0; i < spans.length; i++) {
+      if (spans[i].settled) continue;
+      const settleAt = i * 50 + 800;
+      if (elapsed >= settleAt) {
+        spans[i].el.textContent = spans[i].final;
+        spans[i].settled = true;
+      } else {
+        spans[i].el.textContent = scrambleChars[Math.random() * scrambleChars.length | 0];
+        allDone = false;
+      }
+    }
+    if (!allDone) {
+      requestAnimationFrame(tick);
+    } else {
+      el.style.fontFamily = '';
+    }
+  }
+  requestAnimationFrame(tick);
 }
 
 /* --- Counter Animation --- */
@@ -1747,65 +1794,157 @@ function initLightbox() {
   });
 }
 
-/* --- Hero Particles --- */
-function initParticles() {
+/* --- Matrix Rain --- */
+function initMatrixRain() {
   const canvas = document.getElementById('hero-particles');
-  if (!canvas || prefersReducedMotion) return;
+  if (!canvas) return;
   const ctx = canvas.getContext('2d');
-  let w, h, particles = [];
-  const count = 80;
+  let w, h, columns, drops;
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*(){}[]<>/\\|~';
+  const fontSize = 14;
+  const activeChance = 0.05;
+  let clickCount = 0, clickTimer = null;
+  let swarming = false;
 
   function resize() {
     const rect = canvas.parentElement.getBoundingClientRect();
     w = canvas.width = rect.width;
     h = canvas.height = rect.height;
+    columns = Math.floor(w / fontSize);
+    drops = new Array(columns).fill(0).map(() => Math.random() * h / fontSize | 0);
   }
   resize();
   window.addEventListener('resize', resize);
 
-  for (let i = 0; i < count; i++) {
-    particles.push({
-      x: Math.random() * w,
-      y: Math.random() * h,
-      r: Math.random() * 2 + 0.5,
-      dx: (Math.random() - 0.5) * 0.3,
-      dy: (Math.random() - 0.5) * 0.3,
-      o: Math.random() * 0.5 + 0.1,
-    });
+  if (prefersReducedMotion) {
+    ctx.fillStyle = 'rgba(0,0,0,1)';
+    ctx.fillRect(0, 0, w, h);
+    ctx.font = fontSize + 'px monospace';
+    for (let i = 0; i < columns; i++) {
+      for (let j = 0; j < 5; j++) {
+        const y = (drops[i] + j) * fontSize;
+        const c = chars[Math.random() * chars.length | 0];
+        ctx.fillStyle = 'rgba(255,255,255,0.04)';
+        ctx.fillText(c, i * fontSize, y);
+      }
+    }
+    return;
+  }
+
+  // Easter egg: click canvas 3 times in 2s to trigger swarm
+  canvas.addEventListener('click', (e) => {
+    clickCount++;
+    clearTimeout(clickTimer);
+    clickTimer = setTimeout(() => { clickCount = 0; }, 2000);
+    if (clickCount >= 3 && !swarming) {
+      swarming = true;
+      clickCount = 0;
+      startSwarm(e.clientX - canvas.getBoundingClientRect().left, e.clientY - canvas.getBoundingClientRect().top);
+    }
+  });
+
+  let swarmTarget = { x: 0, y: 0 };
+  let swarmPhase = 0;
+  let swarmStart = 0;
+  let swarmChars = [];
+
+  function startSwarm(tx, ty) {
+    swarmTarget = { x: tx, y: ty };
+    swarmPhase = 1;
+    swarmStart = performance.now();
+    swarmChars = [];
+    for (let i = 0; i < columns; i++) {
+      const x = i * fontSize;
+      const y = drops[i] * fontSize;
+      swarmChars.push({
+        x, y, origCol: i, origY: drops[i],
+        char: chars[Math.random() * chars.length | 0],
+        angle: Math.atan2(ty - y, tx - x) + (Math.random() - 0.5) * 0.5,
+        speed: 3 + Math.random() * 4,
+        orbitAngle: Math.random() * Math.PI * 2,
+        orbitSpeed: 0.02 + Math.random() * 0.03,
+      });
+    }
+    if (typeof playSound === 'function') playSound('easter');
+    setTimeout(() => { swarmPhase = 2; }, 1000);
+    setTimeout(() => { swarmPhase = 3; }, 4000);
+    setTimeout(() => { swarmPhase = 0; swarming = false; }, 5000);
   }
 
   function draw() {
-    ctx.clearRect(0, 0, w, h);
-    for (const p of particles) {
-      p.x += p.dx;
-      p.y += p.dy;
-      if (p.x < 0) p.x = w;
-      if (p.x > w) p.x = 0;
-      if (p.y < 0) p.y = h;
-      if (p.y > h) p.y = 0;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(34,197,94,${p.o})`;
-      ctx.fill();
-    }
-    // Draw lines between close particles
-    for (let i = 0; i < particles.length; i++) {
-      for (let j = i + 1; j < particles.length; j++) {
-        const dx = particles[i].x - particles[j].x;
-        const dy = particles[i].y - particles[j].y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 120) {
-          ctx.beginPath();
-          ctx.moveTo(particles[i].x, particles[i].y);
-          ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.strokeStyle = `rgba(34,197,94,${0.08 * (1 - dist / 120)})`;
-          ctx.lineWidth = 0.5;
-          ctx.stroke();
-        }
-      }
+    if (swarmPhase > 0) {
+      drawSwarm();
+    } else {
+      drawRain();
     }
     requestAnimationFrame(draw);
   }
+
+  function drawRain() {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+    ctx.fillRect(0, 0, w, h);
+    ctx.font = fontSize + 'px monospace';
+
+    for (let i = 0; i < columns; i++) {
+      const c = chars[Math.random() * chars.length | 0];
+      const y = drops[i] * fontSize;
+      const isActive = Math.random() < activeChance;
+
+      if (isActive) {
+        ctx.fillStyle = 'rgba(34,197,94,0.9)';
+        ctx.shadowColor = '#22C55E';
+        ctx.shadowBlur = 8;
+      } else {
+        ctx.fillStyle = 'rgba(255,255,255,0.04)';
+        ctx.shadowBlur = 0;
+      }
+      ctx.fillText(c, i * fontSize, y);
+      ctx.shadowBlur = 0;
+
+      if (y > h && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+      drops[i] += 0.5 + Math.random() * 0.5;
+    }
+  }
+
+  function drawSwarm() {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+    ctx.fillRect(0, 0, w, h);
+    ctx.font = fontSize + 'px monospace';
+    ctx.shadowColor = '#22C55E';
+
+    const elapsed = performance.now() - swarmStart;
+
+    for (const p of swarmChars) {
+      if (swarmPhase === 1) {
+        const dx = swarmTarget.x - p.x;
+        const dy = swarmTarget.y - p.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist > 5) {
+          p.x += (dx / dist) * p.speed * 2;
+          p.y += (dy / dist) * p.speed * 2;
+        }
+      } else if (swarmPhase === 2) {
+        p.orbitAngle += p.orbitSpeed;
+        const radius = 50 + Math.sin(elapsed * 0.002) * 20;
+        p.x = swarmTarget.x + Math.cos(p.orbitAngle) * radius;
+        p.y = swarmTarget.y + Math.sin(p.orbitAngle) * radius;
+      } else if (swarmPhase === 3) {
+        const targetX = p.origCol * fontSize;
+        const targetY = p.origY * fontSize;
+        p.x += (targetX - p.x) * 0.08;
+        p.y += (targetY - p.y) * 0.08;
+      }
+
+      ctx.shadowBlur = swarmPhase === 2 ? 12 : 4;
+      ctx.fillStyle = 'rgba(34,197,94,0.8)';
+      p.char = chars[Math.random() * chars.length | 0];
+      ctx.fillText(p.char, p.x, p.y);
+    }
+    ctx.shadowBlur = 0;
+  }
+
   requestAnimationFrame(draw);
 }
 
@@ -1833,6 +1972,7 @@ function initScrollProgress() {
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   initBlurReveal();
+  initTextScramble();
   animateCounters();
   initScrollReveal();
   initScrollProgress();
@@ -1852,6 +1992,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initContentPrompts();
   initEnhancedScoring();
   initCICDDemo();
-  initParticles();
+  initMatrixRain();
   initLightbox();
 });
