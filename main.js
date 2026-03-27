@@ -2018,6 +2018,50 @@ function initScrollProgress() {
   });
 }
 
+/* --- Spotlight Cards --- */
+function initSpotlightCards() {
+  const cards = document.querySelectorAll('.project-showcase, .project-card');
+  cards.forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      card.style.setProperty('--mouse-x', (e.clientX - rect.left) + 'px');
+      card.style.setProperty('--mouse-y', (e.clientY - rect.top) + 'px');
+    });
+  });
+}
+
+/* --- Magnetic Buttons --- */
+function initMagneticButtons() {
+  if (prefersReducedMotion) return;
+  const isMobile = window.matchMedia('(hover: none)').matches;
+  if (isMobile) return;
+
+  const selectors = '.project-cta, .contact-link, #cicd-run-btn, #pipeline-run-btn, #sprint-start';
+  document.querySelectorAll(selectors).forEach(btn => {
+    btn.classList.add('magnetic-btn');
+    btn.addEventListener('mousemove', (e) => {
+      const rect = btn.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = e.clientX - cx;
+      const dy = e.clientY - cy;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const maxDist = 80;
+      if (dist < maxDist) {
+        const pull = (1 - dist / maxDist) * 6;
+        const nx = (dx / dist) * pull;
+        const ny = (dy / dist) * pull;
+        btn.classList.remove('releasing');
+        btn.style.transform = `translate(${nx}px, ${ny}px)`;
+      }
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.classList.add('releasing');
+      btn.style.transform = '';
+    });
+  });
+}
+
 /* --- Init --- */
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
@@ -2029,6 +2073,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initNav();
   initCardTilt();
   initCVCards();
+  initSpotlightCards();
+  initMagneticButtons();
   initCompass();
   initDevGuideCompass();
   initPipelineSim();

@@ -555,6 +555,41 @@ section {
   box-shadow: 0 0 30px var(--accent-glow);
 }
 
+/* Spotlight Card Effect */
+.project-showcase,
+.project-card {
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+}
+.project-showcase > .project-card-inner::before,
+.project-card > .project-card-inner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(300px circle at var(--mouse-x) var(--mouse-y), rgba(34,197,94,0.08), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 1;
+}
+.project-showcase:hover > .project-card-inner::before,
+.project-card:hover > .project-card-inner::before {
+  opacity: 1;
+}
+
+/* Magnetic Buttons */
+.magnetic-btn {
+  will-change: transform;
+  transition: transform 0.2s ease-out;
+}
+.magnetic-btn.releasing {
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .magnetic-btn { transition: none !important; }
+}
+
 .project-header {
   display: flex;
   align-items: center;
