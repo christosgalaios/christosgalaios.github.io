@@ -1085,6 +1085,127 @@ function initEnhancedScoring() {
   });
 }
 
+/* --- CI/CD Pipeline Demo --- */
+function initCICDDemo() {
+  const section = document.getElementById('cicd-demo');
+  if (!section) return;
+
+  // Animate git flow on scroll
+  const gitSteps = document.querySelectorAll('.cicd-git-step');
+  const gitObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      gitSteps.forEach((s, i) => {
+        setTimeout(() => {
+          s.classList.add('cicd-git-step--active');
+          setTimeout(() => {
+            s.classList.remove('cicd-git-step--active');
+            s.classList.add('cicd-git-step--done');
+            s.querySelector('.cicd-git-check').textContent = i === 2 ? '⚠ → ✓' : '✓';
+          }, 500);
+        }, i * 600);
+      });
+      gitObs.unobserve(entry.target);
+    });
+  }, { threshold: 0.3 });
+  if (gitSteps[0]?.parentElement) gitObs.observe(gitSteps[0].parentElement);
+
+  // Animate hooks on scroll
+  const hooks = document.querySelectorAll('.cicd-hook');
+  const hookResults = ['✓ passed', '✗ blocked', '✓ passed', '✓ passed'];
+  const hookStates = ['active', 'blocked', 'active', 'active'];
+  const hookObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      hooks.forEach((h, i) => {
+        setTimeout(() => {
+          h.classList.add(`cicd-hook--${hookStates[i]}`);
+          h.querySelector('.cicd-hook-status').textContent = hookResults[i];
+        }, i * 500 + 300);
+      });
+      hookObs.unobserve(entry.target);
+    });
+  }, { threshold: 0.3 });
+  if (hooks[0]?.parentElement) hookObs.observe(hooks[0].parentElement);
+
+  // CI Pipeline button
+  const ciBtn = document.getElementById('cicd-run-btn');
+  const ciNodes = ['ci-push', 'ci-lint', 'ci-tsc', 'ci-test', 'ci-build', 'ci-deploy'].map(id => document.getElementById(id));
+  const testCount = document.getElementById('ci-test-count');
+
+  if (ciBtn) {
+    ciBtn.addEventListener('click', async () => {
+      ciBtn.disabled = true;
+      ciNodes.forEach(n => n.classList.remove('cicd-pipe-node--active', 'cicd-pipe-node--done'));
+      if (testCount) testCount.textContent = '0/1,671';
+
+      for (let i = 0; i < ciNodes.length; i++) {
+        ciNodes[i].classList.add('cicd-pipe-node--active');
+        if (i === 3 && testCount) {
+          // Animate test counter
+          let count = 0;
+          const iv = setInterval(() => {
+            count += Math.floor(Math.random() * 80) + 40;
+            if (count > 1671) count = 1671;
+            testCount.textContent = `${count.toLocaleString()}/1,671`;
+            if (count >= 1671) clearInterval(iv);
+          }, 50);
+          await new Promise(r => setTimeout(r, 1200));
+        } else {
+          await new Promise(r => setTimeout(r, 600));
+        }
+        ciNodes[i].classList.remove('cicd-pipe-node--active');
+        ciNodes[i].classList.add('cicd-pipe-node--done');
+      }
+      ciBtn.disabled = false;
+      ciBtn.textContent = 'Run Again';
+    });
+  }
+
+  // Test coverage bars — animate on scroll
+  const testBars = { hub: document.getElementById('test-hub'), app: document.getElementById('test-app'), dg: document.getElementById('test-dg') };
+  const totalEl = document.getElementById('cicd-total');
+  const testObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      setTimeout(() => { if (testBars.hub) testBars.hub.style.width = '100%'; }, 200);
+      setTimeout(() => { if (testBars.app) testBars.app.style.width = '32.8%'; }, 400);
+      setTimeout(() => { if (testBars.dg) testBars.dg.style.width = '2.4%'; }, 600);
+      // Count up total
+      if (totalEl) {
+        let c = 0;
+        const iv = setInterval(() => {
+          c += Math.floor(Math.random() * 100) + 50;
+          if (c > 2259) c = 2259;
+          totalEl.textContent = c.toLocaleString();
+          if (c >= 2259) clearInterval(iv);
+        }, 30);
+      }
+      testObs.unobserve(entry.target);
+    });
+  }, { threshold: 0.3 });
+  if (testBars.hub?.parentElement?.parentElement) testObs.observe(testBars.hub.parentElement.parentElement);
+
+  // 6-env pipeline — animate on scroll
+  const envNodes = document.querySelectorAll('.cicd-env');
+  const envObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      envNodes.forEach((n, i) => {
+        setTimeout(() => {
+          n.classList.add('cicd-env--active');
+          setTimeout(() => {
+            n.classList.remove('cicd-env--active');
+            n.classList.add('cicd-env--done');
+          }, 800);
+        }, i * 500);
+      });
+      envObs.unobserve(entry.target);
+    });
+  }, { threshold: 0.3 });
+  if (envNodes[0]?.parentElement) envObs.observe(envNodes[0].parentElement);
+}
+
 /* --- Init --- */
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
@@ -1106,4 +1227,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initIdeaGenerator();
   initContentPrompts();
   initEnhancedScoring();
+  initCICDDemo();
 });

@@ -2242,6 +2242,285 @@ section {
 }
 
 /* ============================================
+   CI/CD Pipeline Demo
+   ============================================ */
+.cicd-demo {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.cicd-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.cicd-panel--wide {
+  grid-column: 1 / -1;
+}
+
+.cicd-panel h4 {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+/* Git flow */
+.cicd-git-step {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  margin-bottom: 0.3rem;
+  border: 1px solid var(--border);
+  transition: border-color 0.3s, background 0.3s;
+}
+
+.cicd-git-step code {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+.cicd-git-step--active {
+  border-color: var(--accent);
+  background: rgba(34,197,94,0.05);
+}
+
+.cicd-git-step--conflict {
+  border-left: 3px solid #f59e0b;
+}
+
+.cicd-git-step--conflict.cicd-git-step--active {
+  border-color: #f59e0b;
+  background: rgba(245,158,11,0.05);
+}
+
+.cicd-git-check {
+  font-size: 0.8rem;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.cicd-git-step--done .cicd-git-check {
+  opacity: 1;
+}
+
+.cicd-learning {
+  margin-top: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  padding: 0.4rem 0.6rem;
+  background: rgba(245,158,11,0.05);
+  border: 1px solid rgba(245,158,11,0.2);
+  border-radius: 6px;
+}
+
+/* Hooks */
+.cicd-hook {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  margin-bottom: 0.3rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  transition: border-color 0.3s, background 0.3s;
+}
+
+.cicd-hook--active {
+  border-color: var(--accent);
+  background: rgba(34,197,94,0.05);
+}
+
+.cicd-hook--blocked {
+  border-color: #ef4444;
+  background: rgba(239,68,68,0.05);
+}
+
+.cicd-hook-icon { font-size: 1rem; }
+
+.cicd-hook-status {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.cicd-hook--active .cicd-hook-status,
+.cicd-hook--blocked .cicd-hook-status {
+  opacity: 1;
+}
+
+/* CI Pipeline flow */
+.cicd-pipeline-flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.cicd-pipe-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  min-width: 70px;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: all 0.3s;
+}
+
+.cicd-pipe-node--active {
+  border-color: var(--accent-secondary);
+  background: rgba(59,130,246,0.08);
+  color: var(--accent-secondary);
+  box-shadow: 0 0 12px rgba(59,130,246,0.2);
+}
+
+.cicd-pipe-node--done {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.cicd-pipe-node--fail {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.cicd-pipe-sub {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+.cicd-pipe-arrow {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* Test coverage bars */
+.cicd-tests {
+  margin-bottom: 1rem;
+}
+
+.cicd-test-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.cicd-test-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  width: 90px;
+  flex-shrink: 0;
+}
+
+.cicd-test-bar {
+  flex: 1;
+  height: 10px;
+  border-radius: 5px;
+  background: rgba(255,255,255,0.05);
+  overflow: hidden;
+}
+
+.cicd-test-fill {
+  height: 100%;
+  border-radius: 5px;
+  background: var(--accent);
+  transition: width 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.cicd-test-fill--blue { background: var(--accent-secondary); }
+.cicd-test-fill--purple { background: #a855f7; }
+
+.cicd-test-count {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  width: 50px;
+  text-align: right;
+}
+
+.cicd-test-total {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.cicd-test-total-num {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--accent);
+  display: block;
+}
+
+/* 6-env pipeline */
+.cicd-env-flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.cicd-env {
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: all 0.4s;
+}
+
+.cicd-env--active {
+  border-color: var(--accent);
+  background: rgba(34,197,94,0.08);
+  color: var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.cicd-env--done {
+  border-color: var(--accent);
+  opacity: 0.5;
+}
+
+.cicd-env-note {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .cicd-demo { grid-template-columns: 1fr; }
+  .cicd-pipeline-flow, .cicd-env-flow { gap: 0.15rem; }
+  .cicd-pipe-node, .cicd-env { min-width: 55px; padding: 0.4rem 0.5rem; font-size: 0.7rem; }
+}
+
+/* ============================================
    DevGuide Compass Demo
    ============================================ */
 .project-card--devguide-wide {

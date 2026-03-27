@@ -23,6 +23,7 @@
       <a href="#hero" class="nav-logo">CG</a>
       <div class="nav-links" id="nav-links">
         <a href="#projects">Projects</a>
+        <a href="#cicd">Pipeline</a>
         <a href="#experience">Experience</a>
         <a href="#education">Education</a>
         <a href="#contact">Contact</a>
@@ -745,6 +746,152 @@
             </div>
           </article>
 
+        </div>
+      </div>
+    </section>
+
+    <!-- CI/CD Pipeline Demo -->
+    <section class="cicd" id="cicd">
+      <div class="container">
+        <span class="section-label">[ ENGINEERING DISCIPLINE ]</span>
+        <h2 class="section-title">Every Commit Is Guarded. Every Push Is Rebased.</h2>
+
+        <div class="cicd-demo" id="cicd-demo">
+          <!-- Git Workflow -->
+          <div class="cicd-panel">
+            <h4>Git Workflow</h4>
+            <div class="cicd-git-flow" id="cicd-git-flow">
+              <div class="cicd-git-step" data-step="0">
+                <code>git fetch origin develop</code>
+                <span class="cicd-git-check"></span>
+              </div>
+              <div class="cicd-git-step" data-step="1">
+                <code>git rebase origin/develop</code>
+                <span class="cicd-git-check"></span>
+              </div>
+              <div class="cicd-git-step cicd-git-step--conflict" data-step="2">
+                <code>Conflict in events.ts — resolve</code>
+                <span class="cicd-git-check"></span>
+              </div>
+              <div class="cicd-git-step" data-step="3">
+                <code>npm run lint</code>
+                <span class="cicd-git-check"></span>
+              </div>
+              <div class="cicd-git-step" data-step="4">
+                <code>git rebase --continue</code>
+                <span class="cicd-git-check"></span>
+              </div>
+              <div class="cicd-git-step" data-step="5">
+                <code>git push --force-with-lease</code>
+                <span class="cicd-git-check"></span>
+              </div>
+            </div>
+            <div class="cicd-learning">Learned rule: "Never bare git push. Always rebase first."</div>
+          </div>
+
+          <!-- Hooks -->
+          <div class="cicd-panel">
+            <h4>Pre-commit Hooks</h4>
+            <div class="cicd-hooks" id="cicd-hooks">
+              <div class="cicd-hook" data-hook="0">
+                <span class="cicd-hook-icon">&#9881;</span>
+                <span>Type-check .ts/.tsx edits</span>
+                <span class="cicd-hook-status"></span>
+              </div>
+              <div class="cicd-hook" data-hook="1">
+                <span class="cicd-hook-icon">&#128274;</span>
+                <span>Block .env file edits</span>
+                <span class="cicd-hook-status"></span>
+              </div>
+              <div class="cicd-hook" data-hook="2">
+                <span class="cicd-hook-icon">&#9888;</span>
+                <span>Lint check</span>
+                <span class="cicd-hook-status"></span>
+              </div>
+              <div class="cicd-hook" data-hook="3">
+                <span class="cicd-hook-icon">&#128065;</span>
+                <span>Self-reflect on merge</span>
+                <span class="cicd-hook-status"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CI Pipeline -->
+          <div class="cicd-panel cicd-panel--wide">
+            <h4>GitHub Actions CI/CD</h4>
+            <div class="cicd-pipeline-flow" id="cicd-pipeline-flow">
+              <div class="cicd-pipe-node" id="ci-push">
+                <span>Push</span>
+              </div>
+              <div class="cicd-pipe-arrow">&rarr;</div>
+              <div class="cicd-pipe-node" id="ci-lint">
+                <span>Lint</span>
+              </div>
+              <div class="cicd-pipe-arrow">&rarr;</div>
+              <div class="cicd-pipe-node" id="ci-tsc">
+                <span>tsc</span>
+              </div>
+              <div class="cicd-pipe-arrow">&rarr;</div>
+              <div class="cicd-pipe-node" id="ci-test">
+                <span>Test</span>
+                <span class="cicd-pipe-sub" id="ci-test-count">0/1,671</span>
+              </div>
+              <div class="cicd-pipe-arrow">&rarr;</div>
+              <div class="cicd-pipe-node" id="ci-build">
+                <span>Build</span>
+              </div>
+              <div class="cicd-pipe-arrow">&rarr;</div>
+              <div class="cicd-pipe-node" id="ci-deploy">
+                <span>Deploy</span>
+              </div>
+            </div>
+            <button class="hub-demo-btn" id="cicd-run-btn">Run CI Pipeline</button>
+          </div>
+
+          <!-- Test Coverage -->
+          <div class="cicd-panel">
+            <h4>Test Coverage</h4>
+            <div class="cicd-tests">
+              <div class="cicd-test-bar-row">
+                <span class="cicd-test-label">SocialiseHub</span>
+                <div class="cicd-test-bar"><div class="cicd-test-fill" id="test-hub" style="width:0"></div></div>
+                <span class="cicd-test-count">1,671</span>
+              </div>
+              <div class="cicd-test-bar-row">
+                <span class="cicd-test-label">SocialiseApp</span>
+                <div class="cicd-test-bar"><div class="cicd-test-fill cicd-test-fill--blue" id="test-app" style="width:0"></div></div>
+                <span class="cicd-test-count">548</span>
+              </div>
+              <div class="cicd-test-bar-row">
+                <span class="cicd-test-label">DevGuide</span>
+                <div class="cicd-test-bar"><div class="cicd-test-fill cicd-test-fill--purple" id="test-dg" style="width:0"></div></div>
+                <span class="cicd-test-count">40</span>
+              </div>
+            </div>
+            <div class="cicd-test-total">
+              <span class="cicd-test-total-num" id="cicd-total">0</span>
+              <span>total tests across all projects</span>
+            </div>
+          </div>
+
+          <!-- 6-Environment Pipeline -->
+          <div class="cicd-panel cicd-panel--wide">
+            <h4>Release Pipeline (Koffee Cup — Meta VR)</h4>
+            <div class="cicd-env-flow" id="cicd-env-flow">
+              <div class="cicd-env" data-env="0"><span>Dev</span></div>
+              <div class="cicd-pipe-arrow">&rarr;</div>
+              <div class="cicd-env" data-env="1"><span>Shared</span></div>
+              <div class="cicd-pipe-arrow">&rarr;</div>
+              <div class="cicd-env" data-env="2"><span>QA</span></div>
+              <div class="cicd-pipe-arrow">&rarr;</div>
+              <div class="cicd-env" data-env="3"><span>Review</span></div>
+              <div class="cicd-pipe-arrow">&rarr;</div>
+              <div class="cicd-env" data-env="4"><span>Partner QA</span></div>
+              <div class="cicd-pipe-arrow">&rarr;</div>
+              <div class="cicd-env" data-env="5"><span>Live</span></div>
+            </div>
+            <p class="cicd-env-note">Dual-lane parallel development: LiveOps hotfixes and features ship independently</p>
+          </div>
         </div>
       </div>
     </section>
