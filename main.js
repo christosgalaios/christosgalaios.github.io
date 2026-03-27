@@ -315,7 +315,59 @@ function initMango() {
     mango.classList.add('mango--in-cannon');
     compass.classList.add('floating-compass--loaded');
 
+    // Draw arc preview during charge
+    const arcCanvas = document.getElementById('cannon-arc');
+    let arcCtx, arcFrame;
+    if (arcCanvas) {
+      arcCanvas.width = window.innerWidth;
+      arcCanvas.height = window.innerHeight;
+      arcCtx = arcCanvas.getContext('2d');
+
+      function drawArc() {
+        arcCtx.clearRect(0, 0, arcCanvas.width, arcCanvas.height);
+        const cr = compass.getBoundingClientRect();
+        const cx = cr.left + cr.width / 2;
+        const cy = cr.top + cr.height / 2;
+        const dx = mouseX - cx;
+        const dy = mouseY - cy;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const power = Math.min(Math.max(dist * 1.5, 150), Math.min(window.innerWidth, window.innerHeight) * 0.8);
+        const angle = Math.atan2(dy, dx);
+        const arcH = -(power * 0.5);
+
+        arcCtx.setLineDash([4, 6]);
+        arcCtx.strokeStyle = 'rgba(245, 158, 11, 0.5)';
+        arcCtx.lineWidth = 2;
+        arcCtx.beginPath();
+        for (let i = 0; i <= 30; i++) {
+          const t = i / 30;
+          const ease = 1 - Math.pow(1 - t, 2);
+          const px = cx + Math.cos(angle) * power * ease;
+          const py = cy + Math.sin(angle) * power * ease + arcH * Math.sin(t * Math.PI);
+          if (i === 0) arcCtx.moveTo(px, py);
+          else arcCtx.lineTo(px, py);
+        }
+        arcCtx.stroke();
+
+        // Landing dot
+        const landX = cx + Math.cos(angle) * power;
+        const landY = cy + Math.sin(angle) * power;
+        arcCtx.setLineDash([]);
+        arcCtx.beginPath();
+        arcCtx.arc(landX, landY, 4, 0, Math.PI * 2);
+        arcCtx.fillStyle = 'rgba(245, 158, 11, 0.6)';
+        arcCtx.fill();
+
+        arcFrame = requestAnimationFrame(drawArc);
+      }
+      drawArc();
+    }
+
     setTimeout(() => {
+      // Stop arc preview
+      if (arcFrame) cancelAnimationFrame(arcFrame);
+      if (arcCtx) arcCtx.clearRect(0, 0, arcCanvas.width, arcCanvas.height);
+
       compass.classList.remove('floating-compass--loaded');
       compass.classList.add('floating-compass--firing');
       mango.classList.remove('mango--in-cannon');
