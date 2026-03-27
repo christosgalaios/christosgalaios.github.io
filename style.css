@@ -2593,25 +2593,28 @@ section {
 }
 
 .project-card--app-demo .project-card-inner {
-  text-align: center;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-xl);
+  align-items: start;
 }
 
-.project-card--app-demo .project-header,
-.project-card--app-demo .project-tags,
-.project-card--app-demo .project-links {
-  justify-content: center;
+.project-card--app-demo .app-text-col {
+  display: flex;
+  flex-direction: column;
 }
 
-.project-card--app-demo .project-desc,
-.project-card--app-demo .project-role {
-  text-align: center;
-  max-width: 500px;
-  margin-left: auto;
-  margin-right: auto;
+.project-card--app-demo .app-embed-wrapper {
+  margin: 0;
 }
 
-.project-card--app-demo .socialise-palette {
-  justify-content: center;
+@media (max-width: 768px) {
+  .project-card--app-demo .project-card-inner {
+    grid-template-columns: 1fr;
+  }
+  .project-card--app-demo .app-embed-wrapper {
+    order: -1;
+  }
 }
 
 .app-embed-wrapper {
