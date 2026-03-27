@@ -2479,6 +2479,11 @@ section {
   transform: none;
 }
 
+/* Once revealed AND tiltable, use fast tilt transition instead of slow reveal */
+.tiltable.reveal--visible {
+  transition: transform 0.1s ease-out, border-color 0.2s, box-shadow 0.2s;
+}
+
 /* ============================================
    Responsive
    ============================================ */
