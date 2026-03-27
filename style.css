@@ -1047,6 +1047,12 @@ section {
   color: var(--text-muted);
   margin-top: 0.25rem;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.mango--idle .mango-label {
+  opacity: 1;
 }
 
 /* Mango Chat Panel */

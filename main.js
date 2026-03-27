@@ -199,11 +199,12 @@ function initMango() {
     mango.querySelectorAll('.mango-pose').forEach(p => p.style.display = 'none');
     const t = mango.querySelector(`.mango-pose-${newPose}`);
     if (t) t.style.display = '';
+    mango.classList.toggle('mango--idle', newPose === 'wave');
   }
 
   function resetIdleTimer() {
     clearTimeout(idleTimer); clearTimeout(sleepTimer);
-    if (isDragging) return;
+    if (isDragging || isFlying) return;
     idleTimer = setTimeout(() => { setPose('clean'); sleepTimer = setTimeout(() => setPose('sleep'), 20000); }, 15000);
   }
 
