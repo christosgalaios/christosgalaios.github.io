@@ -2589,6 +2589,7 @@ section {
    ============================================ */
 .project-card--app-demo {
   overflow: visible;
+  grid-column: 1 / -1;
 }
 
 .project-card--app-demo .project-card-inner {
