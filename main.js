@@ -311,7 +311,7 @@ function initMango() {
     isFlying = true;
     isDragging = false;
     mango.classList.remove('mango--cannon-ready');
-    setPose('celebrate');
+    mango.classList.add('mango--in-cannon');
     compass.classList.add('floating-compass--loaded');
 
     // Snapshot cursor position at moment of drop for angle + power
@@ -321,6 +321,7 @@ function initMango() {
     setTimeout(() => {
       compass.classList.remove('floating-compass--loaded');
       compass.classList.add('floating-compass--firing');
+      mango.classList.remove('mango--in-cannon');
       setPose('playful');
 
       // Calculate angle from compass center to cursor position

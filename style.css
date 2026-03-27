@@ -1232,6 +1232,12 @@ section {
   color: #f59e0b;
 }
 
+.mango--in-cannon .mango-svg,
+.mango--in-cannon .mango-label {
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
 .mango--flying {
   transition: none !important;
   z-index: 100;
