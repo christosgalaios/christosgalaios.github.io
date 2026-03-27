@@ -2313,6 +2313,104 @@ function initMagneticButtons() {
   });
 }
 
+/* --- Easter Eggs --- */
+function initEasterEggs() {
+  // === 1. CG Logo × 5 → Hacker Theme (10s) ===
+  const logo = document.querySelector('.nav-logo');
+  if (logo) {
+    let logoClicks = 0, logoTimer = null;
+    logo.addEventListener('click', (e) => {
+      logoClicks++;
+      clearTimeout(logoTimer);
+      logoTimer = setTimeout(() => { logoClicks = 0; }, 2000);
+      if (logoClicks >= 5) {
+        logoClicks = 0;
+        e.preventDefault();
+        playSound('easter');
+        document.documentElement.classList.add('theme-hacker');
+        setTimeout(() => {
+          document.documentElement.classList.add('theme-hacker-exit');
+          document.documentElement.classList.remove('theme-hacker');
+          setTimeout(() => document.documentElement.classList.remove('theme-hacker-exit'), 1000);
+        }, 10000);
+      }
+    });
+  }
+
+  // === 2. Footer Hover 3s → Cheeky Message ===
+  const footer = document.querySelector('.footer');
+  const footerEaster = document.getElementById('footer-easter');
+  const mangoPeek = document.getElementById('mango-peek');
+  if (footer && footerEaster) {
+    let footerTimer = null;
+    footer.addEventListener('mouseenter', () => {
+      footerTimer = setTimeout(() => {
+        footerEaster.classList.add('footer-easter--visible');
+        if (mangoPeek) mangoPeek.classList.add('mango-peek--visible');
+        playSound('easter');
+      }, 3000);
+    });
+    footer.addEventListener('mouseleave', () => {
+      clearTimeout(footerTimer);
+      footerEaster.classList.remove('footer-easter--visible');
+      if (mangoPeek) mangoPeek.classList.remove('mango-peek--visible');
+    });
+  }
+
+  // === 3. Select Hero Text → Glitch ===
+  const heroContent = document.querySelector('.hero-content');
+  let glitchFired = false;
+  if (heroContent) {
+    heroContent.addEventListener('mouseup', () => {
+      if (glitchFired) return;
+      const sel = window.getSelection();
+      if (!sel || sel.toString().trim().length === 0) return;
+      glitchFired = true;
+      playSound('glitch');
+      const textEls = heroContent.querySelectorAll('.hero-name, .hero-tagline, .hero-description');
+      const originals = [];
+      const scrambleChars = '!@#$%^&*<>{}[]~|/\\';
+      textEls.forEach(el => {
+        originals.push({ el, text: el.textContent });
+      });
+      const glitchInterval = setInterval(() => {
+        originals.forEach(({ el }) => {
+          el.textContent = el.textContent.split('').map(c =>
+            c === ' ' ? ' ' : scrambleChars[Math.random() * scrambleChars.length | 0]
+          ).join('');
+        });
+      }, 30);
+      heroContent.classList.add('hero-content--glitch');
+      setTimeout(() => {
+        clearInterval(glitchInterval);
+        originals.forEach(({ el, text }) => { el.textContent = text; });
+        heroContent.classList.remove('hero-content--glitch');
+      }, 200);
+    });
+  }
+
+  // === 4. Overscroll Past Footer ===
+  const overscrollMsg = document.getElementById('overscroll-msg');
+  if (overscrollMsg) {
+    let overscrollShown = false;
+    window.addEventListener('scroll', () => {
+      const atBottom = (window.innerHeight + window.scrollY) >= document.body.scrollHeight - 5;
+      if (atBottom && !overscrollShown) {
+        overscrollShown = true;
+        overscrollMsg.classList.add('overscroll-msg--visible');
+        if (mangoPeek) mangoPeek.classList.add('mango-peek--visible');
+        playSound('easter');
+      } else if (!atBottom && overscrollShown) {
+        overscrollShown = false;
+        overscrollMsg.classList.remove('overscroll-msg--visible');
+        if (mangoPeek) mangoPeek.classList.remove('mango-peek--visible');
+      }
+    });
+  }
+
+  // === 5. Canvas Swarm — already in initMatrixRain() ===
+}
+
 /* --- Init --- */
 document.addEventListener('DOMContentLoaded', () => {
   initSoundSystem();
@@ -2342,4 +2440,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initCICDDemo();
   initMatrixRain();
   initLightbox();
+  initEasterEggs();
 });

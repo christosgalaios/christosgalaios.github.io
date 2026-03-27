@@ -4005,6 +4005,110 @@ section {
   .pipeline-node { min-width: 60px; padding: 0.4rem; }
 }
 
+/* === EASTER EGGS === */
+
+/* Hacker Theme */
+html.theme-hacker {
+  --bg-primary: #000;
+  --bg-secondary: #0a0a0a;
+  --bg-card: #0a0f0a;
+  --bg-card-hover: #0a1a0a;
+  --text-primary: #00ff00;
+  --text-secondary: #00cc00;
+  --text-muted: #008800;
+  --accent: #00ff00;
+  --accent-glow: rgba(0, 255, 0, 0.2);
+  --accent-secondary: #00cc00;
+  --border: #003300;
+  --border-hover: #00ff00;
+}
+html.theme-hacker * {
+  font-family: var(--font-mono) !important;
+}
+html.theme-hacker .hero-particles {
+  filter: brightness(2) saturate(2);
+}
+html.theme-hacker .nav-links a::before {
+  content: '> ';
+  color: var(--accent);
+}
+html.theme-hacker::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,255,0,0.03) 2px,
+    rgba(0,255,0,0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+html.theme-hacker-exit {
+  transition: all 1s ease-out;
+}
+
+/* Footer Easter Egg */
+.footer-easter {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-style: italic;
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.5s, max-height 0.5s;
+}
+.footer-easter--visible {
+  opacity: 1;
+  max-height: 2rem;
+  margin-top: 0.5rem;
+}
+
+/* Overscroll Easter Egg */
+.overscroll-msg {
+  text-align: center;
+  padding: 2rem 1rem;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+.overscroll-msg--visible {
+  opacity: 1;
+}
+.overscroll-msg p {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Mango Peek */
+.mango-peek {
+  position: fixed;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: bottom 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 60;
+  pointer-events: none;
+}
+.mango-peek--visible {
+  bottom: 0;
+}
+
+/* Hero Glitch */
+.hero-content--glitch {
+  animation: heroGlitch 200ms steps(3);
+}
+@keyframes heroGlitch {
+  0%, 100% { transform: translate(0); }
+  25% { transform: translate(-2px, 1px); }
+  50% { transform: translate(2px, -1px); }
+  75% { transform: translate(-1px, -2px); }
+}
+
 /* ============================================
    Light Theme
    ============================================ */
