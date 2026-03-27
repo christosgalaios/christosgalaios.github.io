@@ -4481,3 +4481,63 @@ html.theme-transition *::after {
   0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
   30% { transform: translateY(-4px); opacity: 1; }
 }
+
+/* Project Showcase — tags/links positioning fix */
+.project-showcase > .project-tags {
+  margin-top: 1.5rem;
+}
+.project-showcase > .project-links {
+  margin-top: 0.75rem;
+}
+
+/* DevGuide Articles */
+.devguide-articles {
+  margin: 1.5rem 0;
+}
+.devguide-articles-title {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.75rem;
+}
+.devguide-articles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+.devguide-article {
+  display: block;
+  padding: 0.6rem 0.75rem;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  text-decoration: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+.devguide-article:hover {
+  border-color: var(--accent);
+  background: rgba(34,197,94,0.05);
+}
+.devguide-article-tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+.devguide-article-name {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+@media (max-width: 768px) {
+  .devguide-articles-grid {
+    grid-template-columns: 1fr;
+  }
+}
