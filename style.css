@@ -107,10 +107,17 @@ html {
   animation: shineText 4s linear infinite;
   margin-bottom: 0.5rem;
 }
-.entry-gate-sub {
-  font-family: var(--font-body);
-  color: var(--text-secondary);
-  font-size: 1.1rem;
+.entry-gate-the {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: clamp(1rem, 3vw, 1.8rem);
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+.entry-gate-the:last-of-type {
+  margin-top: 0.25rem;
   margin-bottom: 2rem;
 }
 .entry-gate-btn {
