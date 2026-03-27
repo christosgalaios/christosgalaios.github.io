@@ -1909,13 +1909,7 @@ section {
   color: var(--text-muted);
 }
 
-.sprint-layout {
-  display: flex;
-  flex-direction: column;
-  border-bottom: 1px solid var(--border);
-}
-
-/* Agents Panel */
+/* Agents Row */
 .sprint-agents {
   border-bottom: 1px solid var(--border);
   padding: 0.75rem 1rem;
@@ -2057,6 +2051,7 @@ section {
   gap: 0;
   min-height: 180px;
   width: 100%;
+  border-bottom: 1px solid var(--border);
 }
 
 .sprint-col {
