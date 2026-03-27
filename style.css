@@ -2184,6 +2184,7 @@ section {
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   overflow: hidden;
+  max-width: 100%;
 }
 
 .sprint-sim-header {
@@ -3919,7 +3920,10 @@ section {
 
 /* Compact cards — smaller projects, fill grid as equal pair */
 .project-card--compact {
-  /* No max-width — let them fill their grid column equally */
+  min-width: 0; /* allow shrinking in grid */
+}
+.project-card--compact .project-desc {
+  word-break: break-word;
 }
 
 .devguide-compass-demo {
@@ -3949,7 +3953,7 @@ section {
   font-size: 0.9rem;
   color: var(--text-secondary);
   line-height: 1.6;
-  max-width: 320px;
+  flex: 1;
 }
 
 /* Pipeline Sim */
