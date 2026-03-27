@@ -1649,6 +1649,25 @@ function initAppDemo() {
   });
 }
 
+/* --- Lightbox (click to zoom screenshots) --- */
+function initLightbox() {
+  document.querySelectorAll('.project-screenshot').forEach(img => {
+    img.addEventListener('click', () => {
+      const lb = document.createElement('div');
+      lb.className = 'lightbox';
+      const clone = document.createElement('img');
+      clone.src = img.src;
+      clone.alt = img.alt;
+      lb.appendChild(clone);
+      lb.addEventListener('click', () => lb.remove());
+      document.addEventListener('keydown', function esc(e) {
+        if (e.key === 'Escape') { lb.remove(); document.removeEventListener('keydown', esc); }
+      });
+      document.body.appendChild(lb);
+    });
+  });
+}
+
 /* --- Hero Particles --- */
 function initParticles() {
   const canvas = document.getElementById('hero-particles');
@@ -1734,5 +1753,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initEnhancedScoring();
   initCICDDemo();
   initParticles();
-  initAppDemo();
+  initLightbox();
 });

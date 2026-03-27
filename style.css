@@ -635,6 +635,28 @@ section {
 .project-screenshot:hover {
   transform: scale(1.02);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  cursor: zoom-in;
+}
+
+/* Lightbox zoom */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+  animation: fadeIn 0.2s ease;
+  padding: 2rem;
+}
+
+.lightbox img {
+  max-width: 95vw;
+  max-height: 90vh;
+  border-radius: var(--radius-md);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
 
 .project-highlights {
@@ -2662,7 +2684,84 @@ section {
 }
 
 .phone-mockup--live {
-  width: 340px;
+  width: 280px;
+  flex-shrink: 0;
+}
+
+/* Multiplatform layout */
+.app-multi-platform {
+  display: flex;
+  gap: var(--space-lg);
+  align-items: flex-start;
+}
+
+.app-multi-label {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: var(--space-sm);
+}
+
+/* Browser mockup */
+.browser-mockup {
+  border-radius: var(--radius-md);
+  border: 2px solid #333;
+  overflow: hidden;
+  background: var(--bg-card);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+  width: 420px;
+  flex-shrink: 0;
+}
+
+.browser-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.4rem 0.75rem;
+  background: #1a1a24;
+  border-bottom: 1px solid var(--border);
+}
+
+.browser-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.browser-url {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin-left: 0.5rem;
+  background: rgba(255,255,255,0.05);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  flex: 1;
+}
+
+.browser-viewport {
+  height: 380px;
+}
+
+.browser-viewport .app-live-iframe {
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 1024px) {
+  .app-multi-platform {
+    flex-direction: column;
+    align-items: center;
+  }
+  .browser-mockup {
+    width: 100%;
+    max-width: 420px;
+  }
+}
+
+@media (max-width: 768px) {
+  .browser-mockup { display: none; }
 }
 
 .phone-notch {
