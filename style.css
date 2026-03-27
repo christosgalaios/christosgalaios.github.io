@@ -774,7 +774,8 @@ section {
 
 .demo-iframe {
   width: 100%;
-  height: 600px;
+  height: 85vh;
+  min-height: 700px;
   border: none;
   border-radius: 12px;
 }
@@ -2196,7 +2197,8 @@ section {
   }
 
   .demo-iframe {
-    height: 400px;
+    height: 70vh;
+    min-height: 500px;
   }
 
   .mango {
