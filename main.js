@@ -114,8 +114,10 @@ function initNav() {
 
 /* --- 3D Card Tilt --- */
 function initCardTilt() {
-  document.querySelectorAll('.project-card, .project-showcase').forEach(card => {
+  const tiltTargets = '.project-card, .project-showcase, .hub-demo, .sprint-sim, .cicd-panel, .pipeline-sim, .education-card, .timeline-card, .phone-mockup, .agentic-detail-card';
+  document.querySelectorAll(tiltTargets).forEach(card => {
     const inner = card.querySelector('.project-card-inner') || card;
+    inner.style.transition = 'transform 0.15s ease-out';
     card.addEventListener('mousemove', (e) => {
       const rect = card.getBoundingClientRect();
       const rotateX = ((e.clientY - rect.top - rect.height / 2) / (rect.height / 2)) * -2;
