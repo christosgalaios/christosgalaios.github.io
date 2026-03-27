@@ -1823,7 +1823,7 @@ section {
 
 .sprint-layout {
   display: grid;
-  grid-template-columns: 180px 1fr;
+  grid-template-columns: 160px 1fr;
   border-bottom: 1px solid var(--border);
 }
 
@@ -1878,7 +1878,16 @@ section {
 
 @keyframes agentPulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  50% { opacity: 0.5; }
+}
+
+/* Reduce animation cost on tickets */
+.sprint-ticket {
+  will-change: opacity;
+}
+
+.sprint-agent {
+  will-change: border-color, background;
 }
 
 .sprint-agent-info {
@@ -1957,13 +1966,14 @@ section {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 0;
-  min-height: 200px;
+  min-height: 220px;
 }
 
 .sprint-col {
   border-right: 1px solid var(--border);
   padding: 0.5rem;
-  min-height: 180px;
+  min-height: 200px;
+  min-width: 0;
 }
 
 .sprint-col:last-child { border-right: none; }
@@ -1990,8 +2000,8 @@ section {
 }
 
 @keyframes ticketSlideIn {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .sprint-ticket-title {
@@ -2012,8 +2022,7 @@ section {
 .sprint-ticket--improvement { border-left: 3px solid #a855f7; }
 
 .sprint-ticket--moving {
-  opacity: 0.6;
-  transform: scale(0.95);
+  opacity: 0.5;
 }
 
 /* Sprint Log */
