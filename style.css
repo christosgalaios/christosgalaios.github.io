@@ -2461,6 +2461,24 @@ section {
   background: rgba(245,158,11,0.05);
 }
 
+.cicd-git-step--pr {
+  border-left: 3px solid #a855f7;
+}
+
+.cicd-git-step--pr.cicd-git-step--active {
+  border-color: #a855f7;
+  background: rgba(168,85,247,0.05);
+}
+
+.cicd-git-step--deploy {
+  border-left: 3px solid var(--accent);
+}
+
+.cicd-git-step--deploy.cicd-git-step--active {
+  border-color: var(--accent);
+  background: rgba(34,197,94,0.08);
+}
+
 .cicd-git-check {
   font-size: 0.8rem;
   opacity: 0;
@@ -2673,6 +2691,69 @@ section {
   color: var(--text-muted);
   text-align: center;
   font-style: italic;
+}
+
+/* Night Shift */
+.nightshift-panel {
+  background: linear-gradient(170deg, #0a0a14 0%, #0d0d1a 100%);
+  border-color: rgba(99,102,241,0.2);
+}
+
+.nightshift-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.nightshift-timeline {
+  position: relative;
+  padding-left: 1rem;
+  border-left: 2px solid rgba(99,102,241,0.3);
+}
+
+.nightshift-event {
+  display: flex;
+  gap: 1rem;
+  padding: 0.4rem 0;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.nightshift-event--visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.nightshift-time {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: #818cf8;
+  min-width: 40px;
+  flex-shrink: 0;
+}
+
+.nightshift-action {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.nightshift-rules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.nightshift-rules span {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid rgba(99,102,241,0.3);
+  color: #818cf8;
+  background: rgba(99,102,241,0.05);
 }
 
 @media (max-width: 768px) {

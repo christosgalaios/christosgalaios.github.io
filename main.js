@@ -1319,6 +1319,21 @@ function initCICDDemo() {
   }, { threshold: 0.3 });
   if (testBars.hub?.parentElement?.parentElement) testObs.observe(testBars.hub.parentElement.parentElement);
 
+  // Night shift timeline — animate on scroll
+  const nsEvents = document.querySelectorAll('.nightshift-event');
+  if (nsEvents.length) {
+    const nsObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        nsEvents.forEach((ev, i) => {
+          setTimeout(() => ev.classList.add('nightshift-event--visible'), i * 400);
+        });
+        nsObs.unobserve(entry.target);
+      });
+    }, { threshold: 0.2 });
+    nsObs.observe(nsEvents[0].parentElement);
+  }
+
   // 6-env pipeline — animate on scroll
   const envNodes = document.querySelectorAll('.cicd-env');
   const envObs = new IntersectionObserver((entries) => {

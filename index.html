@@ -788,31 +788,43 @@
             <h4>Git Workflow</h4>
             <div class="cicd-git-flow" id="cicd-git-flow">
               <div class="cicd-git-step" data-step="0">
-                <code>git fetch origin develop</code>
+                <code>git checkout -b fix/price-guard</code>
                 <span class="cicd-git-check"></span>
               </div>
               <div class="cicd-git-step" data-step="1">
-                <code>git rebase origin/develop</code>
+                <code>git commit -m "fix: price null guard"</code>
                 <span class="cicd-git-check"></span>
               </div>
-              <div class="cicd-git-step cicd-git-step--conflict" data-step="2">
-                <code>Conflict in events.ts — resolve</code>
+              <div class="cicd-git-step" data-step="2">
+                <code>git fetch origin develop</code>
                 <span class="cicd-git-check"></span>
               </div>
               <div class="cicd-git-step" data-step="3">
-                <code>npm run lint</code>
+                <code>git rebase origin/develop</code>
                 <span class="cicd-git-check"></span>
               </div>
-              <div class="cicd-git-step" data-step="4">
-                <code>git rebase --continue</code>
+              <div class="cicd-git-step cicd-git-step--conflict" data-step="4">
+                <code>Conflict in events.ts — resolve &rarr; lint</code>
                 <span class="cicd-git-check"></span>
               </div>
               <div class="cicd-git-step" data-step="5">
-                <code>git push --force-with-lease</code>
+                <code>git push --force-with-lease origin fix/price-guard</code>
+                <span class="cicd-git-check"></span>
+              </div>
+              <div class="cicd-git-step cicd-git-step--pr" data-step="6">
+                <code>gh pr create --base develop --title "fix: price guard"</code>
+                <span class="cicd-git-check"></span>
+              </div>
+              <div class="cicd-git-step" data-step="7">
+                <code>CI passes &rarr; auto-merge to develop</code>
+                <span class="cicd-git-check"></span>
+              </div>
+              <div class="cicd-git-step cicd-git-step--deploy" data-step="8">
+                <code>develop &rarr; main merge &rarr; deploy to production</code>
                 <span class="cicd-git-check"></span>
               </div>
             </div>
-            <div class="cicd-learning">Learned rule: "Never bare git push. Always rebase first."</div>
+            <div class="cicd-learning">Learned rules: "Never bare git push" &middot; "Rebase and merge only — no squash" &middot; "GITHUB_TOKEN merges don't trigger workflows — use workflow_dispatch"</div>
           </div>
 
           <!-- Hooks -->
@@ -917,6 +929,59 @@
               <div class="cicd-env" data-env="5"><span>Live</span></div>
             </div>
             <p class="cicd-env-note">Dual-lane parallel development: LiveOps hotfixes and features ship independently</p>
+          </div>
+
+          <!-- Night Shift Mode -->
+          <div class="cicd-panel cicd-panel--wide nightshift-panel">
+            <h4>Night Shift Mode</h4>
+            <p class="nightshift-desc">When I say "night shift", the agents enter autonomous continuous operation. They never stop.</p>
+            <div class="nightshift-sim" id="nightshift-sim">
+              <div class="nightshift-timeline">
+                <div class="nightshift-event" data-ns="0">
+                  <span class="nightshift-time">23:00</span>
+                  <span class="nightshift-action">User: "night shift" &rarr; agents activate</span>
+                </div>
+                <div class="nightshift-event" data-ns="1">
+                  <span class="nightshift-time">23:12</span>
+                  <span class="nightshift-action">Agent fixes price guard bug, commits, pushes</span>
+                </div>
+                <div class="nightshift-event" data-ns="2">
+                  <span class="nightshift-time">23:18</span>
+                  <span class="nightshift-action">QA validates via MCP, marks VERIFIED</span>
+                </div>
+                <div class="nightshift-event" data-ns="3">
+                  <span class="nightshift-time">23:20</span>
+                  <span class="nightshift-action">Manager writes next task, Agent picks it up</span>
+                </div>
+                <div class="nightshift-event" data-ns="4">
+                  <span class="nightshift-time">23:45</span>
+                  <span class="nightshift-action">Backlog empty &rarr; Agent hunts for bugs proactively</span>
+                </div>
+                <div class="nightshift-event" data-ns="5">
+                  <span class="nightshift-time">00:10</span>
+                  <span class="nightshift-action">Found missing validation on event dates &rarr; fixes, tests, commits</span>
+                </div>
+                <div class="nightshift-event" data-ns="6">
+                  <span class="nightshift-time">01:30</span>
+                  <span class="nightshift-action">QA finds no more issues. Agents stay on standby, file watchers active</span>
+                </div>
+                <div class="nightshift-event" data-ns="7">
+                  <span class="nightshift-time">03:00</span>
+                  <span class="nightshift-action">Context running low &rarr; commit, push, log next steps for next agent</span>
+                </div>
+                <div class="nightshift-event" data-ns="8">
+                  <span class="nightshift-time">08:00</span>
+                  <span class="nightshift-action">User wakes up. Code shipped. Tests green. Status log updated.</span>
+                </div>
+              </div>
+            </div>
+            <div class="nightshift-rules">
+              <span>Never stop working</span>
+              <span>When done, find more work</span>
+              <span>Commit early and often</span>
+              <span>Log everything to status-log.md</span>
+              <span>Only the user can stop night shift</span>
+            </div>
           </div>
         </div>
       </div>
