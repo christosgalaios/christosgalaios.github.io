@@ -74,19 +74,22 @@ function ensureAudioCtx() {
 
 function playSound(type, sourceEl) {
   if (!soundEnabled || !audioCtx) return;
-  // Proximity volume: if a source element is passed, scale volume by how visible it is
+  // Proximity volume: scale by how close the source element is to the viewport center
   let proximityScale = 1;
   if (sourceEl) {
     const rect = sourceEl.getBoundingClientRect();
     const vh = window.innerHeight;
-    // How much of the element's center is within the viewport
-    const center = rect.top + rect.height / 2;
-    if (center < -rect.height || center > vh + rect.height) return; // fully off-screen, skip sound
-    const distFromCenter = Math.abs(center - vh / 2);
-    const maxDist = vh / 2 + rect.height / 2;
+    // Fully off-screen check
+    if (rect.bottom < 0 || rect.top > vh) return;
+    // Use the closest visible point of the element to viewport center, not the element's center.
+    // This handles tall/growing elements (like sprint log) where the active area is at the bottom.
+    const viewCenter = vh / 2;
+    const closestY = Math.max(rect.top, Math.min(rect.bottom, viewCenter));
+    const distFromCenter = Math.abs(closestY - viewCenter);
+    const maxDist = vh / 2;
     proximityScale = Math.max(0, 1 - (distFromCenter / maxDist));
-    proximityScale = proximityScale * proximityScale; // ease-in curve for faster falloff
-    if (proximityScale < 0.05) return; // too quiet, skip
+    proximityScale = proximityScale * proximityScale;
+    if (proximityScale < 0.05) return;
   }
   const t = audioCtx.currentTime;
   const vol = audioCtx.createGain();
@@ -1569,7 +1572,7 @@ function initSprintSim() {
       if (i < fullText.length) {
         line.textContent += fullText[i];
         log.scrollTop = log.scrollHeight;
-        if (typeof playSound === 'function') playSound('typewriter', sim);
+        if (typeof playSound === 'function') playSound('typewriter', line);
         i++;
         setTimeout(typeChar, 25 + Math.random() * 15);
       } else {
@@ -1589,15 +1592,15 @@ function initSprintSim() {
     if (state === 'busy') el.classList.add('sprint-agent--busy');
     sEl.textContent = statusText;
     sEl.style.color = state === 'active' ? 'var(--accent)' : state === 'busy' ? 'var(--accent-secondary)' : '';
-    if (state === 'active') playSound('activate', sim);
-    if (state === 'busy') playSound('tick', sim);
+    if (state === 'active') playSound('activate', el);
+    if (state === 'busy') playSound('tick', el);
   }
 
   function flashFile(name, cls) {
     const el = fileEls[name];
     if (!el) return;
     el.classList.add(cls || 'sprint-file--flash');
-    playSound('tick', sim);
+    playSound('tick', el);
     setTimeout(() => el.classList.remove(cls || 'sprint-file--flash'), 1500);
   }
 
@@ -1619,7 +1622,7 @@ function initSprintSim() {
     div.id = `ticket-${ticketId}`;
     div.innerHTML = `<div class="sprint-ticket-title">${data.title}</div><div class="sprint-ticket-meta">#${ticketId} · ${data.type}</div>`;
     div.dataset.id = ticketId;
-    playSound('pop', sim);
+    playSound('pop', div);
     return { el: div, id: ticketId, ...data };
   }
 
@@ -1630,7 +1633,7 @@ function initSprintSim() {
     setTimeout(() => {
       ticket.el.classList.remove('sprint-ticket--moving');
       col.appendChild(ticket.el);
-      playSound('whoosh', sim);
+      playSound('whoosh', ticket.el);
     }, 200);
   }
 
@@ -1878,7 +1881,7 @@ function initSprintSim() {
 
   startBtn.addEventListener('click', () => {
     if (running) return;
-    playSound('click', sim);
+    playSound('click', startBtn);
     // Clear log
     log.innerHTML = '';
     timers.forEach(clearTimeout);
@@ -3208,6 +3211,20 @@ function initTimelineChart() {
 
 /* --- Init --- */
 document.addEventListener('DOMContentLoaded', () => {
+  // Entry gate — unlock AudioContext on first click
+  const entryGate = document.getElementById('entry-gate');
+  const entryBtn = document.getElementById('entry-gate-btn');
+  if (entryGate && entryBtn) {
+    document.body.style.overflow = 'hidden'; // prevent scrolling behind gate
+    entryBtn.addEventListener('click', () => {
+      ensureAudioCtx();
+      entryGate.classList.add('entry-gate--hidden');
+      document.body.style.overflow = '';
+      playSound('easter'); // satisfying entry chime
+      setTimeout(() => entryGate.remove(), 600);
+    });
+  }
+
   initSoundSystem();
   initTheme();
   initBlurReveal();
