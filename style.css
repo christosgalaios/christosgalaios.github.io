@@ -2228,6 +2228,45 @@ section {
 .sprint-log-line--mcp { color: #e879f9; }
 .sprint-log-line--error { color: #ef4444; }
 
+/* Typewriter Cursor */
+.sprint-log-line--typing::after {
+  content: '|';
+  animation: blink 530ms step-end infinite;
+  color: var(--accent);
+  font-weight: bold;
+}
+@keyframes blink {
+  50% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sprint-log-line--typing::after { animation: none; }
+}
+
+/* Loading Skeletons */
+.skeleton-loading {
+  position: relative;
+  min-height: 80px;
+  overflow: hidden;
+}
+.skeleton-loading > * {
+  visibility: hidden;
+}
+.skeleton-loading::before,
+.skeleton-loading::after {
+  content: '';
+  position: absolute;
+  background: var(--bg-card-hover);
+  border-radius: 8px;
+  visibility: visible;
+}
+.skeleton-loading::before {
+  top: 1rem; left: 1rem; right: 30%; height: 16px;
+}
+.skeleton-loading::after {
+  top: 2.5rem; left: 1rem; right: 50%; height: 16px;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
 /* Mini App Preview */
 .sprint-app-preview {
   margin: 0;

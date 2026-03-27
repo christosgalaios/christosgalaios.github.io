@@ -865,7 +865,12 @@ function initHubDemo() {
       document.querySelectorAll('.hub-tab').forEach(t => t.classList.remove('hub-tab--active'));
       document.querySelectorAll('.hub-panel').forEach(p => p.classList.remove('hub-panel--active'));
       tab.classList.add('hub-tab--active');
-      document.getElementById(`hub-panel-${tab.dataset.tab}`)?.classList.add('hub-panel--active');
+      const panel = document.getElementById(`hub-panel-${tab.dataset.tab}`);
+      if (panel) {
+        panel.classList.add('hub-panel--active');
+        panel.classList.add('skeleton-loading');
+        setTimeout(() => panel.classList.remove('skeleton-loading'), 300);
+      }
     });
   });
 
@@ -1260,13 +1265,48 @@ function initSprintSim() {
     { title: 'Improve conflict detection accuracy', type: 'improvement' },
   ];
 
+  let typewriterQueue = [];
+  let isTyping = false;
+
   function addLog(text, type) {
+    typewriterQueue.push({ text, type });
+    if (!isTyping) processTypewriterQueue();
+  }
+
+  function processTypewriterQueue() {
+    if (!typewriterQueue.length) { isTyping = false; return; }
+    isTyping = true;
+    const { text, type } = typewriterQueue.shift();
     const line = document.createElement('div');
-    line.className = `sprint-log-line sprint-log-line--${type}`;
+    line.className = `sprint-log-line sprint-log-line--${type} sprint-log-line--typing`;
     const time = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    line.textContent = `[${time}] ${text}`;
+    const fullText = `[${time}] ${text}`;
+
+    if (prefersReducedMotion) {
+      line.textContent = fullText;
+      line.classList.remove('sprint-log-line--typing');
+      log.appendChild(line);
+      log.scrollTop = log.scrollHeight;
+      processTypewriterQueue();
+      return;
+    }
+
+    line.textContent = '';
     log.appendChild(line);
-    log.scrollTop = log.scrollHeight;
+    let i = 0;
+    function typeChar() {
+      if (i < fullText.length) {
+        line.textContent += fullText[i];
+        log.scrollTop = log.scrollHeight;
+        if (typeof playSound === 'function') playSound('typewriter');
+        i++;
+        setTimeout(typeChar, 25 + Math.random() * 15);
+      } else {
+        line.classList.remove('sprint-log-line--typing');
+        setTimeout(processTypewriterQueue, 200);
+      }
+    }
+    typeChar();
   }
 
   function setAgentState(name, state, statusText) {
