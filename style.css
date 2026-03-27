@@ -3162,6 +3162,14 @@ section {
   background: #F9F7F2;
 }
 
+.phone-screen .app-live-iframe {
+  width: 150%;
+  height: 150%;
+  transform: scale(0.6667);
+  transform-origin: top left;
+  border: none;
+}
+
 .app-live-iframe {
   width: 100%;
   height: 100%;
