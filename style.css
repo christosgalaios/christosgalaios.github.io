@@ -2432,6 +2432,420 @@ section {
 }
 
 /* ============================================
+   SocialiseApp Phone Mockup
+   ============================================ */
+.project-card--app-demo {
+  overflow: visible;
+}
+
+.phone-mockup {
+  width: 300px;
+  margin: 1.5rem auto;
+  border-radius: 32px;
+  border: 3px solid #333;
+  background: #F9F7F2;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(255,255,255,0.05);
+  overflow: hidden;
+  position: relative;
+}
+
+.phone-notch {
+  width: 120px;
+  height: 24px;
+  background: #333;
+  border-radius: 0 0 16px 16px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 5;
+}
+
+.phone-screen {
+  height: 520px;
+  overflow: hidden;
+  position: relative;
+  background: #F9F7F2;
+}
+
+.app-page {
+  display: none;
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  background: #F9F7F2;
+  animation: appPageIn 0.3s ease;
+}
+
+.app-page--active { display: block; }
+
+@keyframes appPageIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.app-topbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: #F9F7F2;
+  border-bottom: 1px solid #e8e4dc;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+
+.app-topbar-logo {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #E2725B;
+}
+
+.app-topbar-title {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #2C2520;
+}
+
+.app-topbar-xp {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: #F4B942;
+  background: rgba(244,185,66,0.12);
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+}
+
+/* Event Cards */
+.app-events {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.app-event-card {
+  display: flex;
+  gap: 0.6rem;
+  padding: 0.6rem;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid #e8e4dc;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+
+.app-event-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.app-event-card::after {
+  content: 'Tap to join +' attr(data-xp) 'XP';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(226,114,91,0.9);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.75rem;
+  border-radius: 12px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.app-event-card:active::after {
+  opacity: 1;
+}
+
+.app-event-card--joined {
+  border-color: #E2725B;
+  background: rgba(226,114,91,0.05);
+}
+
+.app-event-card--joined::after {
+  content: 'Joined ✓';
+  background: rgba(45,95,93,0.9);
+}
+
+.app-event-cat {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: #fff;
+  padding: 0.3rem 0.15rem;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: center;
+  min-width: 18px;
+}
+
+.app-event-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.app-event-info strong {
+  font-size: 0.8rem;
+  color: #2C2520;
+}
+
+.app-event-info span {
+  font-size: 0.65rem;
+  color: #6B6560;
+}
+
+.app-event-price {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: #E2725B;
+}
+
+.app-event-fill {
+  position: absolute;
+  bottom: 4px;
+  left: 0.6rem;
+  right: 0.6rem;
+  height: 3px;
+  background: #e8e4dc;
+  border-radius: 2px;
+}
+
+.app-event-fill-bar {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #2D5F5D, #E2725B);
+}
+
+/* Feed */
+.app-feed {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.app-feed-post {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.6rem;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid #e8e4dc;
+}
+
+.app-feed-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.app-feed-body {
+  flex: 1;
+}
+
+.app-feed-body strong {
+  font-size: 0.75rem;
+  color: #2C2520;
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.app-feed-body p {
+  font-size: 0.7rem;
+  color: #6B6560;
+  line-height: 1.4;
+  margin-bottom: 0.4rem;
+}
+
+.app-feed-reactions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.app-reaction {
+  font-size: 0.6rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 999px;
+  background: #f0ece4;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.app-reaction:hover { background: #e8e0d4; }
+.app-reaction--active { background: rgba(226,114,91,0.15); }
+
+/* Profile */
+.app-profile {
+  padding: 1rem;
+}
+
+.app-profile-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.app-profile-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #E2725B;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.app-profile-info strong {
+  display: block;
+  font-size: 1rem;
+  color: #2C2520;
+}
+
+.app-profile-title {
+  font-size: 0.75rem;
+  color: #F4B942;
+}
+
+.app-profile-xp {
+  background: #fff;
+  border: 1px solid #e8e4dc;
+  border-radius: 12px;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.app-profile-level {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: #2C2520;
+  margin-bottom: 0.4rem;
+}
+
+.app-profile-bar {
+  height: 8px;
+  background: #e8e4dc;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.25rem;
+}
+
+.app-profile-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #E2725B, #F4B942);
+}
+
+.app-profile-xp-text {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: #6B6560;
+}
+
+.app-profile-skills {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 0.75rem;
+}
+
+.app-skill {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4rem 0.6rem;
+  background: #fff;
+  border: 1px solid #e8e4dc;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  color: #2C2520;
+}
+
+.app-skill-level {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: #E2725B;
+  font-size: 0.65rem;
+}
+
+.app-profile-stats {
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+}
+
+.app-profile-stats div strong {
+  display: block;
+  font-size: 1.1rem;
+  color: #E2725B;
+}
+
+.app-profile-stats div span {
+  font-size: 0.65rem;
+  color: #6B6560;
+}
+
+/* Phone Bottom Nav */
+.phone-nav {
+  display: flex;
+  justify-content: space-around;
+  padding: 0.4rem 0.5rem;
+  background: #fff;
+  border-top: 1px solid #e8e4dc;
+}
+
+.phone-nav-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6B6560;
+  padding: 0.3rem 0.75rem;
+  border-radius: 8px;
+  transition: color 0.2s, background 0.2s;
+}
+
+.phone-nav-btn span {
+  font-size: 0.55rem;
+  font-family: var(--font-body);
+}
+
+.phone-nav-btn--active {
+  color: #E2725B;
+  background: rgba(226,114,91,0.08);
+}
+
+.phone-nav-btn:hover {
+  color: #E2725B;
+}
+
+/* ============================================
    CI/CD Pipeline Demo
    ============================================ */
 .cicd-demo {

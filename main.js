@@ -1354,6 +1354,70 @@ function initCICDDemo() {
   if (envNodes[0]?.parentElement) envObs.observe(envNodes[0].parentElement);
 }
 
+/* --- SocialiseApp Phone Demo --- */
+function initAppDemo() {
+  const navBtns = document.querySelectorAll('.phone-nav-btn');
+  const pages = document.querySelectorAll('.app-page');
+  if (!navBtns.length) return;
+
+  // Tab navigation
+  navBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      navBtns.forEach(b => b.classList.remove('phone-nav-btn--active'));
+      pages.forEach(p => p.classList.remove('app-page--active'));
+      btn.classList.add('phone-nav-btn--active');
+      const page = document.getElementById(`app-page-${btn.dataset.page}`);
+      if (page) page.classList.add('app-page--active');
+    });
+  });
+
+  // Join events + earn XP
+  let totalXP = 280;
+  const xpBadge = document.getElementById('app-xp-badge');
+  const levels = [
+    { xp: 0, title: 'Newcomer' }, { xp: 50, title: 'Rising Star' },
+    { xp: 150, title: 'Social Explorer' }, { xp: 450, title: 'Scene Regular' },
+    { xp: 800, title: 'Socialite' },
+  ];
+
+  function updateXP() {
+    const level = levels.filter(l => totalXP >= l.xp).pop();
+    const lvNum = levels.indexOf(level) + 1;
+    if (xpBadge) xpBadge.textContent = `Lv.${lvNum} ★ ${totalXP} XP`;
+    // Update profile too
+    const profileBar = document.querySelector('.app-profile-bar-fill');
+    const profileText = document.querySelector('.app-profile-xp-text');
+    const profileLevel = document.querySelector('.app-profile-level');
+    const nextLevel = levels[levels.indexOf(level) + 1];
+    if (profileBar && nextLevel) {
+      const progress = ((totalXP - level.xp) / (nextLevel.xp - level.xp)) * 100;
+      profileBar.style.width = Math.min(progress, 100) + '%';
+    }
+    if (profileText) profileText.textContent = `${totalXP} / ${nextLevel ? nextLevel.xp : '???'} XP`;
+    if (profileLevel) profileLevel.textContent = `Level ${lvNum} — ${level.title}`;
+  }
+
+  document.querySelectorAll('.app-event-card').forEach(card => {
+    card.addEventListener('click', () => {
+      if (card.classList.contains('app-event-card--joined')) return;
+      card.classList.add('app-event-card--joined');
+      const xp = parseInt(card.dataset.xp) || 20;
+      totalXP += xp;
+      updateXP();
+    });
+  });
+
+  // Clickable reactions
+  document.querySelectorAll('.app-reaction').forEach(r => {
+    r.addEventListener('click', () => {
+      r.classList.toggle('app-reaction--active');
+      const num = parseInt(r.textContent.match(/\d+/)?.[0] || '0');
+      const emoji = r.textContent.match(/[^\d\s]+/)?.[0] || '';
+      r.textContent = `${emoji} ${r.classList.contains('app-reaction--active') ? num + 1 : Math.max(0, num - 1)}`;
+    });
+  });
+}
+
 /* --- Hero Particles --- */
 function initParticles() {
   const canvas = document.getElementById('hero-particles');
@@ -1439,4 +1503,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initEnhancedScoring();
   initCICDDemo();
   initParticles();
+  initAppDemo();
 });
