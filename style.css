@@ -40,6 +40,42 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Custom scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-hover) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--border-hover);
+  border-radius: 3px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+[data-theme="light"] * {
+  scrollbar-color: var(--border) transparent;
+}
+
+[data-theme="light"] *::-webkit-scrollbar-thumb {
+  background: var(--border);
+}
+
+[data-theme="light"] *::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover);
+}
+
 body {
   font-family: var(--font-body);
   font-size: 16px;
