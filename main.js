@@ -245,6 +245,8 @@ function initMango() {
       setPose('carried');
       mango.style.cursor = 'grabbing';
       mango.style.transition = 'none';
+      // Show compass as drop target
+      if (compass) compass.classList.add('floating-compass--drop-target');
     }
     if (isDragging) {
       currentX = e.clientX - startX;
@@ -260,6 +262,7 @@ function initMango() {
       mango.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
       currentY = 0;
       mango.style.transform = `translate(${currentX}px, 0px)`;
+      if (compass) compass.classList.remove('floating-compass--drop-target');
       setPose('playful');
       setTimeout(() => { setPose('wave'); resetIdleTimer(); }, 800);
     } else if (downTime && !hasMoved && Date.now() - downTime < 300) {
@@ -313,6 +316,7 @@ function initMango() {
     isDragging = false;
     mango.classList.remove('mango--cannon-ready');
     mango.classList.add('mango--in-cannon');
+    compass.classList.remove('floating-compass--drop-target');
     compass.classList.add('floating-compass--loaded');
 
     // Draw arc preview during charge
