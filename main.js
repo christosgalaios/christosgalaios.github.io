@@ -357,44 +357,146 @@ function initHubDemo() {
   const syncBtn = document.getElementById('sync-btn');
   const syncLog = document.getElementById('sync-log');
   const syncStatus = document.getElementById('sync-status');
+  // Sync event list (populates as events arrive)
+  const syncEventList = document.getElementById('sync-event-list');
+
+  const meetupEvents = [
+    'Speed Friending Social — Fri 7pm',
+    'Sunday Hike — Leigh Woods',
+    'Board Games Night — Wed 7pm',
+    'Pub Quiz at The Lanes',
+    'Comedy Open Mic Night',
+    'Welcome Night — First Event',
+    'Yoga in the Park — Sunday',
+    'Photography Walk — Harbourside',
+  ];
+  const eventbriteEvents = [
+    'Pottery Workshop — Sat 2pm',
+    'Wine Tasting Social',
+    'Salsa Night — Beginners',
+  ];
+  const headfirstEvents = [
+    'Live Jazz Evening — The Louisiana',
+    'Spoken Word Night — Stokes Croft',
+  ];
+
   if (syncBtn) {
     syncBtn.addEventListener('click', () => {
       syncBtn.disabled = true;
       syncLog.innerHTML = '';
+      if (syncEventList) syncEventList.innerHTML = '';
       syncStatus.textContent = 'Syncing...';
       const platforms = document.querySelectorAll('.sync-platform');
       const arrows = document.querySelectorAll('.sync-arrow');
-      const steps = [
-        { delay: 0, log: '> Connecting to Meetup GraphQL API...', type: 'info' },
-        { delay: 600, log: '  Fetched 282 events via graphql.meetup.com', type: 'info', platform: 0, arrows: [0,1,2] },
-        { delay: 1200, log: '> Launching Eventbrite DOM automation...', type: 'info' },
-        { delay: 1800, log: '  Scraped 47 events via Electron WebContentsView', type: 'info', platform: 3, arrows: [3,4] },
-        { delay: 2400, log: '> Scraping Headfirst Bristol...', type: 'info' },
-        { delay: 2800, log: '  Parsed 23 events from headfirstbristol.co.uk', type: 'info', platform: 4 },
-        { delay: 3400, log: '> Running conflict detection...', type: 'info' },
-        { delay: 3800, log: '  6 cross-platform conflicts detected', type: 'info' },
-        { delay: 4200, log: '> Sync complete: 282 pulled, 6 updated, 276 skipped', type: 'success' },
-      ];
-      steps.forEach(step => {
+      let eventCount = 0;
+
+      function addEvent(name, platform, delay) {
         setTimeout(() => {
-          const line = document.createElement('div');
-          line.className = `sync-log-line sync-log-line--${step.type}`;
-          line.textContent = step.log;
-          syncLog.appendChild(line);
-          syncLog.scrollTop = syncLog.scrollHeight;
-          if (step.platform !== undefined) {
-            platforms[step.platform]?.classList.add('sync-platform--active');
-            setTimeout(() => platforms[step.platform]?.classList.remove('sync-platform--active'), 800);
-          }
-          if (step.arrows) {
-            step.arrows.forEach((a, i) => {
-              setTimeout(() => arrows[a]?.classList.add('sync-arrow--pulse'), i * 150);
-              setTimeout(() => arrows[a]?.classList.remove('sync-arrow--pulse'), i * 150 + 500);
-            });
-          }
-        }, step.delay);
-      });
-      setTimeout(() => { syncBtn.disabled = false; syncStatus.textContent = 'Synced'; }, 4500);
+          if (!syncEventList) return;
+          eventCount++;
+          const row = document.createElement('div');
+          row.className = 'sync-event-row';
+          row.innerHTML = `<span class="sync-event-name">${name}</span><span class="sync-event-src sync-event-src--${platform}">${platform}</span>`;
+          syncEventList.appendChild(row);
+          syncEventList.scrollTop = syncEventList.scrollHeight;
+        }, delay);
+      }
+
+      // Meetup batch
+      setTimeout(() => {
+        const line = document.createElement('div');
+        line.className = 'sync-log-line sync-log-line--info';
+        line.textContent = '> Connecting to Meetup GraphQL API...';
+        syncLog.appendChild(line);
+        platforms[0]?.classList.add('sync-platform--active');
+        arrows.forEach((a, i) => { if (i < 3) { setTimeout(() => { a.classList.add('sync-arrow--pulse'); setTimeout(() => a.classList.remove('sync-arrow--pulse'), 500); }, i * 150); }});
+      }, 0);
+
+      meetupEvents.forEach((ev, i) => addEvent(ev, 'meetup', 400 + i * 250));
+
+      setTimeout(() => {
+        platforms[0]?.classList.remove('sync-platform--active');
+        const line = document.createElement('div');
+        line.className = 'sync-log-line sync-log-line--success';
+        line.textContent = `  ✓ Fetched ${meetupEvents.length} events via graphql.meetup.com`;
+        syncLog.appendChild(line);
+        syncLog.scrollTop = syncLog.scrollHeight;
+      }, 400 + meetupEvents.length * 250 + 200);
+
+      // Eventbrite batch
+      const ebStart = 400 + meetupEvents.length * 250 + 600;
+      setTimeout(() => {
+        const line = document.createElement('div');
+        line.className = 'sync-log-line sync-log-line--info';
+        line.textContent = '> Launching Eventbrite DOM automation...';
+        syncLog.appendChild(line);
+        syncLog.scrollTop = syncLog.scrollHeight;
+        platforms[3]?.classList.add('sync-platform--active');
+        [3,4].forEach((a, i) => { setTimeout(() => { arrows[a]?.classList.add('sync-arrow--pulse'); setTimeout(() => arrows[a]?.classList.remove('sync-arrow--pulse'), 500); }, i * 150); });
+      }, ebStart);
+
+      eventbriteEvents.forEach((ev, i) => addEvent(ev, 'eventbrite', ebStart + 300 + i * 350));
+
+      setTimeout(() => {
+        platforms[3]?.classList.remove('sync-platform--active');
+        const line = document.createElement('div');
+        line.className = 'sync-log-line sync-log-line--success';
+        line.textContent = `  ✓ Scraped ${eventbriteEvents.length} events via Electron WebContentsView`;
+        syncLog.appendChild(line);
+        syncLog.scrollTop = syncLog.scrollHeight;
+      }, ebStart + 300 + eventbriteEvents.length * 350 + 200);
+
+      // Headfirst batch
+      const hfStart = ebStart + 300 + eventbriteEvents.length * 350 + 600;
+      setTimeout(() => {
+        const line = document.createElement('div');
+        line.className = 'sync-log-line sync-log-line--info';
+        line.textContent = '> Scraping Headfirst Bristol...';
+        syncLog.appendChild(line);
+        syncLog.scrollTop = syncLog.scrollHeight;
+        platforms[4]?.classList.add('sync-platform--active');
+      }, hfStart);
+
+      headfirstEvents.forEach((ev, i) => addEvent(ev, 'headfirst', hfStart + 300 + i * 350));
+
+      setTimeout(() => {
+        platforms[4]?.classList.remove('sync-platform--active');
+        const line = document.createElement('div');
+        line.className = 'sync-log-line sync-log-line--success';
+        line.textContent = `  ✓ Parsed ${headfirstEvents.length} events from headfirstbristol.co.uk`;
+        syncLog.appendChild(line);
+        syncLog.scrollTop = syncLog.scrollHeight;
+      }, hfStart + 300 + headfirstEvents.length * 350 + 200);
+
+      // Conflict detection + done
+      const endStart = hfStart + 300 + headfirstEvents.length * 350 + 600;
+      setTimeout(() => {
+        const l1 = document.createElement('div');
+        l1.className = 'sync-log-line sync-log-line--info';
+        l1.textContent = '> Running conflict detection...';
+        syncLog.appendChild(l1);
+      }, endStart);
+      setTimeout(() => {
+        const l2 = document.createElement('div');
+        l2.className = 'sync-log-line sync-log-line--info';
+        l2.textContent = '  2 cross-platform conflicts detected (title mismatch)';
+        syncLog.appendChild(l2);
+        // Highlight conflicted events
+        const rows = syncEventList?.querySelectorAll('.sync-event-row');
+        if (rows && rows[0]) rows[0].classList.add('sync-event-row--conflict');
+        if (rows && rows[5]) rows[5].classList.add('sync-event-row--conflict');
+      }, endStart + 400);
+      setTimeout(() => {
+        const total = meetupEvents.length + eventbriteEvents.length + headfirstEvents.length;
+        const l3 = document.createElement('div');
+        l3.className = 'sync-log-line sync-log-line--success';
+        l3.textContent = `> Sync complete: ${total} events pulled, 2 conflicts, ${total - 2} clean`;
+        syncLog.appendChild(l3);
+        syncLog.scrollTop = syncLog.scrollHeight;
+        syncStatus.textContent = `${total} synced`;
+        syncBtn.disabled = false;
+        syncBtn.textContent = 'Run Again';
+      }, endStart + 800);
     });
   }
 

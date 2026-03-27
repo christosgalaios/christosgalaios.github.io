@@ -1339,13 +1339,73 @@ section {
 .hub-demo-btn:hover { background: #16a34a; transform: translateY(-1px); }
 .hub-demo-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
+.sync-results {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.sync-event-list {
+  max-height: 180px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem;
+}
+
+.sync-event-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.3rem 0.5rem;
+  border-radius: 4px;
+  margin-bottom: 0.2rem;
+  animation: syncEventIn 0.3s ease;
+  font-size: 0.7rem;
+  border: 1px solid transparent;
+}
+
+@keyframes syncEventIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.sync-event-row--conflict {
+  border-color: #f59e0b;
+  background: rgba(245,158,11,0.05);
+}
+
+.sync-event-name {
+  color: var(--text-secondary);
+  font-size: 0.68rem;
+}
+
+.sync-event-src {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.sync-event-src--meetup { background: rgba(237,28,36,0.12); color: #ed1c24; }
+.sync-event-src--eventbrite { background: rgba(247,107,28,0.12); color: #f76b1c; }
+.sync-event-src--headfirst { background: rgba(100,149,237,0.12); color: #6495ed; }
+
 .sync-log {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--text-muted);
-  max-height: 120px;
+  max-height: 180px;
   overflow-y: auto;
-  padding: 0 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+  .sync-results { grid-template-columns: 1fr; }
 }
 
 .sync-log-line {
