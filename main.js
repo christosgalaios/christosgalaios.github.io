@@ -114,28 +114,28 @@ function initNav() {
 
 /* --- 3D Card Tilt --- */
 function initCardTilt() {
-  const tiltTargets = '.project-card, .project-showcase, .hub-demo, .sprint-sim, .cicd-panel, .pipeline-sim, .education-card, .timeline-card, .phone-mockup, .agentic-detail-card';
-  document.querySelectorAll(tiltTargets).forEach(card => {
-    const inner = card.querySelector('.project-card-inner') || card;
-    inner.style.transition = 'transform 0.15s ease-out';
-    card.addEventListener('mousemove', (e) => {
-      const rect = card.getBoundingClientRect();
-      const rotateX = ((e.clientY - rect.top - rect.height / 2) / (rect.height / 2)) * -2;
-      const rotateY = ((e.clientX - rect.left - rect.width / 2) / (rect.width / 2)) * 2;
-      inner.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+  // Apply to ALL tiltable elements — the element itself transforms, not an inner child
+  document.querySelectorAll('[data-tilt]').forEach(el => {
+    el.addEventListener('mousemove', (e) => {
+      const rect = el.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      el.style.transform = `perspective(800px) rotateX(${y * -4}deg) rotateY(${x * 4}deg)`;
     });
-    card.addEventListener('mouseleave', () => { inner.style.transform = ''; });
+    el.addEventListener('mouseleave', () => {
+      el.style.transform = '';
+    });
   });
 }
 
-/* --- Interactive CV Mini Cards --- */
+/* --- Interactive CV Mini Cards (stronger tilt) --- */
 function initCVCards() {
   document.querySelectorAll('.cv-card').forEach(card => {
     card.addEventListener('mousemove', (e) => {
       const rect = card.getBoundingClientRect();
-      const rotateX = ((e.clientY - rect.top - rect.height / 2) / (rect.height / 2)) * -10;
-      const rotateY = ((e.clientX - rect.left - rect.width / 2) / (rect.width / 2)) * 10;
-      card.style.transform = `perspective(600px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      card.style.transform = `perspective(600px) rotateX(${y * -12}deg) rotateY(${x * 12}deg) translateY(-8px)`;
     });
     card.addEventListener('mouseleave', () => { card.style.transform = ''; });
   });
@@ -314,22 +314,19 @@ function initMango() {
     mango.classList.add('mango--in-cannon');
     compass.classList.add('floating-compass--loaded');
 
-    // Snapshot cursor position at moment of drop for angle + power
-    const fireMouseX = mouseX;
-    const fireMouseY = mouseY;
-
     setTimeout(() => {
       compass.classList.remove('floating-compass--loaded');
       compass.classList.add('floating-compass--firing');
       mango.classList.remove('mango--in-cannon');
       setPose('playful');
 
-      // Calculate angle from compass center to cursor position
+      // Use CURRENT cursor position at moment of fire (not drop)
+      // This lets the user aim during the 1.5s charge
       const cr = compass.getBoundingClientRect();
       const compassCx = cr.left + cr.width / 2;
       const compassCy = cr.top + cr.height / 2;
-      const dx = fireMouseX - compassCx;
-      const dy = fireMouseY - compassCy;
+      const dx = mouseX - compassCx;
+      const dy = mouseY - compassCy;
       const angleRad = Math.atan2(dy, dx);
 
       // Power = distance from compass to cursor, clamped
