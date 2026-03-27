@@ -739,7 +739,7 @@ function initCompass() {
   }
   requestAnimationFrame(animate);
 
-  compass.addEventListener('click', () => { window.scrollTo({ top: 0, behavior: 'smooth' }); playSound('whoosh'); });
+  compass.addEventListener('click', () => { ensureAudioCtx(); playSound('whoosh'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
 }
 
 /* --- Mango Mascot --- */

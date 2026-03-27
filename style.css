@@ -755,7 +755,6 @@ section {
   margin-top: var(--space-lg);
   margin-bottom: var(--space-lg);
   transition: border-color 0.3s;
-  overflow: hidden;
 }
 
 .project-showcase:hover {
@@ -3918,9 +3917,11 @@ section {
   margin-right: auto;
 }
 
-/* Compact cards — smaller projects, fill grid as equal pair */
+/* Compact cards — smaller projects */
 .project-card--compact {
-  min-width: 0; /* allow shrinking in grid */
+  min-width: 0;
+  max-width: 400px;
+  justify-self: center;
 }
 .project-card--compact .project-desc {
   word-break: break-word;
@@ -4498,11 +4499,11 @@ html.theme-transition *::after {
 }
 
 /* Project Showcase — tags/links positioning fix */
-.project-showcase > .project-tags {
+.sprint-sim-tags {
   margin-top: 1.5rem;
-}
-.project-showcase > .project-links {
-  margin-top: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 /* DevGuide Articles */
