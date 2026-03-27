@@ -1073,14 +1073,30 @@ function initMangoChat() {
     addMsg(msg, 'user');
     playSound('send');
 
-    const loading = addMsg('Mango is thinking...', 'loading');
+    // Show typing indicator bubble
+    const typingBubble = document.createElement('div');
+    typingBubble.className = 'mango-msg mango-msg--mango mango-msg--typing';
+    typingBubble.innerHTML = '<span class="typing-dots"><span>.</span><span>.</span><span>.</span></span>';
+    messages.appendChild(typingBubble);
+    messages.scrollTop = messages.scrollHeight;
+    playSound('tick');
+
     // Simulate AI thinking delay
     setTimeout(() => {
-      loading.remove();
+      typingBubble.remove();
       addMsg(getReply(msg), 'bot');
       playSound('receive');
     }, 600 + Math.random() * 800);
   });
+
+  // Keystroke sounds while typing in chat input
+  const chatField = document.getElementById('mango-chat-field');
+  if (chatField) {
+    chatField.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') return; // form submit handles this
+      playSound('typewriter');
+    });
+  }
 }
 
 /* --- Lazy Iframes --- */
@@ -2795,6 +2811,39 @@ function startShader(canvas) {
   requestAnimationFrame(render);
 }
 
+/* --- Offscreen Unloader --- */
+function initOffscreenUnloader() {
+  const sections = document.querySelectorAll('.sprint-sim, .hub-demo, .pipeline-sim, .cicd-panel, .cv-battle, .project-card--app-demo');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const el = entry.target;
+      if (entry.isIntersecting) {
+        // Resume
+        el.classList.remove('section--offscreen');
+        // Resume iframes
+        el.querySelectorAll('iframe[data-src]').forEach(iframe => {
+          if (!iframe.src || iframe.src === 'about:blank') {
+            iframe.src = iframe.dataset.src;
+          }
+        });
+      } else {
+        // Pause
+        el.classList.add('section--offscreen');
+        // Pause iframes (store src, set to blank)
+        el.querySelectorAll('iframe').forEach(iframe => {
+          if (iframe.src && iframe.src !== 'about:blank') {
+            iframe.dataset.src = iframe.src;
+            iframe.src = 'about:blank';
+          }
+        });
+      }
+    });
+  }, { rootMargin: '200px 0px' }); // 200px buffer so unload happens well off-screen
+
+  sections.forEach(s => observer.observe(s));
+}
+
 /* --- Init --- */
 document.addEventListener('DOMContentLoaded', () => {
   initSoundSystem();
@@ -2825,5 +2874,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initMatrixRain();
   initContactShader();
   initLightbox();
+  initOffscreenUnloader();
   initEasterEggs();
 });

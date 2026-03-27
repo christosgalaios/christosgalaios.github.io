@@ -4244,3 +4244,36 @@ html.theme-transition *::after {
     scroll-behavior: auto;
   }
 }
+
+/* Offscreen section pause */
+.section--offscreen * {
+  animation-play-state: paused !important;
+}
+
+/* Mango chat disclaimer */
+.mango-chat-disclaimer {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 0.25rem 0.5rem;
+  opacity: 0.6;
+}
+
+/* Mango typing indicator */
+.mango-msg--typing .typing-dots span {
+  animation: typingBounce 1.4s infinite;
+  display: inline-block;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+.mango-msg--typing .typing-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.mango-msg--typing .typing-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
