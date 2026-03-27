@@ -30,7 +30,209 @@ function initTheme() {
     const current = document.documentElement.getAttribute('data-theme') || 'dark';
     applyTheme(current === 'dark' ? 'light' : 'dark');
     setTimeout(() => document.documentElement.classList.remove('theme-transition'), 500);
+    playSound('toggle');
   });
+}
+
+/* --- Sound System --- */
+let audioCtx = null;
+let soundEnabled = true;
+const masterVolume = 0.3;
+
+function initSoundSystem() {
+  const toggle = document.getElementById('sound-toggle');
+  if (!toggle) return;
+
+  const stored = localStorage.getItem('sound');
+  soundEnabled = stored !== 'off';
+  updateSoundToggle(toggle);
+
+  toggle.addEventListener('click', () => {
+    soundEnabled = !soundEnabled;
+    localStorage.setItem('sound', soundEnabled ? 'on' : 'off');
+    updateSoundToggle(toggle);
+    ensureAudioCtx();
+    if (soundEnabled) playSound('toggle');
+  });
+
+  document.addEventListener('click', ensureAudioCtx, { once: true });
+  document.addEventListener('keydown', ensureAudioCtx, { once: true });
+}
+
+function updateSoundToggle(toggle) {
+  toggle.querySelector('.icon-sound-on').style.display = soundEnabled ? '' : 'none';
+  toggle.querySelector('.icon-sound-off').style.display = soundEnabled ? 'none' : '';
+  toggle.setAttribute('aria-label', soundEnabled ? 'Mute sound' : 'Unmute sound');
+}
+
+function ensureAudioCtx() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+function playSound(type) {
+  if (!soundEnabled || !audioCtx) return;
+  const t = audioCtx.currentTime;
+  const vol = audioCtx.createGain();
+  vol.connect(audioCtx.destination);
+
+  switch (type) {
+    case 'click': {
+      vol.gain.setValueAtTime(0.2 * masterVolume, t);
+      vol.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+      const osc = audioCtx.createOscillator();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(800, t);
+      osc.frequency.exponentialRampToValueAtTime(400, t + 0.05);
+      osc.connect(vol);
+      osc.start(t);
+      osc.stop(t + 0.05);
+      break;
+    }
+    case 'whoosh': {
+      vol.gain.setValueAtTime(0, t);
+      vol.gain.linearRampToValueAtTime(0.15 * masterVolume, t + 0.05);
+      vol.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+      const bufferSize = audioCtx.sampleRate * 0.2 | 0;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.3;
+      const noise = audioCtx.createBufferSource();
+      noise.buffer = buffer;
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(600, t);
+      filter.frequency.exponentialRampToValueAtTime(200, t + 0.2);
+      noise.connect(filter);
+      filter.connect(vol);
+      noise.start(t);
+      noise.stop(t + 0.2);
+      break;
+    }
+    case 'tick': {
+      vol.gain.setValueAtTime(0.15 * masterVolume, t);
+      vol.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
+      const osc = audioCtx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1200, t);
+      osc.connect(vol);
+      osc.start(t);
+      osc.stop(t + 0.03);
+      break;
+    }
+    case 'toggle': {
+      vol.gain.setValueAtTime(0.25 * masterVolume, t);
+      vol.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+      const osc = audioCtx.createOscillator();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(600, t);
+      osc.frequency.exponentialRampToValueAtTime(1200, t + 0.04);
+      osc.frequency.exponentialRampToValueAtTime(800, t + 0.08);
+      osc.connect(vol);
+      osc.start(t);
+      osc.stop(t + 0.08);
+      break;
+    }
+    case 'glass': {
+      vol.gain.setValueAtTime(0.15 * masterVolume, t);
+      vol.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
+      const osc = audioCtx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(2000, t);
+      osc.frequency.exponentialRampToValueAtTime(1500, t + 0.04);
+      osc.connect(vol);
+      osc.start(t);
+      osc.stop(t + 0.04);
+      break;
+    }
+    case 'purr': {
+      vol.gain.setValueAtTime(0.25 * masterVolume, t);
+      vol.gain.linearRampToValueAtTime(0.2 * masterVolume, t + 0.15);
+      vol.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+      const osc = audioCtx.createOscillator();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(80, t);
+      const lfo = audioCtx.createOscillator();
+      const lfoGain = audioCtx.createGain();
+      lfo.frequency.value = 25;
+      lfoGain.gain.value = 15;
+      lfo.connect(lfoGain);
+      lfoGain.connect(osc.frequency);
+      lfo.start(t);
+      lfo.stop(t + 0.3);
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 300;
+      osc.connect(filter);
+      filter.connect(vol);
+      osc.start(t);
+      osc.stop(t + 0.3);
+      break;
+    }
+    case 'pew': {
+      vol.gain.setValueAtTime(0.3 * masterVolume, t);
+      vol.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+      const osc = audioCtx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1200, t);
+      osc.frequency.exponentialRampToValueAtTime(200, t + 0.3);
+      osc.connect(vol);
+      osc.start(t);
+      osc.stop(t + 0.4);
+      break;
+    }
+    case 'typewriter': {
+      vol.gain.setValueAtTime(0.1 * masterVolume, t);
+      vol.gain.exponentialRampToValueAtTime(0.001, t + 0.02);
+      const osc = audioCtx.createOscillator();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(600 + Math.random() * 400, t);
+      osc.connect(vol);
+      osc.start(t);
+      osc.stop(t + 0.02);
+      break;
+    }
+    case 'easter': {
+      vol.gain.setValueAtTime(0.3 * masterVolume, t);
+      vol.gain.linearRampToValueAtTime(0.2 * masterVolume, t + 0.3);
+      vol.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
+      const notes = [523, 659, 784];
+      notes.forEach((freq, i) => {
+        const osc = audioCtx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        const g = audioCtx.createGain();
+        g.gain.setValueAtTime(0, t + i * 0.1);
+        g.gain.linearRampToValueAtTime(0.3 * masterVolume, t + i * 0.1 + 0.05);
+        g.gain.exponentialRampToValueAtTime(0.001, t + i * 0.1 + 0.4);
+        osc.connect(g);
+        g.connect(audioCtx.destination);
+        osc.start(t + i * 0.1);
+        osc.stop(t + i * 0.1 + 0.4);
+      });
+      break;
+    }
+    case 'glitch': {
+      vol.gain.setValueAtTime(0.2 * masterVolume, t);
+      vol.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+      const bufferSize = audioCtx.sampleRate * 0.2 | 0;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1);
+      const noise = audioCtx.createBufferSource();
+      noise.buffer = buffer;
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'highpass';
+      filter.frequency.value = 2000;
+      noise.connect(filter);
+      filter.connect(vol);
+      noise.start(t);
+      noise.stop(t + 0.2);
+      break;
+    }
+  }
 }
 
 /* --- Blur Text Reveal --- */
@@ -205,12 +407,13 @@ function initNav() {
     toggle.setAttribute('aria-expanded', String(isOpen));
   });
   links.querySelectorAll('a').forEach(a => {
-    a.addEventListener('click', () => { links.classList.remove('nav-links--open'); toggle.classList.remove('nav-toggle--active'); toggle.setAttribute('aria-expanded', 'false'); });
+    a.addEventListener('click', () => { links.classList.remove('nav-links--open'); toggle.classList.remove('nav-toggle--active'); toggle.setAttribute('aria-expanded', 'false'); playSound('click'); });
   });
 }
 
 /* --- 3D Card Tilt --- */
 function initCardTilt() {
+  let lastGlassSound = 0;
   const selector = [
     '.project-card',
     '.project-showcase',
@@ -230,6 +433,9 @@ function initCardTilt() {
 
   document.querySelectorAll(selector).forEach(el => {
     el.classList.add('tiltable');
+    el.addEventListener('mouseenter', () => {
+      if (Date.now() - lastGlassSound > 300) { playSound('glass'); lastGlassSound = Date.now(); }
+    });
     el.addEventListener('mousemove', (e) => {
       const rect = el.getBoundingClientRect();
       const x = (e.clientX - rect.left) / rect.width - 0.5;
@@ -386,7 +592,11 @@ function initMango() {
       }, 800);
     } else if (downTime && !hasMoved && Date.now() - downTime < 300) {
       // Short tap = toggle chat
-      if (chatPanel) chatPanel.classList.toggle('mango-chat--open');
+      if (chatPanel) {
+        const opening = !chatPanel.classList.contains('mango-chat--open');
+        chatPanel.classList.toggle('mango-chat--open');
+        if (opening) playSound('purr');
+      }
       resetIdleTimer();
     }
     downTime = 0;
@@ -495,6 +705,7 @@ function initMango() {
       compass.classList.add('floating-compass--firing');
       mango.classList.remove('mango--in-cannon');
       setPose('playful');
+      playSound('pew');
 
       // Use CURRENT cursor position at moment of fire (not drop)
       // This lets the user aim during the 1.5s charge
@@ -2064,6 +2275,7 @@ function initMagneticButtons() {
 
 /* --- Init --- */
 document.addEventListener('DOMContentLoaded', () => {
+  initSoundSystem();
   initTheme();
   initBlurReveal();
   initTextScramble();
