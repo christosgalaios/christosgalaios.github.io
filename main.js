@@ -114,8 +114,25 @@ function initNav() {
 
 /* --- 3D Card Tilt --- */
 function initCardTilt() {
-  // Apply to ALL tiltable elements — the element itself transforms, not an inner child
-  document.querySelectorAll('[data-tilt]').forEach(el => {
+  const selector = [
+    '.project-card',
+    '.project-showcase',
+    '.hub-demo',
+    '.sprint-sim',
+    '.cicd-panel',
+    '.pipeline-sim',
+    '.education-card',
+    '.timeline-card',
+    '.agentic-detail-card',
+    '.phone-mockup',
+    '.browser-mockup',
+    '.nightshift-panel',
+    '.ideas-input-card',
+    '.highlight-item',
+  ].join(',');
+
+  document.querySelectorAll(selector).forEach(el => {
+    el.classList.add('tiltable');
     el.addEventListener('mousemove', (e) => {
       const rect = el.getBoundingClientRect();
       const x = (e.clientX - rect.left) / rect.width - 0.5;

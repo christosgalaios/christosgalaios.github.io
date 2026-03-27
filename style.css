@@ -486,13 +486,13 @@ section {
   position: relative;
 }
 
-/* Uniform tilt + glow */
-[data-tilt] {
-  transition: transform 0.15s ease-out, border-color 0.2s, box-shadow 0.2s;
+/* Uniform tilt + glow on all interactive cards */
+.tiltable {
+  transition: transform 0.1s ease-out, border-color 0.2s, box-shadow 0.2s;
   will-change: transform;
 }
 
-[data-tilt]:hover {
+.tiltable:hover {
   border-color: var(--border-hover);
   box-shadow: 0 0 30px var(--accent-glow);
 }
@@ -2476,7 +2476,7 @@ section {
 
 .reveal--visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: none;
 }
 
 /* ============================================
