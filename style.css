@@ -4462,6 +4462,20 @@ html.theme-hacker-exit {
   border-color: #6b6;
 }
 
+[data-theme="light"] .contact-shader {
+  display: none;
+}
+
+[data-theme="light"] .project-showcase--dark {
+  background: linear-gradient(170deg, #eef2f5 0%, #f8fafb 100%);
+  border-color: var(--border);
+}
+
+[data-theme="light"] .nightshift-panel {
+  background: linear-gradient(170deg, #eef0f8 0%, #f5f6fc 100%);
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
 html.theme-transition,
 html.theme-transition *,
 html.theme-transition *::before,
