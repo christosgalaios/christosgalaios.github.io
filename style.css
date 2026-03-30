@@ -4452,6 +4452,18 @@ html.theme-hacker-exit {
   background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
 }
 
+[data-theme="light"] .hero-name {
+  background: linear-gradient(110deg, #F8FAFC 35%, #22C55E 50%, #F8FAFC 65%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+[data-theme="light"] .hero-description {
+  color: #94A3B8;
+}
+
 [data-theme="light"] .cv-card--objection {
   background: linear-gradient(170deg, #f5e0e0 0%, #faf0f0 100%);
   border-color: #d88;
