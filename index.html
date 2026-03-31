@@ -482,7 +482,7 @@
               <p class="project-role">AI Agent Orchestration Framework — Built from 5 Years of Studio Experience</p>
             </div>
           </div>
-          <p class="project-desc">I spent 5 years inside game studios. I know what every role does and why it exists — from how artists need fast iteration loops, to how QA and devs communicate, to how a technical lead shields their team from scope creep. I encoded all of that into an autonomous AI system that runs my codebases while I sleep.</p>
+          <p class="project-desc">I spent 5 years inside game studios. I know what every role does and why it exists — from how a technical lead protects a team from scope creep, to how QA and devs communicate without friction, to how a producer keeps a sprint on track. I encoded all of that institutional knowledge into an autonomous AI system that runs my codebases while I sleep.</p>
 
           <!-- Agent Flow Diagram — Expanded -->
           <div class="agent-flow-expanded">
@@ -491,7 +491,7 @@
                 <span class="agent-node-icon">&#9733;</span>
                 <div class="agent-node-content">
                   <strong>CEO Agent</strong>
-                  <span>Strategic oversight. Reads status reports, evaluates efficiency, scolds violations, writes business directives. Operates at the business level — WHAT the company needs, not HOW.</span>
+                  <span>Reads status logs, evaluates efficiency, writes business directives. When a task is needed, recommends which specialist to hire and writes their system prompt — Architect for planning, QA for validation, Test Writer for coverage. Operates at the business level only.</span>
                 </div>
               </div>
             </div>
@@ -504,20 +504,41 @@
                 <span class="agent-node-icon">&#9881;</span>
                 <div class="agent-node-content">
                   <strong>Manager Agent</strong>
-                  <span>Writes task specs (&le;15 lines), dispatches code-reviewer subagents, verifies work, archives completed tasks. Decides HOW to achieve CEO directives. Never implements.</span>
+                  <span>Runs the sprint skill. Breaks directives into &le;15-line task specs. Dispatches the right specialist for each task — Architect first, then Dev, then Test Writer, then QA. Dispatches code-reviewer subagents after every commit. Never implements.</span>
                 </div>
               </div>
             </div>
             <div class="agent-flow-connector">
               <div class="agent-flow-line"></div>
-              <span class="agent-flow-label">.manager-feedback.md</span>
+              <span class="agent-flow-label">sprint.md / .manager-feedback.md</span>
             </div>
-            <div class="agent-flow-row">
+            <div class="agent-flow-row agent-flow-row--specialists">
+              <div class="agent-node-expanded agent-node--architect">
+                <span class="agent-node-icon">&#9998;</span>
+                <div class="agent-node-content">
+                  <strong>Architect</strong>
+                  <span>Plans before a single line is written. Reads the codebase, identifies files to change, documents patterns to follow. Produces the implementation blueprint the Dev agents execute against.</span>
+                </div>
+              </div>
               <div class="agent-node-expanded agent-node--agent">
                 <span class="agent-node-icon">&#9662;</span>
                 <div class="agent-node-content">
-                  <strong>Agent</strong>
-                  <span>Implements tasks, runs tests, commits code, checks for feedback before AND after every commit. Uses haiku for mechanical work, sonnet for implementation, opus for architecture.</span>
+                  <strong>Dev Agents</strong>
+                  <span>Implement against the Architect's plan using Sonnet. Commit early and often. Check sprint.md before and after every commit. Use Haiku for file search, Sonnet for implementation.</span>
+                </div>
+              </div>
+              <div class="agent-node-expanded agent-node--testwriter">
+                <span class="agent-node-icon">&#9679;</span>
+                <div class="agent-node-content">
+                  <strong>Test Writer</strong>
+                  <span>Writes tests after each implementation commit — unit, integration, and edge cases. Runs the full suite. Reports coverage gaps to Manager before QA is called in.</span>
+                </div>
+              </div>
+              <div class="agent-node-expanded agent-node--qa">
+                <span class="agent-node-icon">&#10003;</span>
+                <div class="agent-node-content">
+                  <strong>QA Agent</strong>
+                  <span>Validates via 110+ MCP tools — queries the database, triggers browser automation, captures screenshots, tests UI state. Files bug tickets directly into the sprint board. VERIFIED or back to Dev.</span>
                 </div>
               </div>
             </div>
@@ -526,36 +547,36 @@
           <!-- Key Achievements -->
           <div class="project-highlights">
             <div class="highlight-item">
-              <span class="highlight-number">3</span>
-              <span class="highlight-text">Autonomous roles running continuously — CEO evaluates, Manager dispatches, Agent implements</span>
+              <span class="highlight-number">5</span>
+              <span class="highlight-text">Specialist roles — CEO, Manager, Architect, Test Writer, QA — all autonomous, all coordinating via shared files</span>
             </div>
             <div class="highlight-item">
               <span class="highlight-number">24/7</span>
-              <span class="highlight-text">Night Shift mode — agents work autonomously while I sleep, committing and pushing working code</span>
+              <span class="highlight-text">Night Shift mode — agents work continuously while I sleep, committing and pushing working code</span>
             </div>
             <div class="highlight-item">
               <span class="highlight-number">3-tier</span>
-              <span class="highlight-text">Model routing — Haiku for file search, Sonnet for implementation, Opus for strategy. Minimizes cost.</span>
+              <span class="highlight-text">Model routing — Haiku for file search, Sonnet for implementation, Opus for strategy. Cost-optimised by design.</span>
             </div>
           </div>
 
-          <!-- Sprint Skill & Communication -->
+          <!-- Detail Cards — ordered by significance -->
           <div class="agentic-detail-grid">
             <div class="agentic-detail-card">
-              <h4>Sprint Skill — QA/Dev Communication</h4>
-              <p>Built a custom sprint management skill where the Manager writes task specs to a shared sprint file and the Agent reads, implements, and acknowledges — all asynchronously. The Manager dispatches code-reviewer subagents after each commit, writes VERIFIED or feedback, and immediately queues the next task. No human in the loop. The sprint file is the single source of truth.</p>
+              <h4>Sprint Skill — Full Role Pipeline</h4>
+              <p>Built a custom sprint management skill that coordinates the full pipeline: Architect plans → Dev implements → Test Writer writes coverage → QA validates via MCP → Manager VERIFIED or sends feedback. All asynchronous, file-driven, no human in the loop. The sprint file is the single source of truth. Manager queues the next task the instant the current one is verified.</p>
             </div>
             <div class="agentic-detail-card">
-              <h4>Autonomous Night Shift</h4>
-              <p>When I say "night shift", the agents enter continuous operation. They never stop. When a task is done, they find the next one. When the backlog is empty, they proactively hunt for bugs, UX issues, missing validation, test coverage gaps. They commit working pieces early and often. Only stop when context runs out — then log what to do next so the next agent picks up seamlessly.</p>
+              <h4>CEO as Hiring Manager</h4>
+              <p>The CEO doesn't just write directives — it decides which role to spin up and writes the system prompt. "This task needs an Architect — here's the prompt." The CEO encodes domain knowledge directly into each agent's persona. A QA agent gets a prompt that references production bugs. An Architect gets context about the codebase patterns they must follow. The CEO controls quality through prompt engineering, not micromanagement.</p>
+            </div>
+            <div class="agentic-detail-card">
+              <h4>Token Budget Engineering</h4>
+              <p>Context windows are the scarcest resource in agentic systems. Task specs are capped at 15 lines. Subagents handle exploration to protect the main context. Model routing is strict: Haiku for grep/search, Sonnet for implementation, Opus for architecture decisions. Night Shift agents commit and hand off before context runs out — logging exactly where to resume so the next agent picks up seamlessly.</p>
             </div>
             <div class="agentic-detail-card">
               <h4>Learned-From-Mistakes System</h4>
-              <p>Cross-project rules encoded from real failures: "always rebase before pushing", "workflow changes must land on the target branch", "never pass raw LLM responses to frontend", "never add auto-triggered API calls". Every mistake becomes a permanent rule. The agents don't repeat my mistakes — they've inherited 5 years of operational knowledge.</p>
-            </div>
-            <div class="agentic-detail-card">
-              <h4>MCP Server Integration</h4>
-              <p>SocialiseHub exposes 110+ tools via Model Context Protocol over SSE. QA agents can query the database, trigger browser automation, capture screenshots, and validate UI state — all through structured tool calls. The agents don't just write code; they test and operate the application autonomously.</p>
+              <p>Every real failure becomes a permanent cross-project rule: "always rebase before pushing", "workflow changes must land on the target branch", "never pass raw LLM responses to frontend", "never add auto-triggered API calls". The CEO encodes lessons after every sprint. The agents have inherited 5 years of operational knowledge — they don't repeat mistakes, they inherit the scar tissue.</p>
             </div>
           </div>
 
@@ -587,12 +608,12 @@
                     <span class="sprint-agent-status" id="manager-status">idle</span>
                   </div>
                 </div>
-                <div class="sprint-agent" id="agent-qa">
+                <div class="sprint-agent" id="agent-architect">
                   <div class="sprint-agent-indicator"></div>
                   <div class="sprint-agent-info">
-                    <strong>QA Agent</strong>
-                    <span class="sprint-agent-model">claude-opus</span>
-                    <span class="sprint-agent-status" id="qa-status">idle</span>
+                    <strong>Architect</strong>
+                    <span class="sprint-agent-model">claude-sonnet</span>
+                    <span class="sprint-agent-status" id="architect-status">idle</span>
                   </div>
                 </div>
                 <div class="sprint-agent" id="agent-dev1">
@@ -611,6 +632,22 @@
                     <span class="sprint-agent-status" id="dev2-status">idle</span>
                   </div>
                 </div>
+                <div class="sprint-agent" id="agent-testwriter">
+                  <div class="sprint-agent-indicator"></div>
+                  <div class="sprint-agent-info">
+                    <strong>Test Writer</strong>
+                    <span class="sprint-agent-model">claude-sonnet</span>
+                    <span class="sprint-agent-status" id="testwriter-status">idle</span>
+                  </div>
+                </div>
+                <div class="sprint-agent" id="agent-qa">
+                  <div class="sprint-agent-indicator"></div>
+                  <div class="sprint-agent-info">
+                    <strong>QA Agent</strong>
+                    <span class="sprint-agent-model">claude-sonnet</span>
+                    <span class="sprint-agent-status" id="qa-status">idle</span>
+                  </div>
+                </div>
             </div>
 
             <!-- Live Files Panel -->
@@ -618,6 +655,10 @@
               <div class="sprint-file" id="file-ceo">
                 <div class="sprint-file-name">ceo-directives.md</div>
                 <div class="sprint-file-content" id="file-ceo-content">No active directives</div>
+              </div>
+              <div class="sprint-file" id="file-architect">
+                <div class="sprint-file-name">sprint-plan.md</div>
+                <div class="sprint-file-content" id="file-architect-content">Awaiting Architect</div>
               </div>
               <div class="sprint-file" id="file-manager">
                 <div class="sprint-file-name">.manager-feedback.md</div>
@@ -697,6 +738,8 @@
             <span class="tag">Custom Skills</span>
             <span class="tag">Hooks</span>
             <span class="tag">Subagents</span>
+            <span class="tag">Architect Agent</span>
+            <span class="tag">Test Writer Agent</span>
           </div>
         </article>
 

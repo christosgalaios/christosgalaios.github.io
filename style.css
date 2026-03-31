@@ -1073,6 +1073,35 @@ section {
   color: var(--accent);
 }
 
+.agent-node--architect {
+  background: rgba(251,191,36,0.08);
+  border: 1px solid rgba(251,191,36,0.3);
+  color: #fbbf24;
+}
+
+.agent-node--testwriter {
+  background: rgba(20,184,166,0.08);
+  border: 1px solid rgba(20,184,166,0.3);
+  color: #14b8a6;
+}
+
+.agent-node--qa {
+  background: rgba(239,68,68,0.08);
+  border: 1px solid rgba(239,68,68,0.3);
+  color: #ef4444;
+}
+
+.agent-flow-row--specialists {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  max-width: 100%;
+}
+
+.agent-flow-row--specialists .agent-node-expanded {
+  max-width: 100%;
+}
+
 .agent-icon {
   font-size: 1.1rem;
 }
@@ -2331,6 +2360,11 @@ section {
 .sprint-file--flash-ceo {
   border-color: #f59e0b;
   background: rgba(245,158,11,0.05);
+}
+
+.sprint-file--flash-architect {
+  border-color: #fbbf24;
+  background: rgba(251,191,36,0.05);
 }
 
 .sprint-file-name {
