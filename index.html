@@ -404,9 +404,9 @@
         <!-- ======= Medium Cards Row ======= -->
         <div class="projects-grid">
 
-          <!-- SocialiseApp — Mobile Demo -->
-          <article class="project-card project-card--app-demo reveal">
-            <div class="project-card-inner">
+          <!-- SocialiseApp — Mobile Demo (locked) -->
+          <article class="project-card project-card--app-demo project-card--locked reveal" data-app-lock>
+            <div class="project-card-inner locked-content" aria-hidden="true">
 
               <!-- Left: text -->
               <div class="app-text-col">
@@ -448,7 +448,7 @@
                   <div class="phone-mockup phone-mockup--live">
                     <div class="phone-notch"></div>
                     <div class="phone-screen">
-                      <iframe src="https://app.socialise.events" class="app-live-iframe" title="SocialiseApp — Mobile Demo" loading="lazy" allowfullscreen></iframe>
+                      <iframe data-locked-src="https://app.socialise.events" class="app-live-iframe" title="SocialiseApp — Mobile Demo" loading="lazy" allowfullscreen></iframe>
                     </div>
                   </div>
                   <!-- Desktop browser -->
@@ -460,11 +460,27 @@
                       <span class="browser-url">app.socialise.events</span>
                     </div>
                     <div class="browser-viewport">
-                      <iframe src="https://app.socialise.events" class="app-live-iframe" title="SocialiseApp — Desktop Demo" loading="lazy" allowfullscreen></iframe>
+                      <iframe data-locked-src="https://app.socialise.events" class="app-live-iframe" title="SocialiseApp — Desktop Demo" loading="lazy" allowfullscreen></iframe>
                     </div>
                   </div>
                 </div>
                 <p class="app-multi-label">Same codebase. PWA-ready. Works everywhere.</p>
+              </div>
+            </div>
+
+            <div class="lock-overlay" data-app-lock-overlay>
+              <div class="lock-overlay__inner">
+                <div class="lock-overlay__badge">Private project</div>
+                <h3 class="lock-overlay__title">Get in touch</h3>
+                <p class="lock-overlay__desc">This project is locked. Reach out and I'll share the password.</p>
+                <form class="lock-overlay__form" data-app-lock-form autocomplete="off">
+                  <label class="lock-overlay__label" for="app-lock-input">Password</label>
+                  <div class="lock-overlay__row">
+                    <input id="app-lock-input" type="password" class="lock-overlay__input" data-app-lock-input autocomplete="off" spellcheck="false" aria-describedby="app-lock-error">
+                    <button type="submit" class="lock-overlay__submit">Unlock</button>
+                  </div>
+                  <p id="app-lock-error" class="lock-overlay__error" data-app-lock-error hidden>Incorrect password</p>
+                </form>
               </div>
             </div>
           </article>

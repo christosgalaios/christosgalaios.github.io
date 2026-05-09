@@ -3022,6 +3022,150 @@ section {
 .project-card--app-demo {
   overflow: visible;
   grid-column: 1 / -1;
+  position: relative;
+}
+
+/* ---- Locked SocialiseApp card ---- */
+.project-card--locked .locked-content {
+  filter: blur(14px) saturate(0.7);
+  pointer-events: none;
+  user-select: none;
+  transition: filter 0.4s ease;
+}
+
+.project-card--locked.project-card--unlocked .locked-content {
+  filter: none;
+  pointer-events: auto;
+  user-select: auto;
+}
+
+.project-card--locked.project-card--unlocked .lock-overlay {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.lock-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl);
+  background: linear-gradient(135deg, rgba(10, 10, 15, 0.55), rgba(10, 10, 15, 0.7));
+  backdrop-filter: blur(2px);
+  border-radius: inherit;
+  z-index: 2;
+  transition: opacity 0.4s ease;
+}
+
+.lock-overlay__inner {
+  width: 100%;
+  max-width: 420px;
+  padding: var(--space-xl);
+  background: var(--bg-card);
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  text-align: center;
+}
+
+.lock-overlay__badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-glow);
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  margin-bottom: var(--space-md);
+}
+
+.lock-overlay__title {
+  font-family: var(--font-heading);
+  font-size: 1.6rem;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.lock-overlay__desc {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-bottom: var(--space-lg);
+}
+
+.lock-overlay__label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: left;
+  margin-bottom: var(--space-xs);
+}
+
+.lock-overlay__row {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.lock-overlay__input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.65rem 0.85rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.lock-overlay__input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.lock-overlay__submit {
+  padding: 0.65rem 1.1rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--bg-primary);
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.lock-overlay__submit:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.lock-overlay__error {
+  margin-top: var(--space-sm);
+  font-size: 0.8rem;
+  color: #ef4444;
+  text-align: left;
+}
+
+[data-theme="light"] .lock-overlay {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.7));
+}
+
+@media (max-width: 640px) {
+  .lock-overlay__row {
+    flex-direction: column;
+  }
+  .lock-overlay__submit {
+    width: 100%;
+  }
 }
 
 .project-card--app-demo .project-card-inner {

@@ -2366,6 +2366,67 @@ function initAppDemo() {
   });
 }
 
+/* --- SocialiseApp lock gate --- */
+function initAppDemoLock() {
+  const card = document.querySelector('[data-app-lock]');
+  if (!card) return;
+
+  const form = card.querySelector('[data-app-lock-form]');
+  const input = card.querySelector('[data-app-lock-input]');
+  const errorEl = card.querySelector('[data-app-lock-error]');
+  const PASSWORD = 'dot';
+  const STORAGE_KEY = 'socialiseapp-unlocked';
+
+  function unlock() {
+    card.classList.add('project-card--unlocked');
+    card.querySelectorAll('iframe[data-locked-src]').forEach(f => {
+      f.dataset.src = f.dataset.lockedSrc;
+      f.removeAttribute('data-locked-src');
+      f.src = f.dataset.src;
+    });
+    const overlay = card.querySelector('[data-app-lock-overlay]');
+    if (overlay) {
+      setTimeout(() => overlay.remove(), 500);
+    }
+    try { sessionStorage.setItem(STORAGE_KEY, '1'); } catch {}
+  }
+
+  try {
+    if (sessionStorage.getItem(STORAGE_KEY) === '1') {
+      unlock();
+      return;
+    }
+  } catch {}
+
+  if (!form || !input) return;
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const value = input.value.trim().toLowerCase();
+    if (value === PASSWORD) {
+      if (errorEl) errorEl.hidden = true;
+      unlock();
+    } else {
+      if (errorEl) errorEl.hidden = false;
+      input.value = '';
+      input.focus();
+      card.animate(
+        [
+          { transform: 'translateX(0)' },
+          { transform: 'translateX(-6px)' },
+          { transform: 'translateX(6px)' },
+          { transform: 'translateX(0)' },
+        ],
+        { duration: 250, easing: 'ease-out' }
+      );
+    }
+  });
+
+  input.addEventListener('input', () => {
+    if (errorEl && !errorEl.hidden) errorEl.hidden = true;
+  });
+}
+
 /* --- Lightbox (click to zoom screenshots) --- */
 function initLightbox() {
   document.querySelectorAll('.project-screenshot').forEach(img => {
@@ -3226,6 +3287,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initMango();
   initMangoChat();
   initLazyIframes();
+  initAppDemoLock();
   initHubDemo();
   initTimelineChart();
   initSprintSim();
